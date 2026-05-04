@@ -456,10 +456,12 @@ struct ExerciseCatalogPickerView: View {
                     if viewModel.isSearchingCatalog {
                         ProgressView()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else if viewModel.catalogResults.isEmpty && !viewModel.catalogQuery.isEmpty {
+                    } else if viewModel.catalogResults.isEmpty && !viewModel.catalogQuery.isEmpty && viewModel.selectedMuscleGroup == nil {
                         emptySearchResult
+                    } else if viewModel.catalogResults.isEmpty && viewModel.selectedMuscleGroup == nil && viewModel.catalogQuery.isEmpty {
+                        muscleGroupGrid
                     } else if viewModel.catalogResults.isEmpty {
-                        searchPrompt
+                        emptySearchResult
                     } else {
                         catalogList
                     }
@@ -481,10 +483,7 @@ struct ExerciseCatalogPickerView: View {
                     .foregroundStyle(Color.brandPrimary)
                 }
             }
-            .onAppear {
-                searchFocused = true
-                Task { await viewModel.searchCatalog(apiClient: container.apiClient) }
-            }
+            .onAppear { searchFocused = true }
         }
     }
 
@@ -515,32 +514,86 @@ struct ExerciseCatalogPickerView: View {
     }
 
     private var catalogList: some View {
-        List(viewModel.catalogResults) { item in
-            Button {
-                viewModel.addExercise(item)
-                dismiss()
-            } label: {
-                CatalogRow(item: item)
+        VStack(spacing: 0) {
+            if let selected = viewModel.selectedMuscleGroup {
+                HStack(spacing: 8) {
+                    Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                        .foregroundStyle(Color.brandPrimary)
+                        .font(.system(size: 14))
+                    Text(MuscleGroupMeta.label(for: selected))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.brandPrimary)
+                    Text("·")
+                        .foregroundStyle(Color.textSecondary.opacity(0.5))
+                    Text("\(viewModel.catalogResults.count)개")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.textSecondary)
+                    Spacer()
+                    Button {
+                        viewModel.clearCatalogSearch()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(Color.textSecondary.opacity(0.5))
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color.brandSurface)
+                Divider()
             }
-            .listRowBackground(Color.surfacePrimary)
-            .listRowSeparatorTint(Color(uiColor: .separator).opacity(0.5))
+            List(viewModel.catalogResults) { item in
+                Button {
+                    viewModel.addExercise(item)
+                    dismiss()
+                } label: {
+                    CatalogRow(item: item)
+                }
+                .listRowBackground(Color.surfacePrimary)
+                .listRowSeparatorTint(Color(uiColor: .separator).opacity(0.5))
+            }
+            .listStyle(.plain)
         }
-        .listStyle(.plain)
     }
 
-    private var searchPrompt: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "dumbbell.fill")
-                .font(.system(size: 44))
-                .foregroundStyle(Color.brandPrimary.opacity(0.25))
-            Text("운동 이름으로 검색하세요")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color.textPrimary)
-            Text("빈 칸으로 검색하면 전체 목록을 볼 수 있습니다")
-                .font(.system(size: 13))
-                .foregroundStyle(Color.textSecondary)
+    private var muscleGroupGrid: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("부위별 운동")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(Color.textPrimary)
+                    Text("운동할 부위를 선택하면 해당 운동 목록을 볼 수 있어요")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.textSecondary)
+                }
+                .padding(.horizontal, 4)
+
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    ForEach(MuscleGroupMeta.all, id: \.key) { meta in
+                        Button {
+                            Task {
+                                await viewModel.selectMuscleGroup(meta.key, apiClient: container.apiClient)
+                            }
+                        } label: {
+                            VStack(spacing: 8) {
+                                Text(meta.emoji)
+                                    .font(.system(size: 28))
+                                Text(meta.label)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(Color.textPrimary)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.surfacePrimary)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(16)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var emptySearchResult: some View {
@@ -629,6 +682,33 @@ struct ExerciseCatalogPickerView: View {
             .padding(.vertical, 5)
             .background(Color.brandSurface)
             .clipShape(Capsule())
+    }
+}
+
+// MARK: - Muscle Group Meta
+
+private struct MuscleGroupMeta {
+    let key: String
+    let label: String
+    let emoji: String
+
+    static let all: [MuscleGroupMeta] = [
+        .init(key: "CHEST",      label: "가슴",    emoji: "💪"),
+        .init(key: "BACK",       label: "등",      emoji: "🔙"),
+        .init(key: "SHOULDERS",  label: "어깨",    emoji: "🏋️"),
+        .init(key: "BICEPS",     label: "이두",    emoji: "💪"),
+        .init(key: "TRICEPS",    label: "삼두",    emoji: "🦾"),
+        .init(key: "CORE",       label: "코어",    emoji: "🔥"),
+        .init(key: "QUADRICEPS", label: "대퇴사두", emoji: "🦵"),
+        .init(key: "HAMSTRINGS", label: "햄스트링", emoji: "🦿"),
+        .init(key: "GLUTES",     label: "둔근",    emoji: "🍑"),
+        .init(key: "CALVES",     label: "종아리",  emoji: "🦶"),
+        .init(key: "FULL_BODY",  label: "전신",    emoji: "🤸"),
+        .init(key: "CARDIO",     label: "유산소",  emoji: "🏃"),
+    ]
+
+    static func label(for key: String) -> String {
+        all.first { $0.key == key }?.label ?? key
     }
 }
 

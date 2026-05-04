@@ -15,6 +15,7 @@ final class AddExerciseSessionViewModel: ObservableObject {
     @Published var catalogResults: [ExerciseCatalogItem] = []
     @Published var isSearchingCatalog = false
     @Published var showCatalogPicker = false
+    @Published var selectedMuscleGroup: String? = nil
 
     // MARK: - AI 추정
     @Published var aiEstimateResult: AiExerciseEstimateResponse?
@@ -104,23 +105,38 @@ final class AddExerciseSessionViewModel: ObservableObject {
 
     func searchCatalog(apiClient: APIClient) async {
         let q = catalogQuery.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty || selectedMuscleGroup != nil else {
+            catalogResults = []
+            return
+        }
         isSearchingCatalog = true
         aiEstimateResult = nil
         defer { isSearchingCatalog = false }
 
         do {
             let results: [ExerciseCatalogItem] = try await apiClient.request(
-                .getExerciseCatalog(query: q.isEmpty ? nil : q)
+                .getExerciseCatalog(query: q.isEmpty ? nil : q, muscleGroup: selectedMuscleGroup)
             )
-            catalogResults = results
+            catalogResults = results.uniqued(by: \.displayName)
         } catch {
             catalogResults = []
+        }
+    }
+
+    func selectMuscleGroup(_ group: String, apiClient: APIClient) async {
+        if selectedMuscleGroup == group {
+            selectedMuscleGroup = nil
+            catalogResults = []
+        } else {
+            selectedMuscleGroup = group
+            await searchCatalog(apiClient: apiClient)
         }
     }
 
     func clearCatalogSearch() {
         catalogQuery = ""
         catalogResults = []
+        selectedMuscleGroup = nil
         aiEstimateResult = nil
         isAiEstimating = false
     }

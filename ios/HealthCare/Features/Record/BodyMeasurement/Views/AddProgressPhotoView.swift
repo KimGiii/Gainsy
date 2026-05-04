@@ -48,7 +48,7 @@ struct AddProgressPhotoView: View {
             }
         }
         .onChange(of: selectedItem) { item in
-            Task {
+            Task { @MainActor in
                 if let data = try? await item?.loadTransferable(type: Data.self),
                    let img = UIImage(data: data) {
                     selectedImage = img

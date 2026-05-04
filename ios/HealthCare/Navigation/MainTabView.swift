@@ -2,6 +2,10 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
+    @State private var homePath    = NavigationPath()
+    @State private var diaryPath   = NavigationPath()
+    @State private var explorePath = NavigationPath()
+    @State private var myPagePath  = NavigationPath()
 
     enum Tab: Int, CaseIterable {
         case home, diary, explore, myPage
@@ -27,30 +31,38 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack {
+            NavigationStack(path: $homePath) {
                 HomeView()
             }
             .tabItem { Label(Tab.home.title,    systemImage: Tab.home.systemImage) }
             .tag(Tab.home)
 
-            NavigationStack {
+            NavigationStack(path: $diaryPath) {
                 DiaryView()
             }
             .tabItem { Label(Tab.diary.title,   systemImage: Tab.diary.systemImage) }
             .tag(Tab.diary)
 
-            NavigationStack {
+            NavigationStack(path: $explorePath) {
                 ExploreView()
             }
             .tabItem { Label(Tab.explore.title, systemImage: Tab.explore.systemImage) }
             .tag(Tab.explore)
 
-            NavigationStack {
+            NavigationStack(path: $myPagePath) {
                 MyPageView()
             }
             .tabItem { Label(Tab.myPage.title,  systemImage: Tab.myPage.systemImage) }
             .tag(Tab.myPage)
         }
         .tint(Color.brandPrimary)
+        .onChange(of: selectedTab) { newTab in
+            switch newTab {
+            case .home:    homePath    = NavigationPath()
+            case .diary:   diaryPath   = NavigationPath()
+            case .explore: explorePath = NavigationPath()
+            case .myPage:  myPagePath  = NavigationPath()
+            }
+        }
     }
 }
