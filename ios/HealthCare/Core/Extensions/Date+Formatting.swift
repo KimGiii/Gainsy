@@ -1,5 +1,12 @@
 import Foundation
 
+extension Array {
+    func uniqued<T: Hashable>(by keyPath: KeyPath<Element, T>) -> [Element] {
+        var seen = Set<T>()
+        return filter { seen.insert($0[keyPath: keyPath]).inserted }
+    }
+}
+
 extension Date {
     func formatted(_ format: String) -> String {
         let formatter = DateFormatter()

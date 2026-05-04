@@ -31,6 +31,10 @@ final class AddDietLogViewModel: ObservableObject {
     @Published var isSearching = false
     @Published var showFoodSearch = false
 
+    // MARK: - 직접 등록 상태
+    @Published var showCustomFoodForm = false
+    @Published var isSubmittingCustomFood = false
+
     // MARK: - AI 추정 상태
     @Published var aiEstimateResult: AiNutritionEstimateResponse?
     @Published var isAiEstimating = false
@@ -147,7 +151,7 @@ final class AddDietLogViewModel: ObservableObject {
             let results: [FoodCatalogItem] = try await apiClient.request(
                 .getFoodCatalog(query: query)
             )
-            catalogResults = results
+            catalogResults = results.uniqued(by: \.displayName)
             errorMessage = nil
         } catch {
             catalogResults = []
@@ -177,8 +181,8 @@ final class AddDietLogViewModel: ObservableObject {
 
                 await MainActor.run {
                     guard let self, self.normalizedSearchQuery == query else { return }
-                    self.catalogResults = catalog
-                    self.externalResults = external
+                    self.catalogResults = catalog.uniqued(by: \.displayName)
+                    self.externalResults = external.uniqued(by: \.displayName)
                     self.errorMessage = nil
                     self.isSearching = false
                     self.searchTask = nil
@@ -277,6 +281,47 @@ final class AddDietLogViewModel: ObservableObject {
         }
     }
 
+    // MARK: - 직접 등록 식품 저장
+    func submitCustomFood(
+        name: String,
+        category: FoodCategory,
+        caloriesPer100g: Double,
+        proteinPer100g: Double?,
+        carbsPer100g: Double?,
+        fatPer100g: Double?,
+        apiClient: APIClient
+    ) async {
+        isSubmittingCustomFood = true
+        defer { isSubmittingCustomFood = false }
+
+        do {
+            struct CustomFoodBody: Encodable {
+                let name: String
+                let nameKo: String
+                let category: String
+                let caloriesPer100g: Double
+                let proteinPer100g: Double?
+                let carbsPer100g: Double?
+                let fatPer100g: Double?
+            }
+            let body = try JSONEncoder().encode(CustomFoodBody(
+                name: name,
+                nameKo: name,
+                category: category.rawValue,
+                caloriesPer100g: caloriesPer100g,
+                proteinPer100g: proteinPer100g,
+                carbsPer100g: carbsPer100g,
+                fatPer100g: fatPer100g
+            ))
+            let saved: FoodCatalogItem = try await apiClient.request(.createCustomFood(body: body))
+            catalogResults.insert(saved, at: 0)
+            addEntry(food: saved)
+            showCustomFoodForm = false
+        } catch {
+            errorMessage = "식품 등록에 실패했습니다."
+        }
+    }
+
     // MARK: - 외부 식품 검색 (USDA / OFF)
     func searchExternal(apiClient: APIClient) async {
         let query = normalizedSearchQuery
@@ -291,7 +336,7 @@ final class AddDietLogViewModel: ObservableObject {
             let results: [ExternalFoodResult] = try await apiClient.request(
                 .searchExternalFoods(query: query, source: "ALL", page: 0, size: 20)
             )
-            externalResults = results
+            externalResults = results.uniqued(by: \.displayName)
             errorMessage = nil
             print("✅ searchExternal success: \(results.count) results")
         } catch {

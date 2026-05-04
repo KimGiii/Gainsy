@@ -24,7 +24,7 @@ enum MealType: String, Codable, CaseIterable {
     }
 }
 
-enum FoodCategory: String, Codable {
+enum FoodCategory: String, Codable, CaseIterable {
     case GRAIN, PROTEIN_SOURCE, VEGETABLE, FRUIT, DAIRY, FAT, BEVERAGE, PROCESSED, OTHER
 
     var displayName: String {
@@ -144,6 +144,8 @@ struct FoodCatalogItem: Codable, Identifiable {
     let carbsPer100g: Double?
     let fatPer100g: Double?
     let custom: Bool
+    let usageCount: Int?
+    let createdByUserId: Int?
 
     var displayName: String { nameKo ?? name }
 
@@ -345,7 +347,9 @@ extension DraftFoodEntry {
             proteinPer100g: per100Protein,
             carbsPer100g: per100Carbs,
             fatPer100g: per100Fat,
-            custom: analysisItem.matchedFoodCatalogId == nil
+            custom: analysisItem.matchedFoodCatalogId == nil,
+            usageCount: nil,
+            createdByUserId: nil
         )
         self.servingGText = String(format: "%.0f", analysisItem.estimatedServingG)
         self.notes = ""

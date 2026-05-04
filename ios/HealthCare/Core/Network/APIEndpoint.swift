@@ -21,7 +21,7 @@ enum APIEndpoint {
     case getExerciseSessions(from: String?, to: String?, page: Int, size: Int)
     case getExerciseSession(id: Int)
     case deleteExerciseSession(id: Int)
-    case getExerciseCatalog(query: String?)
+    case getExerciseCatalog(query: String?, muscleGroup: String?)
     case createCustomExercise(body: Data)
 
     // Diet - Logs
@@ -162,8 +162,11 @@ extension APIEndpoint {
             if let from { items.append(.init(name: "from", value: from)) }
             if let to   { items.append(.init(name: "to",   value: to))   }
             return items
-        case .getExerciseCatalog(let q):
-            return q.map { [.init(name: "query", value: $0)] }
+        case .getExerciseCatalog(let q, let mg):
+            var items: [URLQueryItem] = []
+            if let q  { items.append(.init(name: "query",       value: q))  }
+            if let mg { items.append(.init(name: "muscleGroup",  value: mg)) }
+            return items.isEmpty ? nil : items
         case .getFoodCatalog(let q):
             return q.map { [.init(name: "query", value: $0)] }
         case .getDietLogs(let from, let to, let page, let size):

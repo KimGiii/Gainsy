@@ -112,7 +112,9 @@ final class AddDietLogViewModelTests: XCTestCase {
             proteinPer100g: 10,
             carbsPer100g: 10,
             fatPer100g: 5,
-            custom: false
+            custom: false,
+            usageCount: 0,
+            createdByUserId: nil
         )
     }
 
@@ -176,7 +178,9 @@ private actor MockDietFoodSearcher: DietFoodSearching {
                 proteinPer100g: 10,
                 carbsPer100g: 10,
                 fatPer100g: 5,
-                custom: false
+                custom: false,
+                usageCount: 0,
+                createdByUserId: nil
             )
         ]
     }

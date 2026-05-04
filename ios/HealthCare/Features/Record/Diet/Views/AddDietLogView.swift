@@ -41,6 +41,9 @@ struct AddDietLogView: View {
             .sheet(isPresented: $viewModel.showFoodSearch) {
                 FoodSearchSheet(viewModel: viewModel)
             }
+            .sheet(isPresented: $viewModel.showCustomFoodForm) {
+                AddCustomFoodView(viewModel: viewModel)
+            }
             .alert("오류", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }
@@ -536,23 +539,38 @@ struct FoodSearchSheet: View {
                 .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
-                Button {
-                    Task {
-                        await viewModel.estimateWithAI(apiClient: container.apiClient)
+                VStack(spacing: 10) {
+                    Button {
+                        Task {
+                            await viewModel.estimateWithAI(apiClient: container.apiClient)
+                        }
+                    } label: {
+                        if viewModel.isAiEstimating {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Label("AI로 영양 추정", systemImage: "sparkles")
+                                .font(.subheadline.bold())
+                                .frame(maxWidth: .infinity)
+                        }
                     }
-                } label: {
-                    if viewModel.isAiEstimating {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Label("AI로 영양 추정", systemImage: "sparkles")
+                    .buttonStyle(.borderedProminent)
+                    .tint(.brandPrimary)
+                    .disabled(viewModel.isAiEstimating)
+
+                    Button {
+                        viewModel.showFoodSearch = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            viewModel.showCustomFoodForm = true
+                        }
+                    } label: {
+                        Label("직접 등록하기", systemImage: "plus.circle")
                             .font(.subheadline.bold())
                             .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.bordered)
+                    .tint(.brandSecondary)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.brandPrimary)
-                .disabled(viewModel.isAiEstimating)
             }
 
             Spacer()
@@ -599,7 +617,7 @@ private struct CatalogFoodRow: View {
                     Text(item.displayName)
                         .font(.subheadline.bold())
                     if item.custom {
-                        Text("MY")
+                        Text("사용자 등록")
                             .font(.caption2.bold())
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
@@ -664,5 +682,128 @@ private struct ExternalFoodRow: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - AddCustomFoodView
+
+private struct AddCustomFoodView: View {
+    @EnvironmentObject private var container: AppContainer
+    @ObservedObject var viewModel: AddDietLogViewModel
+
+    @State private var name = ""
+    @State private var category: FoodCategory = .OTHER
+    @State private var calories = ""
+    @State private var protein = ""
+    @State private var carbs = ""
+    @State private var fat = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("기본 정보") {
+                    TextField("식품명", text: $name)
+                        .textInputAutocapitalization(.never)
+                    Picker("카테고리", selection: $category) {
+                        ForEach(FoodCategory.allCases, id: \.self) { category in
+                            Text(category.displayName).tag(category)
+                        }
+                    }
+                }
+
+                Section("100g 기준 영양 정보") {
+                    nutritionField("칼로리", text: $calories, unit: "kcal", required: true)
+                    nutritionField("단백질", text: $protein, unit: "g", required: false)
+                    nutritionField("탄수화물", text: $carbs, unit: "g", required: false)
+                    nutritionField("지방", text: $fat, unit: "g", required: false)
+                }
+            }
+            .navigationTitle("직접 등록")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("취소") { viewModel.showCustomFoodForm = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        Task { await submit() }
+                    } label: {
+                        if viewModel.isSubmittingCustomFood {
+                            ProgressView()
+                        } else {
+                            Text("등록")
+                        }
+                    }
+                    .disabled(!canSubmit || viewModel.isSubmittingCustomFood)
+                }
+            }
+            .onAppear {
+                if name.isEmpty {
+                    name = viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+                }
+            }
+        }
+    }
+
+    private var canSubmit: Bool {
+        !normalizedName.isEmpty && caloriesValue != nil
+    }
+
+    private var normalizedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var caloriesValue: Double? {
+        parseRequiredNumber(calories)
+    }
+
+    private func nutritionField(
+        _ title: String,
+        text: Binding<String>,
+        unit: String,
+        required: Bool
+    ) -> some View {
+        HStack {
+            Text(title)
+            if required {
+                Text("필수")
+                    .font(.caption2.bold())
+                    .foregroundColor(.brandPrimary)
+            }
+            Spacer()
+            TextField(unit, text: text)
+                .keyboardType(.decimalPad)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 90)
+            Text(unit)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private func submit() async {
+        guard let caloriesValue else { return }
+        await viewModel.submitCustomFood(
+            name: normalizedName,
+            category: category,
+            caloriesPer100g: caloriesValue,
+            proteinPer100g: parseOptionalNumber(protein),
+            carbsPer100g: parseOptionalNumber(carbs),
+            fatPer100g: parseOptionalNumber(fat),
+            apiClient: container.apiClient
+        )
+    }
+
+    private func parseRequiredNumber(_ text: String) -> Double? {
+        let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let number = Double(value), (0...9999).contains(number) else { return nil }
+        return number
+    }
+
+    private func parseOptionalNumber(_ text: String) -> Double? {
+        let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        guard let number = Double(value), (0...9999).contains(number) else { return nil }
+        return number
     }
 }
