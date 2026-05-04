@@ -44,6 +44,10 @@ public class FoodCatalog {
     @Column(name = "is_custom", nullable = false)
     private Boolean isCustom;
 
+    @Column(name = "usage_count", nullable = false)
+    @Builder.Default
+    private Long usageCount = 0L;
+
     @Column(name = "created_by_user_id")
     private Long createdByUserId;
 
@@ -69,6 +73,14 @@ public class FoodCatalog {
 
     public void softDelete() {
         this.deletedAt = OffsetDateTime.now();
+    }
+
+    public void incrementUsage() {
+        this.usageCount = (this.usageCount == null ? 0L : this.usageCount) + 1;
+    }
+
+    public void decrementUsage() {
+        this.usageCount = Math.max((this.usageCount == null ? 0L : this.usageCount) - 1, 0L);
     }
 
     public enum FoodCategory {

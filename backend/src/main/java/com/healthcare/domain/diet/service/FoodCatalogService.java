@@ -6,9 +6,11 @@ import com.healthcare.domain.diet.dto.FoodSearchParams;
 import com.healthcare.domain.diet.entity.FoodCatalog;
 import com.healthcare.domain.diet.repository.FoodCatalogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.List;
 
 @Service
@@ -18,10 +20,10 @@ public class FoodCatalogService {
 
     private final FoodCatalogRepository foodCatalogRepository;
 
-    public List<FoodCatalogResponse> searchFoods(Long userId, FoodSearchParams params) {
+    public List<FoodCatalogResponse> searchFoods(FoodSearchParams params) {
         String normalizedQuery = normalizeQuery(params.getQuery());
         return foodCatalogRepository
-                .findAccessibleToUser(userId, normalizedQuery, params.getCategory(), params.isCustomOnly())
+                .searchAll(normalizedQuery, params.getCategory(), params.isCustomOnly())
                 .stream()
                 .map(FoodCatalogResponse::from)
                 .toList();
@@ -29,27 +31,47 @@ public class FoodCatalogService {
 
     @Transactional
     public FoodCatalogResponse createCustomFood(Long userId, CreateCustomFoodRequest request) {
-        FoodCatalog food = FoodCatalog.builder()
-                .name(request.getName())
-                .nameKo(request.getNameKo())
-                .category(request.getCategory())
-                .caloriesPer100g(request.getCaloriesPer100g())
-                .proteinPer100g(request.getProteinPer100g())
-                .carbsPer100g(request.getCarbsPer100g())
-                .fatPer100g(request.getFatPer100g())
-                .isCustom(true)
-                .createdByUserId(userId)
-                .build();
+        String normalizedName = normalizeName(request.getNameKo() != null ? request.getNameKo() : request.getName());
 
-        FoodCatalog saved = foodCatalogRepository.save(food);
-        return FoodCatalogResponse.from(saved);
+        // 중복 검사: 같은 이름+카테고리의 커스텀 식품이 이미 있으면 기존 항목 반환 (idempotent)
+        var existing = foodCatalogRepository.findCustomByNameKoAndCategory(normalizedName, request.getCategory());
+        if (existing.isPresent()) {
+            return FoodCatalogResponse.from(existing.get());
+        }
+
+        try {
+            FoodCatalog food = FoodCatalog.builder()
+                    .name(normalizedName)
+                    .nameKo(normalizedName)
+                    .category(request.getCategory())
+                    .caloriesPer100g(request.getCaloriesPer100g())
+                    .proteinPer100g(request.getProteinPer100g())
+                    .carbsPer100g(request.getCarbsPer100g())
+                    .fatPer100g(request.getFatPer100g())
+                    .isCustom(true)
+                    .createdByUserId(userId)
+                    .build();
+
+            return FoodCatalogResponse.from(foodCatalogRepository.save(food));
+        } catch (DataIntegrityViolationException e) {
+            // DB 레벨 유니크 충돌 (동시 요청) → 기존 항목 반환
+            return foodCatalogRepository
+                    .findCustomByNameKoAndCategory(normalizedName, request.getCategory())
+                    .map(FoodCatalogResponse::from)
+                    .orElseThrow(() -> e);
+        }
     }
 
     private String normalizeQuery(String query) {
-        if (query == null) {
-            return null;
-        }
+        if (query == null) return null;
         String trimmed = query.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    /** NFC 정규화 + 연속 공백 축약 + 앞뒤 공백 제거 */
+    private String normalizeName(String name) {
+        if (name == null) return null;
+        String nfc = Normalizer.normalize(name, Normalizer.Form.NFC);
+        return nfc.trim().replaceAll("\\s+", " ");
     }
 }

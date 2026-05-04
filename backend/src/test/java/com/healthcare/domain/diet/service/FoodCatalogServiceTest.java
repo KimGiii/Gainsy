@@ -15,9 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -41,17 +43,16 @@ class FoodCatalogServiceTest {
     @DisplayName("필터 없이 조회 시 글로벌 + 사용자 커스텀 식품을 반환한다")
     void searchFoods_noFilter_returnsGlobalAndUserCustomFoods() {
         // given
-        Long userId = 1L;
         FoodCatalog rice = buildGlobalFood(1L, "White Rice", "흰쌀밥",
                 FoodCategory.GRAIN, 130.0, 2.4, 28.7, 0.3);
-        FoodCatalog customFood = buildCustomFood(2L, "My Protein Shake", FoodCategory.PROTEIN_SOURCE, userId);
+        FoodCatalog customFood = buildCustomFood(2L, "My Protein Shake", FoodCategory.PROTEIN_SOURCE, 1L);
 
-        given(foodCatalogRepository.findAccessibleToUser(userId, null, null, false))
+        given(foodCatalogRepository.searchAll(null, null, false))
                 .willReturn(List.of(rice, customFood));
 
         // when
         List<FoodCatalogResponse> result = foodCatalogService.searchFoods(
-                userId, FoodSearchParams.of(null, null, false));
+                FoodSearchParams.of(null, null, false));
 
         // then
         assertThat(result).hasSize(2);
@@ -65,16 +66,15 @@ class FoodCatalogServiceTest {
     @DisplayName("category 필터로 조회 시 해당 카테고리만 반환한다")
     void searchFoods_withCategoryFilter_returnsOnlyMatchingCategory() {
         // given
-        Long userId = 1L;
         FoodCatalog chicken = buildGlobalFood(3L, "Chicken Breast", "닭가슴살",
                 FoodCategory.PROTEIN_SOURCE, 165.0, 31.0, 0.0, 3.6);
 
-        given(foodCatalogRepository.findAccessibleToUser(userId, null, FoodCategory.PROTEIN_SOURCE, false))
+        given(foodCatalogRepository.searchAll(null, FoodCategory.PROTEIN_SOURCE, false))
                 .willReturn(List.of(chicken));
 
         // when
         List<FoodCatalogResponse> result = foodCatalogService.searchFoods(
-                userId, FoodSearchParams.of(null, FoodCategory.PROTEIN_SOURCE, false));
+                FoodSearchParams.of(null, FoodCategory.PROTEIN_SOURCE, false));
 
         // then
         assertThat(result).hasSize(1);
@@ -82,18 +82,18 @@ class FoodCatalogServiceTest {
     }
 
     @Test
-    @DisplayName("customOnly=true 조회 시 해당 사용자의 커스텀 식품만 반환한다")
-    void searchFoods_customOnly_returnsOnlyUserCustomFoods() {
+    @DisplayName("customOnly=true 조회 시 커스텀 식품만 반환한다")
+    void searchFoods_customOnly_returnsOnlyCustomFoods() {
         // given
         Long userId = 1L;
         FoodCatalog customFood = buildCustomFood(10L, "My Salad", FoodCategory.VEGETABLE, userId);
 
-        given(foodCatalogRepository.findAccessibleToUser(userId, null, null, true))
+        given(foodCatalogRepository.searchAll(null, null, true))
                 .willReturn(List.of(customFood));
 
         // when
         List<FoodCatalogResponse> result = foodCatalogService.searchFoods(
-                userId, FoodSearchParams.of(null, null, true));
+                FoodSearchParams.of(null, null, true));
 
         // then
         assertThat(result).hasSize(1);
@@ -105,20 +105,19 @@ class FoodCatalogServiceTest {
     @DisplayName("검색어는 trim 후 repository에 전달한다")
     void searchFoods_trimsQueryBeforeRepositoryCall() {
         // given
-        Long userId = 1L;
         FoodCatalog chicken = buildGlobalFood(3L, "Chicken Breast", "닭가슴살",
                 FoodCategory.PROTEIN_SOURCE, 165.0, 31.0, 0.0, 3.6);
 
-        given(foodCatalogRepository.findAccessibleToUser(userId, "닭가슴살", null, false))
+        given(foodCatalogRepository.searchAll("닭가슴살", null, false))
                 .willReturn(List.of(chicken));
 
         // when
         List<FoodCatalogResponse> result = foodCatalogService.searchFoods(
-                userId, FoodSearchParams.of("  닭가슴살  ", null, false));
+                FoodSearchParams.of("  닭가슴살  ", null, false));
 
         // then
         assertThat(result).hasSize(1);
-        verify(foodCatalogRepository).findAccessibleToUser(userId, "닭가슴살", null, false);
+        verify(foodCatalogRepository).searchAll("닭가슴살", null, false);
     }
 
     // ─────────────────────────── 커스텀 식품 생성 ───────────────────────────
@@ -139,6 +138,8 @@ class FoodCatalogServiceTest {
                 .build();
 
         FoodCatalog saved = buildCustomFood(99L, "Greek Yogurt", FoodCategory.DAIRY, userId);
+        given(foodCatalogRepository.findCustomByNameKoAndCategory("그릭 요거트", FoodCategory.DAIRY))
+                .willReturn(Optional.empty());
         given(foodCatalogRepository.save(any(FoodCatalog.class))).willReturn(saved);
 
         // when
@@ -173,6 +174,8 @@ class FoodCatalogServiceTest {
                 .build();
 
         FoodCatalog saved = buildCustomFood(200L, "My Mix", FoodCategory.OTHER, userId);
+        given(foodCatalogRepository.findCustomByNameKoAndCategory("My Mix", FoodCategory.OTHER))
+                .willReturn(Optional.empty());
         given(foodCatalogRepository.save(any(FoodCatalog.class))).willReturn(saved);
 
         // when
@@ -182,6 +185,29 @@ class FoodCatalogServiceTest {
         ArgumentCaptor<FoodCatalog> captor = ArgumentCaptor.forClass(FoodCatalog.class);
         verify(foodCatalogRepository).save(captor.capture());
         assertThat(captor.getValue().getCreatedByUserId()).isEqualTo(userId);
+    }
+
+    @Test
+    @DisplayName("같은 이름과 카테고리의 커스텀 식품이 있으면 기존 식품을 반환한다")
+    void createCustomFood_duplicate_returnsExistingFood() {
+        // given
+        Long userId = 1L;
+        CreateCustomFoodRequest request = CreateCustomFoodRequest.builder()
+                .name("  My Mix  ")
+                .category(FoodCategory.OTHER)
+                .caloriesPer100g(200.0)
+                .build();
+        FoodCatalog existing = buildCustomFood(300L, "My Mix", FoodCategory.OTHER, 99L);
+
+        given(foodCatalogRepository.findCustomByNameKoAndCategory("My Mix", FoodCategory.OTHER))
+                .willReturn(Optional.of(existing));
+
+        // when
+        FoodCatalogResponse result = foodCatalogService.createCustomFood(userId, request);
+
+        // then
+        assertThat(result.getId()).isEqualTo(300L);
+        assertThat(result.getName()).isEqualTo("My Mix");
     }
 
     // ─────────────────────────── 헬퍼 ───────────────────────────

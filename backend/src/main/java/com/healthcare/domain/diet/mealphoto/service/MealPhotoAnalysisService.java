@@ -222,7 +222,7 @@ public class MealPhotoAnalysisService {
     }
 
     private FoodCatalog matchFoodCatalog(Long userId, String label) {
-        return foodCatalogRepository.findAccessibleToUser(userId, label, null, false)
+        return foodCatalogRepository.searchAll(label, null, false)
                 .stream()
                 .findFirst()
                 .orElse(null);

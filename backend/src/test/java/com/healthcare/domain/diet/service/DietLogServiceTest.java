@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -98,6 +99,8 @@ class DietLogServiceTest {
         verify(dietLogRepository).save(logCaptor.capture());
         assertThat(logCaptor.getValue().getTotalCalories()).isEqualTo(425.0);
         assertThat(logCaptor.getValue().getMealType()).isEqualTo(MealType.LUNCH);
+        verify(foodCatalogRepository).incrementUsageCount(10L);
+        verify(foodCatalogRepository).incrementUsageCount(20L);
     }
 
     @Test
@@ -123,8 +126,8 @@ class DietLogServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사용자의 커스텀 식품 사용 시 ResourceNotFoundException 발생")
-    void createDietLog_otherUserCustomFood_throwsResourceNotFoundException() {
+    @DisplayName("다른 사용자가 등록한 커스텀 식품도 공용 카탈로그 항목으로 사용할 수 있다")
+    void createDietLog_otherUserCustomFood_allowsPublicCatalogFood() {
         // given
         Long userId = 1L;
         Long anotherUserId = 99L;
@@ -137,6 +140,10 @@ class DietLogServiceTest {
         given(userRepository.findByIdAndDeletedAtIsNull(userId))
                 .willReturn(Optional.of(buildUser(userId)));
         given(foodCatalogRepository.findById(50L)).willReturn(Optional.of(otherUserFood));
+        DietLog savedLog = buildSavedDietLog(101L, userId, LocalDate.of(2026, 4, 13),
+                MealType.DINNER, 150.0, 7.5, 15.0, 4.5);
+        given(dietLogRepository.save(any(DietLog.class))).willReturn(savedLog);
+        given(foodEntryRepository.saveAll(anyList())).willReturn(List.of());
 
         CreateDietLogRequest request = CreateDietLogRequest.builder()
                 .logDate(LocalDate.of(2026, 4, 13))
@@ -146,9 +153,12 @@ class DietLogServiceTest {
                 ))
                 .build();
 
-        // when & then
-        assertThatThrownBy(() -> dietLogService.createDietLog(userId, request))
-                .isInstanceOf(ResourceNotFoundException.class);
+        // when
+        CreateDietLogResponse response = dietLogService.createDietLog(userId, request);
+
+        // then
+        assertThat(response.getDietLogId()).isEqualTo(101L);
+        verify(foodCatalogRepository).incrementUsageCount(50L);
     }
 
     // ─────────────────────────── 식사 기록 단건 조회 ───────────────────────────
@@ -163,6 +173,7 @@ class DietLogServiceTest {
                 MealType.LUNCH, 425.0, 35.8, 57.4, 4.2);
 
         given(dietLogRepository.findById(logId)).willReturn(Optional.of(dietLog));
+        given(foodEntryRepository.findByDietLogIdOrderById(logId)).willReturn(List.of());
         given(foodEntryRepository.findByDietLogIdOrderById(logId)).willReturn(List.of());
 
         // when
@@ -253,6 +264,36 @@ class DietLogServiceTest {
         ArgumentCaptor<DietLog> captor = ArgumentCaptor.forClass(DietLog.class);
         verify(dietLogRepository).save(captor.capture());
         assertThat(captor.getValue().getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("식사 기록 삭제 시 중복 식품은 하나로 합산해 사용 횟수를 차감한다")
+    void deleteDietLog_decrementsUsageCountPerDistinctFood() {
+        // given
+        Long userId = 1L;
+        Long logId = 100L;
+        DietLog dietLog = buildSavedDietLog(logId, userId, LocalDate.of(2026, 4, 13),
+                MealType.LUNCH, 425.0, 35.8, 57.4, 4.2);
+        FoodEntry chicken = FoodEntry.builder()
+                .id(1L).dietLogId(logId).foodCatalogId(10L).servingG(100.0).calories(165.0)
+                .build();
+        FoodEntry chickenAgain = FoodEntry.builder()
+                .id(2L).dietLogId(logId).foodCatalogId(10L).servingG(50.0).calories(82.5)
+                .build();
+        FoodEntry rice = FoodEntry.builder()
+                .id(3L).dietLogId(logId).foodCatalogId(20L).servingG(200.0).calories(260.0)
+                .build();
+
+        given(dietLogRepository.findById(logId)).willReturn(Optional.of(dietLog));
+        given(foodEntryRepository.findByDietLogIdOrderById(logId))
+                .willReturn(List.of(chicken, chickenAgain, rice));
+
+        // when
+        dietLogService.deleteDietLog(userId, logId);
+
+        // then — chicken이 2개 항목이어도 distinct 처리로 1번만 차감
+        verify(foodCatalogRepository, times(1)).decrementUsageCount(10L);
+        verify(foodCatalogRepository, times(1)).decrementUsageCount(20L);
     }
 
     @Test

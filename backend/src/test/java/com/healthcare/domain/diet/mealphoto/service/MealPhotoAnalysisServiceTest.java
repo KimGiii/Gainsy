@@ -138,7 +138,7 @@ class MealPhotoAnalysisServiceTest {
                                 "밥", 150.0, 400.0, 10.0, 50.0, 3.0, 0.8, false, null
                         ))
                 ));
-        given(foodCatalogRepository.findAccessibleToUser(1L, "밥", null, false)).willReturn(List.of(rice));
+        given(foodCatalogRepository.searchAll("밥", null, false)).willReturn(List.of(rice));
         given(itemRepository.save(any(MealPhotoAnalysisItem.class))).willAnswer(invocation -> {
             MealPhotoAnalysisItem item = invocation.getArgument(0);
             setField(item, "id", 31L);

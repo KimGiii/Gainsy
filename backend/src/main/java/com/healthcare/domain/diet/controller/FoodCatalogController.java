@@ -26,14 +26,13 @@ public class FoodCatalogController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<FoodCatalogResponse>>> searchFoods(
-            @RequestHeader("Authorization") String bearerToken,
+            @RequestHeader(value = "Authorization", required = false) String bearerToken,
             @RequestParam(required = false) String query,
             @RequestParam(required = false) FoodCategory category,
             @RequestParam(defaultValue = "false") boolean customOnly) {
 
-        Long userId = resolveUserId(bearerToken);
         List<FoodCatalogResponse> response = foodCatalogService.searchFoods(
-                userId, FoodSearchParams.of(query, category, customOnly));
+                FoodSearchParams.of(query, category, customOnly));
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

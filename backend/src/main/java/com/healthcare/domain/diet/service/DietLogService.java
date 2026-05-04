@@ -103,6 +103,11 @@ public class DietLogService {
                 .toList();
         foodEntryRepository.saveAll(entriesWithLogId);
 
+        // usage_count는 현재 살아있는 food_entries 참조 수를 나타낸다.
+        request.getEntries().stream()
+                .map(CreateFoodEntryRequest::getFoodCatalogId)
+                .forEach(foodCatalogRepository::incrementUsageCount);
+
         return CreateDietLogResponse.builder()
                 .dietLogId(savedLog.getId())
                 .logDate(savedLog.getLogDate())
@@ -169,6 +174,11 @@ public class DietLogService {
             throw new UnauthorizedException("다른 사용자의 식사 기록을 삭제할 수 없습니다.");
         }
 
+        foodEntryRepository.findByDietLogIdOrderById(logId).stream()
+                .map(FoodEntry::getFoodCatalogId)
+                .distinct()
+                .forEach(foodCatalogRepository::decrementUsageCount);
+
         log.softDelete();
         dietLogRepository.save(log);
     }
@@ -186,11 +196,6 @@ public class DietLogService {
         for (Long id : catalogIds) {
             FoodCatalog food = foodCatalogRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("FoodCatalog", id));
-            // 다른 사용자의 커스텀 식품은 접근 불가
-            if (Boolean.TRUE.equals(food.getIsCustom())
-                    && !userId.equals(food.getCreatedByUserId())) {
-                throw new ResourceNotFoundException("FoodCatalog", id);
-            }
             catalogMap.put(id, food);
         }
         return catalogMap;

@@ -18,6 +18,7 @@ public class FoodCatalogResponse {
     private final Double carbsPer100g;
     private final Double fatPer100g;
     private final boolean custom;
+    private final long usageCount;
     private final Long createdByUserId;
 
     public static FoodCatalogResponse from(FoodCatalog food) {
@@ -31,6 +32,7 @@ public class FoodCatalogResponse {
                 .carbsPer100g(food.getCarbsPer100g())
                 .fatPer100g(food.getFatPer100g())
                 .custom(food.getIsCustom())
+                .usageCount(food.getUsageCount() != null ? food.getUsageCount() : 0L)
                 .createdByUserId(food.getCreatedByUserId())
                 .build();
     }
