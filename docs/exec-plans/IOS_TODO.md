@@ -108,8 +108,9 @@
 
 ### 5. 알림 및 앱 상태 대응
 
-- [ ] Firebase 연동 범위 점검
-- [ ] 푸시 알림 수신 후 라우팅 규칙 정의
+- [x] Firebase 연동 범위 점검 — AppDelegate FCM 토큰 수신 기존 구현 확인
+- [x] 푸시 알림 수신 후 라우팅 규칙 정의 — `WEEKLY_SUMMARY` 탭 → 탐색 탭 자동 이동 (`pushNotificationTapped` 브로드캐스트)
+- [x] FCM 토큰 업로드 — `FcmTokenUploader` (fcmTokenRefreshed → PATCH /api/v1/users/me)
 - [ ] 토큰 만료, 네트워크 오류, 빈 상태에 대한 공통 사용자 메시지 톤 정리
 
 ## 후순위 (출시 준비)

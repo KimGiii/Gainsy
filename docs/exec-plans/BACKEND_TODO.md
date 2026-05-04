@@ -1,4 +1,4 @@
-# 백엔드 TODO — 2026년 5월 4일 기준
+# 백엔드 TODO — 2026년 5월 4일 기준 (FCM 완료)
 
 ## 목적
 
@@ -113,9 +113,9 @@
 - [x] `InsightsControllerTest` 10개 추가 — weekOffset, 빈 데이터, 401, 날짜 유효성, from>to 검증
 - [x] `InsightsServiceTest` 11개 추가 — 델타 반올림, ENDURANCE 스킵, WEIGHT_LOSS 달성률 등
 - [x] `ProgressPhotoResponse.isBaseline` `@JsonProperty` 직렬화 버그 수정
-- [ ] FCM Admin SDK 실제 사용 흐름 연결
-- [ ] 알림 발송 조건 정의 (주간 회고 등)
-- [ ] 스케줄링 또는 이벤트 트리거 방식 결정
+- [x] FCM Admin SDK 실제 사용 흐름 연결 — `FcmConfig` (credentials-path 기반 FirebaseApp 초기화) + `FcmService` (ObjectProvider 패턴, mock mode fallback)
+- [x] 알림 발송 조건 정의 — 주간 요약 알림, 6일 이내 중복 발송 방지, `notification_logs` 이력 기록
+- [x] 스케줄링 또는 이벤트 트리거 방식 결정 — `@Scheduled(cron)` 매주 월요일 KST 09:00, `@ConditionalOnProperty`로 로컬 비활성화
 
 ## 후순위 (출시 준비)
 
@@ -131,6 +131,7 @@
 - AI 추정 서비스(`AiNutritionEstimationService`, `AiExerciseEstimationService`)는 기존 `OpenAiMealAnalysisProvider`와 동일한 OpenAI Responses API 패턴을 재사용한다. `OPENAI_API_KEY`는 `backend/.env`에 추가하면 된다.
 - 운동 카탈로그는 V11 마이그레이션으로 110개 시드 추가. 이후 검색 결과 없으면 AI 추정 엔드포인트 폴백 사용.
 - AI 추정 응답의 `isAiEstimated: true` + `disclaimer` 필드는 AI기본법(2026) 대응이다 — 클라이언트 View에서 반드시 표시해야 한다.
+- FCM 도메인은 "FcmConfig + FcmService + NotificationService + WeeklyNotificationScheduler + V14 notification_logs + FcmServiceTest 3개 + NotificationServiceTest 4개 완료" 상태다.
 - Insights 도메인은 "InsightsController/Service 구현 + InsightsControllerTest 10개 + InsightsServiceTest 11개 완료" 상태다.
 - 백엔드 신체 측정은 "CRUD + atOrBefore + TDD 20개 완료" 상태다.
 - 진행 사진은 "presigned URL 발급 + 메타데이터 등록 + signed download 조회 + 경로 정합성 반영" 상태다.
