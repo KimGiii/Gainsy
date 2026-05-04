@@ -1,4 +1,4 @@
-# 백엔드 TODO — 2026년 4월 28일 기준
+# 백엔드 TODO — 2026년 5월 4일 기준
 
 ## 목적
 
@@ -89,19 +89,22 @@
 
 ### 3.5. AI 추정 서비스 단위 테스트
 
-- [ ] `AiNutritionEstimationServiceTest` — OpenAI 응답 파싱, 카테고리 매핑, 예외 처리 케이스
-- [ ] `AiExerciseEstimationServiceTest` — muscleGroup/exerciseType 파싱, MET 기본값 폴백
+- [x] `AiNutritionEstimationServiceTest` — OpenAI 응답 파싱, 카테고리 매핑, 예외 처리 케이스 (53개 통과)
+- [x] `AiExerciseEstimationServiceTest` — muscleGroup/exerciseType 파싱, MET 기본값 폴백 (53개 통과)
 
-완료 기준:
-- AI 응답 파싱 실패 시 기본값 반환, 카테고리 매핑 정확성, `@ConditionalOnExpression` 비활성화 케이스가 테스트로 검증된다.
+### 3.6. 진행 사진 삭제 API
 
-### 4. 신체 측정 후처리 (EXIF, 썸네일)
+- [x] `ProgressPhotoService.deletePhoto()` — 소유권 검증 후 soft-delete
+- [x] `DELETE /api/v1/body-measurements/photos/{photoId}` 엔드포인트 추가
+- [x] `ProgressPhotoServiceTest` — deletePhoto 성공·notFound·타인 소유 3개 케이스 추가
+
+### 4. 신체 측정 후처리 (EXIF, 썸네일) — 출시 준비 단계
 
 - [ ] EXIF 제거 서버 측 구현 (`ExifStripper`)
 - [ ] 썸네일 비동기 생성 (150px, 400px, 800px)
 - [ ] 업로드 완료 검증 로직 (`progress_photos.upload_completed_at` 활용)
 
-### 5. 인사이트/알림 기반 작업
+### 5. 인사이트/알림 기반 작업 (Phase 5)
 
 - [x] `GET /api/v1/insights/weekly-summary` — 주간 요약 API 구현 (운동/식단/신체/목표 집계)
 - [x] `GET /api/v1/insights/change-analysis` — 기간별 신체 변화 분석 API 구현

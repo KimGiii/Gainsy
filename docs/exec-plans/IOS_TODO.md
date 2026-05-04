@@ -1,4 +1,4 @@
-# iOS TODO — 2026년 4월 28일 기준
+# iOS TODO — 2026년 5월 4일 기준
 
 ## 목적
 
@@ -56,28 +56,20 @@
 
 ## 다음 순서
 
-### 0. AI 추정 결과 View UI (신규 — 최우선)
+### 0. AI 추정 결과 View UI — 완료
 
-- [ ] 음식 검색 결과 없을 때 "AI로 추정하기" 버튼 표시 (`AddDietLogView`)
-- [ ] `aiEstimateResult` 표시 카드 — 추정 영양성분 + "AI 추정값" 배지 + disclaimer 텍스트
-- [ ] 사용자가 추정값 수정 가능하도록 인라인 편집 UI
-- [ ] 운동 검색 결과 없을 때 "AI로 추정하기" 버튼 표시 (`AddExerciseSessionView`)
-- [ ] `aiEstimateResult` 표시 카드 — 추정 muscleGroup/exerciseType/MET + 배지 + disclaimer
+- [x] 음식 검색 결과 없을 때 "AI로 추정하기" + "직접 등록하기" 버튼 표시 (`AddDietLogView`)
+- [x] `aiEstimateResult` 표시 카드 — 추정 영양성분 + "AI 추정값" 배지 + disclaimer 텍스트
+- [x] 운동 검색 결과 없을 때 "AI로 추정하기" 버튼 표시 (`AddExerciseSessionView`)
+- [x] `aiEstimateResult` 표시 카드 — 추정 muscleGroup/exerciseType/MET + 배지 + disclaimer
 
-완료 기준:
-- 검색 결과 없는 경우 사용자가 AI 추정을 요청하고, 결과를 확인·수정 후 저장할 수 있다.
-- "AI 추정값이며 실제와 다를 수 있습니다" 문구가 항상 표시된다 (AI기본법 대응).
+### 1. 진행 사진 UX 보강 — 완료
 
-### 1. 진행 사진 UX 보강 및 백엔드 후처리 대응
-
-- [ ] 진행 사진 삭제 UX 추가
-- [ ] 같은 부위 기준 before/after 비교 뷰 추가
+- [x] 진행 사진 삭제 UX 추가 (그리드 context menu + 상세 화면 삭제 버튼, 확인 알림)
+- [x] 같은 부위 기준 before/after 비교 뷰 추가 (`PhotoCompareView`, 좌우 분할, 날짜·체중 오버레이)
 - [ ] 업로드 실패/부분 완료 상태 fallback 문구와 재시도 UX 정리
 - [ ] 서버 썸네일 생성 도입 시 원본/썸네일 URL 분기 표시 반영
 - [ ] 촬영 시점 선택 및 메모 입력 흐름 다듬기
-
-완료 기준:
-- 사용자가 사진 업로드 이후 비교, 재시도, 삭제까지 앱 안에서 자연스럽게 처리할 수 있다.
 
 ### 2. 신체 측정 히스토리 시각화
 
@@ -94,6 +86,7 @@
 - [x] `AddDietLogViewModel` 검색 디바운스/즉시 검색/검색어 삭제/느린 응답 역전 방지 단위 테스트 추가
 - [ ] `APIClient` 토큰 refresh 및 401 재시도 테스트
 - [ ] 주요 ViewModel 테스트 (`HomeViewModel`, `GoalProgressViewModel`, `ProgressPhotoViewModel`, `MyPageViewModel`)
+- [ ] `ProgressPhotoViewModel` 삭제·비교 모드 테스트
 - [ ] 인증/온보딩/메인 진입 smoke UI 테스트 추가
 - [ ] 핵심 작성 플로우 UI 테스트 추가 (운동 기록, 식단 기록, 신체 측정)
 
@@ -131,8 +124,9 @@
 
 ## 메모
 
-- AI 검색 폴백은 ViewModel 레이어까지만 구현된 상태다. View UI(배지·disclaimer·수정 폼)가 없으면 사용자가 기능을 사용할 수 없다 — 최우선 작업.
+- AI 검색 폴백(식단·운동 모두)은 View UI(배지·disclaimer) 포함 완성 상태다.
 - 식단 검색 시트는 이제 `onChange`마다 즉시 네트워크를 치지 않고, 입력 종료 후 500ms 뒤에만 검색한다.
+- 진행 사진 삭제/비교 UX는 완료됐다. context menu 길게 누르기(그리드)와 상세 화면 삭제 버튼 두 경로 제공.
 - `AddDietLogViewModelTests`는 추가됐지만 현재 `HealthCareTests` 타깃이 앱 소스 일부를 잘못 포함하고 있어 전체 `xcodebuild test`는 별도 타깃 정리가 필요하다.
 - `estimateWithAI()` 호출 시점: 검색 결과(`catalogResults` + `externalResults`)가 모두 비어 있을 때 버튼을 활성화하거나 자동 호출하는 UX 결정 필요.
 - `addAiEstimatedFood()`는 `POST /api/v1/diet/catalog`(커스텀 식품 생성)를 호출한다. 저장 후 항목이 사용자 카탈로그에 남는다.
