@@ -1,5 +1,7 @@
 package com.healthcare.domain.bodymeasurement.service;
 
+import com.healthcare.common.exception.ResourceNotFoundException;
+import com.healthcare.common.exception.UnauthorizedException;
 import com.healthcare.common.exception.ValidationException;
 import com.healthcare.domain.bodymeasurement.dto.CreateProgressPhotoRequest;
 import com.healthcare.domain.bodymeasurement.dto.InitiatePhotoUploadRequest;
@@ -134,6 +136,56 @@ class ProgressPhotoServiceTest {
         assertThat(response.content()).hasSize(1);
         assertThat(response.content().get(0).getSignedUrls().getOriginal()).contains("download.example.com");
         assertThat(response.totalElements()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("자신의 사진을 삭제하면 soft-delete된다")
+    void deletePhoto_ownPhoto_softDeletes() {
+        ProgressPhoto photo = ProgressPhoto.builder()
+                .id(10L)
+                .userId(1L)
+                .photoType(PhotoType.FRONT)
+                .capturedAt(OffsetDateTime.parse("2026-04-20T09:00:00+09:00"))
+                .photoDate(LocalDate.of(2026, 4, 20))
+                .storageKey("progress-photos/1/photo.jpg")
+                .build();
+
+        given(progressPhotoRepository.findById(10L)).willReturn(Optional.of(photo));
+        given(progressPhotoRepository.save(any(ProgressPhoto.class))).willAnswer(inv -> inv.getArgument(0));
+
+        progressPhotoService.deletePhoto(1L, 10L);
+
+        ArgumentCaptor<ProgressPhoto> captor = ArgumentCaptor.forClass(ProgressPhoto.class);
+        verify(progressPhotoRepository).save(captor.capture());
+        assertThat(captor.getValue().getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사진 삭제 시 ResourceNotFoundException이 발생한다")
+    void deletePhoto_notFound_throwsResourceNotFoundException() {
+        given(progressPhotoRepository.findById(99L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> progressPhotoService.deletePhoto(1L, 99L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("다른 사용자의 사진 삭제 시 UnauthorizedException이 발생한다")
+    void deletePhoto_otherUserPhoto_throwsUnauthorizedException() {
+        ProgressPhoto photo = ProgressPhoto.builder()
+                .id(20L)
+                .userId(99L)
+                .photoType(PhotoType.BACK)
+                .capturedAt(OffsetDateTime.parse("2026-04-20T09:00:00+09:00"))
+                .photoDate(LocalDate.of(2026, 4, 20))
+                .storageKey("progress-photos/99/photo.jpg")
+                .build();
+
+        given(progressPhotoRepository.findById(20L)).willReturn(Optional.of(photo));
+
+        assertThatThrownBy(() -> progressPhotoService.deletePhoto(1L, 20L))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessageContaining("다른 사용자");
     }
 
     @Test

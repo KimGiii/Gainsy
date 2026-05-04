@@ -45,6 +45,15 @@ public class ProgressPhotoController {
                 .body(ApiResponse.ok("진행 사진 메타데이터가 저장되었습니다.", response));
     }
 
+    @DeleteMapping("/{photoId}")
+    public ResponseEntity<ApiResponse<Void>> deletePhoto(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long photoId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        progressPhotoService.deletePhoto(userId, photoId);
+        return ResponseEntity.ok(ApiResponse.ok("사진이 삭제되었습니다.", null));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<ProgressPhotoListResponse>> listPhotos(
             @AuthenticationPrincipal UserDetails userDetails,

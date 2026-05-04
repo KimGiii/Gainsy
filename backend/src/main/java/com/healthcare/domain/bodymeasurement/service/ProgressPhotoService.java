@@ -1,6 +1,8 @@
 package com.healthcare.domain.bodymeasurement.service;
 
 import com.healthcare.common.exception.DuplicateResourceException;
+import com.healthcare.common.exception.ResourceNotFoundException;
+import com.healthcare.common.exception.UnauthorizedException;
 import com.healthcare.common.exception.ValidationException;
 import com.healthcare.domain.bodymeasurement.dto.*;
 import com.healthcare.domain.bodymeasurement.entity.ProgressPhoto;
@@ -77,6 +79,17 @@ public class ProgressPhotoService {
 
         ProgressPhoto saved = progressPhotoRepository.save(photo);
         return toResponse(saved);
+    }
+
+    @Transactional
+    public void deletePhoto(Long userId, Long photoId) {
+        ProgressPhoto photo = progressPhotoRepository.findById(photoId)
+                .orElseThrow(() -> new ResourceNotFoundException("ProgressPhoto", photoId));
+        if (!photo.isOwnedBy(userId)) {
+            throw new UnauthorizedException("다른 사용자의 사진을 삭제할 수 없습니다.");
+        }
+        photo.delete();
+        progressPhotoRepository.save(photo);
     }
 
     public ProgressPhotoListResponse listPhotos(Long userId, PhotoType photoType, LocalDate from, LocalDate to,
