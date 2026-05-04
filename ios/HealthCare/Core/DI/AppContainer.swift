@@ -4,6 +4,7 @@ import Foundation
 final class AppContainer: ObservableObject {
     let tokenStore: TokenStore
     let apiClient: APIClient
+    private let fcmTokenUploader: FcmTokenUploader
 
     init() {
         let tokenStore = TokenStore()
@@ -18,7 +19,9 @@ final class AppContainer: ObservableObject {
             string: ProcessInfo.processInfo.environment["BASE_URL"] ?? defaultBaseURL
         )!
 
+        let apiClient = APIClient(baseURL: baseURL, tokenStore: tokenStore)
         self.tokenStore = tokenStore
-        self.apiClient  = APIClient(baseURL: baseURL, tokenStore: tokenStore)
+        self.apiClient  = apiClient
+        self.fcmTokenUploader = FcmTokenUploader(apiClient: apiClient)
     }
 }

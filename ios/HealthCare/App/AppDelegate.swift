@@ -60,6 +60,18 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     ) async -> UNNotificationPresentationOptions {
         return [.banner, .sound, .badge]
     }
+
+    // User tapped the notification
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        let userInfo = response.notification.request.content.userInfo
+        guard let type = userInfo["type"] as? String else { return }
+        NotificationCenter.default.post(name: .pushNotificationTapped,
+                                        object: nil,
+                                        userInfo: ["type": type])
+    }
 }
 
 // MARK: - MessagingDelegate
@@ -71,5 +83,6 @@ extension AppDelegate: @preconcurrency MessagingDelegate {
 }
 
 extension Notification.Name {
-    static let fcmTokenRefreshed = Notification.Name("fcmTokenRefreshed")
+    static let fcmTokenRefreshed    = Notification.Name("fcmTokenRefreshed")
+    static let pushNotificationTapped = Notification.Name("pushNotificationTapped")
 }

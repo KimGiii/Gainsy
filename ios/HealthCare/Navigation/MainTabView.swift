@@ -64,5 +64,19 @@ struct MainTabView: View {
             case .myPage:  myPagePath  = NavigationPath()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationTapped)) { note in
+            guard let type = note.userInfo?["type"] as? String else { return }
+            handlePushRoute(type: type)
+        }
+    }
+
+    private func handlePushRoute(type: String) {
+        switch type {
+        case "WEEKLY_SUMMARY":
+            selectedTab = .explore
+            explorePath = NavigationPath()
+        default:
+            break
+        }
     }
 }
