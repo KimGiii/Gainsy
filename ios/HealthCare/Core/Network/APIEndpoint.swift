@@ -51,6 +51,7 @@ enum APIEndpoint {
     case initiatePhotoUpload(body: Data)
     case registerProgressPhoto(body: Data)
     case getProgressPhotos(photoType: String?, page: Int, size: Int)
+    case deleteProgressPhoto(id: Int)
 
     // Goal
     case createGoal(body: Data)
@@ -104,6 +105,7 @@ extension APIEndpoint {
         case .initiatePhotoUpload:               return "/api/v1/body-measurements/photos/upload-url"
         case .registerProgressPhoto, .getProgressPhotos:
                                                  return "/api/v1/body-measurements/photos"
+        case .deleteProgressPhoto(let id):       return "/api/v1/body-measurements/photos/\(id)"
         case .createGoal, .getGoals:             return "/api/v1/goals"
         case .getGoal(let id),
              .updateGoal(let id, _),
@@ -127,7 +129,7 @@ extension APIEndpoint {
         case .updateProfile, .updateGoal:
             return .PATCH
         case .deleteAccount, .deleteExerciseSession, .deleteDietLog,
-             .deleteGoal, .deleteBodyMeasurement:
+             .deleteGoal, .deleteBodyMeasurement, .deleteProgressPhoto:
             return .DELETE
         default:
             return .GET

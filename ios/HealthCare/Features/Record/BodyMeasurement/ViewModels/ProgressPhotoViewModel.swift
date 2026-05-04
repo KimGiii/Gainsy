@@ -10,6 +10,10 @@ final class ProgressPhotoViewModel: ObservableObject {
     @Published var uploadProgress: Double = 0
     @Published var errorMessage: String?
 
+    // MARK: - 비교 모드
+    @Published var isCompareMode = false
+    @Published var compareSelection: [ProgressPhotoItem] = []
+
     var photosForSelectedType: [ProgressPhotoItem] {
         photosByType[selectedType] ?? []
     }
@@ -33,6 +37,40 @@ final class ProgressPhotoViewModel: ObservableObject {
         } catch {
             errorMessage = "사진을 불러오지 못했습니다."
         }
+    }
+
+    // MARK: - Delete
+
+    func deletePhoto(photoId: Int, apiClient: APIClient) async {
+        do {
+            try await apiClient.requestVoid(.deleteProgressPhoto(id: photoId))
+            for type in photosByType.keys {
+                photosByType[type]?.removeAll { $0.photoId == photoId }
+            }
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = "사진 삭제에 실패했습니다."
+        }
+    }
+
+    // MARK: - Compare Mode
+
+    func toggleCompareMode() {
+        isCompareMode.toggle()
+        compareSelection.removeAll()
+    }
+
+    func toggleCompareSelection(_ photo: ProgressPhotoItem) {
+        if let idx = compareSelection.firstIndex(where: { $0.photoId == photo.photoId }) {
+            compareSelection.remove(at: idx)
+        } else if compareSelection.count < 2 {
+            compareSelection.append(photo)
+        }
+    }
+
+    func isSelectedForCompare(_ photo: ProgressPhotoItem) -> Bool {
+        compareSelection.contains { $0.photoId == photo.photoId }
     }
 
     // MARK: - Upload Flow
