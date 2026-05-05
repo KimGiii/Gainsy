@@ -71,10 +71,11 @@
   - `DietLogAuthorizationBoundaryTest` — 식단 기록 GET/DELETE 크로스유저 401
   - `BodyMeasurementAuthorizationBoundaryTest` — 신체 측정 GET/PATCH/DELETE 크로스유저 401
   - `GoalAuthorizationBoundaryTest` — 목표 GET/진행률/포기 크로스유저 401, 잘못된 토큰 형식 401
+  - `ProgressPhotoAuthorizationBoundaryTest` — 진행 사진 삭제 크로스유저 401, 목록/업로드/등록 미인증 401
 
 완료 기준:
 - 핵심 인증/인가 흐름이 서비스 단위 테스트 외 보안 체인까지 포함해 검증된다.
-- 도메인별 권한 경계 시나리오 검증 완료.
+- 도메인별 권한 경계 시나리오를 `@TestFactory` 기반으로 확장 가능하게 검증 완료.
 
 ### 3. API 설계 문서와 실제 경로 정합성
 
