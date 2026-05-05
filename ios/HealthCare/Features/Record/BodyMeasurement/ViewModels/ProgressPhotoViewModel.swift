@@ -1,6 +1,20 @@
 import Foundation
 import UIKit
 
+protocol ProgressPhotoAPIClient: Sendable {
+    func loadPhotos() async throws -> ProgressPhotoListResponse
+    func deletePhoto(id: Int) async throws
+}
+
+extension APIClient: ProgressPhotoAPIClient {
+    func loadPhotos() async throws -> ProgressPhotoListResponse {
+        try await request(.getProgressPhotos(photoType: nil, page: 0, size: 100))
+    }
+    func deletePhoto(id: Int) async throws {
+        try await requestVoid(.deleteProgressPhoto(id: id))
+    }
+}
+
 @MainActor
 final class ProgressPhotoViewModel: ObservableObject {
     @Published var photosByType: [PhotoType: [ProgressPhotoItem]] = [:]
@@ -20,13 +34,11 @@ final class ProgressPhotoViewModel: ObservableObject {
 
     // MARK: - Load
 
-    func loadAll(apiClient: APIClient) async {
+    func loadAll(apiClient: any ProgressPhotoAPIClient) async {
         isLoading = true
         defer { isLoading = false }
         do {
-            let response: ProgressPhotoListResponse = try await apiClient.request(
-                .getProgressPhotos(photoType: nil, page: 0, size: 100)
-            )
+            let response = try await apiClient.loadPhotos()
             var grouped: [PhotoType: [ProgressPhotoItem]] = [:]
             for photo in response.content {
                 grouped[photo.photoType, default: []].append(photo)
@@ -41,9 +53,9 @@ final class ProgressPhotoViewModel: ObservableObject {
 
     // MARK: - Delete
 
-    func deletePhoto(photoId: Int, apiClient: APIClient) async {
+    func deletePhoto(photoId: Int, apiClient: any ProgressPhotoAPIClient) async {
         do {
-            try await apiClient.requestVoid(.deleteProgressPhoto(id: photoId))
+            try await apiClient.deletePhoto(id: photoId)
             for type in photosByType.keys {
                 photosByType[type]?.removeAll { $0.photoId == photoId }
             }

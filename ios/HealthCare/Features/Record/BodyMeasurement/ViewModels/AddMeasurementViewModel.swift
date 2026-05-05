@@ -27,7 +27,8 @@ final class AddMeasurementViewModel: ObservableObject {
 
     private let onSuccess: () -> Void
 
-    init(onSuccess: @escaping () -> Void) {
+    init(initialDate: Date = Date(), onSuccess: @escaping () -> Void) {
+        measuredAt = min(initialDate, Date())
         self.onSuccess = onSuccess
     }
 

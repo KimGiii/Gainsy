@@ -1,5 +1,27 @@
 import Foundation
 
+protocol HomeDashboardLoading: Sendable {
+    func loadDietLogs(from: String, to: String) async throws -> DietLogListResponse
+    func loadExerciseSessions() async throws -> SessionListResponse
+    func loadGoals() async throws -> GoalListResponse
+    func loadGoalProgress(id: Int) async throws -> GoalProgressResponse
+}
+
+extension APIClient: HomeDashboardLoading {
+    func loadDietLogs(from: String, to: String) async throws -> DietLogListResponse {
+        try await request(.getDietLogs(from: from, to: to, page: 0, size: 10))
+    }
+    func loadExerciseSessions() async throws -> SessionListResponse {
+        try await request(.getExerciseSessions(from: nil, to: nil, page: 0, size: 5))
+    }
+    func loadGoals() async throws -> GoalListResponse {
+        try await request(.getGoals)
+    }
+    func loadGoalProgress(id: Int) async throws -> GoalProgressResponse {
+        try await request(.getGoalProgress(id: id))
+    }
+}
+
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published var isLoading = false
@@ -44,18 +66,14 @@ final class HomeViewModel: ObservableObject {
 
     // MARK: - API
 
-    func loadDashboard(apiClient: APIClient) async {
+    func loadDashboard(apiClient: any HomeDashboardLoading) async {
         isLoading = true
         defer { isLoading = false }
 
         do {
-            async let dietResponse: DietLogListResponse = apiClient.request(
-                .getDietLogs(from: today, to: today, page: 0, size: 10)
-            )
-            async let exerciseResponse: SessionListResponse = apiClient.request(
-                .getExerciseSessions(from: nil, to: nil, page: 0, size: 5)
-            )
-            async let goalResponse: GoalListResponse = apiClient.request(.getGoals)
+            async let dietResponse = apiClient.loadDietLogs(from: today, to: today)
+            async let exerciseResponse = apiClient.loadExerciseSessions()
+            async let goalResponse = apiClient.loadGoals()
 
             let (diet, exercise, goals) = try await (dietResponse, exerciseResponse, goalResponse)
             todayDietLogs  = diet.content
@@ -70,9 +88,9 @@ final class HomeViewModel: ObservableObject {
         }
     }
 
-    private func enrichedActiveGoal(_ goal: GoalSummary, apiClient: APIClient) async -> GoalSummary {
+    private func enrichedActiveGoal(_ goal: GoalSummary, apiClient: any HomeDashboardLoading) async -> GoalSummary {
         do {
-            let progress: GoalProgressResponse = try await apiClient.request(.getGoalProgress(id: goal.goalId))
+            let progress = try await apiClient.loadGoalProgress(id: goal.goalId)
             return goal.withPercentComplete(progress.percentComplete)
         } catch {
             return goal

@@ -6,7 +6,7 @@ import Foundation
 final class FcmTokenUploader {
 
     private let apiClient: APIClient
-    private var observer: NSObjectProtocol?
+    nonisolated(unsafe) private var observer: NSObjectProtocol?
 
     init(apiClient: APIClient) {
         self.apiClient = apiClient

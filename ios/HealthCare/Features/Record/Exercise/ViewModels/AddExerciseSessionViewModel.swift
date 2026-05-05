@@ -35,6 +35,10 @@ final class AddExerciseSessionViewModel: ObservableObject {
     @Published var isSaving = false
     @Published var errorMessage: String?
 
+    init(initialDate: Date = Date()) {
+        sessionDate = initialDate
+    }
+
     // MARK: - Draft Set Model
     struct DraftSet: Identifiable {
         let id = UUID()

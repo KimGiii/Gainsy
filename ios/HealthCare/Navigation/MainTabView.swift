@@ -4,16 +4,18 @@ struct MainTabView: View {
     @State private var selectedTab: Tab = .home
     @State private var homePath    = NavigationPath()
     @State private var diaryPath   = NavigationPath()
+    @State private var recordPath  = NavigationPath()
     @State private var explorePath = NavigationPath()
     @State private var myPagePath  = NavigationPath()
 
     enum Tab: Int, CaseIterable {
-        case home, diary, explore, myPage
+        case home, diary, record, explore, myPage
 
         var title: String {
             switch self {
             case .home:    return "대시보드"
             case .diary:   return "다이어리"
+            case .record:  return "기록"
             case .explore: return "탐색"
             case .myPage:  return "프로필"
             }
@@ -23,6 +25,7 @@ struct MainTabView: View {
             switch self {
             case .home:    return "square.grid.2x2.fill"
             case .diary:   return "calendar"
+            case .record:  return "plus.circle.fill"
             case .explore: return "safari"
             case .myPage:  return "person.fill"
             }
@@ -43,6 +46,12 @@ struct MainTabView: View {
             .tabItem { Label(Tab.diary.title,   systemImage: Tab.diary.systemImage) }
             .tag(Tab.diary)
 
+            NavigationStack(path: $recordPath) {
+                RecordHubView(showsDismissButton: false)
+            }
+            .tabItem { Label(Tab.record.title,  systemImage: Tab.record.systemImage) }
+            .tag(Tab.record)
+
             NavigationStack(path: $explorePath) {
                 ExploreView()
             }
@@ -60,6 +69,7 @@ struct MainTabView: View {
             switch newTab {
             case .home:    homePath    = NavigationPath()
             case .diary:   diaryPath   = NavigationPath()
+            case .record:  recordPath  = NavigationPath()
             case .explore: explorePath = NavigationPath()
             case .myPage:  myPagePath  = NavigationPath()
             }

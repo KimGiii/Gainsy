@@ -36,6 +36,27 @@ struct UpdateProfileRequest: Encodable {
     var calorieTarget: Int?
 }
 
+protocol MyPageProfileManaging: Sendable {
+    func loadProfile() async throws -> UserProfile
+    func updateProfile(_ request: UpdateProfileRequest) async throws -> UserProfile
+    func deleteAccount() async throws
+}
+
+extension APIClient: MyPageProfileManaging {
+    func loadProfile() async throws -> UserProfile {
+        try await request(.getProfile)
+    }
+
+    func updateProfile(_ request: UpdateProfileRequest) async throws -> UserProfile {
+        let body = try encode(request)
+        return try await self.request(.updateProfile(body: body))
+    }
+
+    func deleteAccount() async throws {
+        try await requestVoid(.deleteAccount)
+    }
+}
+
 @MainActor
 final class MyPageViewModel: ObservableObject {
     @Published var profile: UserProfile?
@@ -61,11 +82,11 @@ final class MyPageViewModel: ObservableObject {
         }
     }
 
-    func load(apiClient: APIClient) async {
+    func load(apiClient: any MyPageProfileManaging) async {
         isLoading = true
         defer { isLoading = false }
         do {
-            let fetched: UserProfile = try await apiClient.request(.getProfile)
+            let fetched = try await apiClient.loadProfile()
             profile = fetched
         } catch let error as APIError {
             errorMessage = error.errorDescription
@@ -83,7 +104,7 @@ final class MyPageViewModel: ObservableObject {
         editActivityLevel = p.activityLevel ?? ""
     }
 
-    func saveProfile(apiClient: APIClient) async {
+    func saveProfile(apiClient: any MyPageProfileManaging) async {
         isLoading = true
         defer { isLoading = false }
         do {
@@ -94,8 +115,7 @@ final class MyPageViewModel: ObservableObject {
                 weightKg:      Double(editWeightKg),
                 activityLevel: editActivityLevel.isEmpty ? nil : editActivityLevel
             )
-            let body = try apiClient.encode(req)
-            let updated: UserProfile = try await apiClient.request(.updateProfile(body: body))
+            let updated = try await apiClient.updateProfile(req)
             profile = updated
         } catch let error as APIError {
             errorMessage = error.errorDescription
@@ -104,11 +124,11 @@ final class MyPageViewModel: ObservableObject {
         }
     }
 
-    func deleteAccount(apiClient: APIClient, authState: AuthState) async {
+    func deleteAccount(apiClient: any MyPageProfileManaging, authState: AuthState) async {
         isLoading = true
         defer { isLoading = false }
         do {
-            try await apiClient.requestVoid(.deleteAccount)
+            try await apiClient.deleteAccount()
             authState.setUnauthenticated()
         } catch let error as APIError {
             errorMessage = error.errorDescription

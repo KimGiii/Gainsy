@@ -64,9 +64,9 @@ final class AddDietLogViewModel: ObservableObject {
         return formatter
     }()
 
-    init(debounceDuration: Duration = .milliseconds(500)) {
+    init(initialDate: Date = Date(), debounceDuration: Duration = .milliseconds(500)) {
         self.debounceDuration = debounceDuration
-        logDate = dateFormatter.string(from: Date())
+        logDate = dateFormatter.string(from: initialDate)
         // 현재 시간에 따라 기본 식사 타입 설정
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
