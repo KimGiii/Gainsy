@@ -100,9 +100,9 @@
 
 ### 4. 신체 측정 후처리 (EXIF, 썸네일) — 출시 준비 단계
 
-- [ ] EXIF 제거 서버 측 구현 (`ExifStripper`)
-- [ ] 썸네일 비동기 생성 (150px, 400px, 800px)
-- [ ] 업로드 완료 검증 로직 (`progress_photos.upload_completed_at` 활용)
+- [x] EXIF 제거 서버 측 구현 (`ProgressPhotoImageProcessor` 재인코딩)
+- [x] 썸네일 생성 (150px, 400px, 800px)
+- [x] 업로드 완료 검증 로직 (`progress_photos.upload_completed_at` 활용)
 
 ### 5. 인사이트/알림 기반 작업 (Phase 5)
 
