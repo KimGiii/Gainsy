@@ -3,6 +3,7 @@ import SwiftUI
 struct DiaryView: View {
     @StateObject private var viewModel = DiaryViewModel()
     @EnvironmentObject private var container: AppContainer
+    @State private var activeAddSheet: DiaryAddSheet?
 
     var body: some View {
         NavigationStack {
@@ -13,6 +14,13 @@ struct DiaryView: View {
 
                     // 달력 그리드
                     CalendarGrid(viewModel: viewModel)
+
+                    QuickAddSection(
+                        selectedDate: viewModel.selectedDate,
+                        hasExercise: viewModel.hasExerciseRecord(on: viewModel.selectedDate),
+                        hasDiet: viewModel.hasDietRecord(on: viewModel.selectedDate),
+                        onSelect: { activeAddSheet = $0 }
+                    )
 
                     // 선택된 날짜의 운동 기록
                     if !viewModel.exerciseSessions(on: viewModel.selectedDate).isEmpty {
@@ -45,12 +53,44 @@ struct DiaryView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
+            .sheet(item: $activeAddSheet) { sheet in
+                switch sheet {
+                case .exercise:
+                    AddExerciseSessionView(initialDate: viewModel.selectedDate) { _ in
+                        finishQuickAdd()
+                    }
+                    .environmentObject(container)
+                case .diet:
+                    AddDietLogView(initialDate: viewModel.selectedDate) {
+                        finishQuickAdd()
+                    }
+                    .environmentObject(container)
+                case .measurement:
+                    AddMeasurementView(initialDate: viewModel.selectedDate) {
+                        finishQuickAdd()
+                    }
+                    .environmentObject(container)
+                }
+            }
         }
         .task { await viewModel.load(apiClient: container.apiClient) }
         .onChange(of: viewModel.selectedDate) { _ in
             Task { await viewModel.load(apiClient: container.apiClient) }
         }
     }
+
+    private func finishQuickAdd() {
+        activeAddSheet = nil
+        Task { await viewModel.load(apiClient: container.apiClient) }
+    }
+}
+
+private enum DiaryAddSheet: String, Identifiable {
+    case exercise
+    case diet
+    case measurement
+
+    var id: String { rawValue }
 }
 
 // MARK: - Month Picker Header
@@ -91,6 +131,103 @@ private struct MonthPickerHeader: View {
             }
         }
         .padding(.horizontal, 4)
+    }
+}
+
+// MARK: - Quick Add
+
+private struct QuickAddSection: View {
+    let selectedDate: Date
+    let hasExercise: Bool
+    let hasDiet: Bool
+    let onSelect: (DiaryAddSheet) -> Void
+
+    private var dateText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일 EEEE"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: selectedDate)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("빠른 기록")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(Color.textPrimary)
+                    Text(dateText)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.textSecondary)
+                }
+                Spacer()
+            }
+
+            HStack(spacing: 10) {
+                if !hasExercise {
+                    QuickAddButton(
+                        icon: "figure.strengthtraining.traditional",
+                        title: "운동 추가",
+                        tint: .green
+                    ) {
+                        onSelect(.exercise)
+                    }
+                }
+
+                if !hasDiet {
+                    QuickAddButton(
+                        icon: "fork.knife",
+                        title: "식단 추가",
+                        tint: .orange
+                    ) {
+                        onSelect(.diet)
+                    }
+                }
+
+                QuickAddButton(
+                    icon: "scalemass.fill",
+                    title: "측정 추가",
+                    tint: Color.brandPrimary
+                ) {
+                    onSelect(.measurement)
+                }
+            }
+        }
+        .padding(16)
+        .background(Color.surfacePrimary)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+    }
+}
+
+private struct QuickAddButton: View {
+    let icon: String
+    let title: String
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 34, height: 34)
+                    .background(tint.opacity(0.12))
+                    .clipShape(Circle())
+
+                Text(title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Color.surfaceSecondary.opacity(0.7))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
     }
 }
 

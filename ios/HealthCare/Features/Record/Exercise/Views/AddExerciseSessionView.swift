@@ -3,11 +3,18 @@ import SwiftUI
 // MARK: - Add Session View
 
 struct AddExerciseSessionView: View {
-    @StateObject private var viewModel = AddExerciseSessionViewModel()
+    @StateObject private var viewModel: AddExerciseSessionViewModel
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
 
     let onSaved: (CreateSessionResponse) -> Void
+
+    init(initialDate: Date = Date(), onSaved: @escaping (CreateSessionResponse) -> Void) {
+        _viewModel = StateObject(
+            wrappedValue: AddExerciseSessionViewModel(initialDate: initialDate)
+        )
+        self.onSaved = onSaved
+    }
 
     var body: some View {
         NavigationStack {

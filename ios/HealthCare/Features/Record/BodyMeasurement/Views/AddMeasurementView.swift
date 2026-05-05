@@ -5,8 +5,10 @@ struct AddMeasurementView: View {
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
 
-    init(onSuccess: @escaping () -> Void) {
-        _viewModel = StateObject(wrappedValue: AddMeasurementViewModel(onSuccess: onSuccess))
+    init(initialDate: Date = Date(), onSuccess: @escaping () -> Void) {
+        _viewModel = StateObject(
+            wrappedValue: AddMeasurementViewModel(initialDate: initialDate, onSuccess: onSuccess)
+        )
     }
 
     var body: some View {

@@ -5,9 +5,16 @@ import SwiftUI
 
 struct AddDietLogView: View {
     @EnvironmentObject private var container: AppContainer
-    @StateObject private var viewModel = AddDietLogViewModel()
+    @StateObject private var viewModel: AddDietLogViewModel
     @State private var selectedPhotoItem: PhotosPickerItem?
     var onSaved: () -> Void
+
+    init(initialDate: Date = Date(), onSaved: @escaping () -> Void) {
+        _viewModel = StateObject(
+            wrappedValue: AddDietLogViewModel(initialDate: initialDate)
+        )
+        self.onSaved = onSaved
+    }
 
     var body: some View {
         NavigationStack {

@@ -7,11 +7,19 @@ import SwiftUI
 
 struct RecordHubView: View {
     @Environment(\.dismiss) private var dismiss
+    let showsDismissButton: Bool
+
+    init(showsDismissButton: Bool = true) {
+        self.showsDismissButton = showsDismissButton
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
-                HubHeroSection(onDismiss: { dismiss() })
+                HubHeroSection(
+                    showsDismissButton: showsDismissButton,
+                    onDismiss: { dismiss() }
+                )
 
                 HubBody()
                     .padding(.top, -30) // lift body into hero
@@ -26,6 +34,7 @@ struct RecordHubView: View {
 // MARK: - Hero Section
 
 private struct HubHeroSection: View {
+    let showsDismissButton: Bool
     let onDismiss: () -> Void
 
     private var todayLabel: String {
@@ -50,15 +59,19 @@ private struct HubHeroSection: View {
             VStack(alignment: .leading, spacing: 0) {
                 // Nav
                 HStack {
-                    Button(action: onDismiss) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .heavy))
-                            .foregroundStyle(.white)
-                            .frame(width: 40, height: 40)
-                            .background(
-                                Circle().fill(Color.glassLight)
-                                    .overlay(Circle().stroke(Color.glassEdge, lineWidth: 0.8))
-                            )
+                    if showsDismissButton {
+                        Button(action: onDismiss) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 14, weight: .heavy))
+                                .foregroundStyle(.white)
+                                .frame(width: 40, height: 40)
+                                .background(
+                                    Circle().fill(Color.glassLight)
+                                        .overlay(Circle().stroke(Color.glassEdge, lineWidth: 0.8))
+                                )
+                        }
+                    } else {
+                        Color.clear.frame(width: 40, height: 40)
                     }
                     Spacer()
                     Text("RECORD")
