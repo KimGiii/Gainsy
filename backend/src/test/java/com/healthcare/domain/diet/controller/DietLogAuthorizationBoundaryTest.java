@@ -12,7 +12,9 @@ import com.healthcare.security.RestAccessDeniedHandler;
 import com.healthcare.security.RestAuthenticationEntryPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +22,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -71,35 +76,39 @@ class DietLogAuthorizationBoundaryTest {
         given(customUserDetailsService.loadUserById(ATTACKER_ID)).willReturn(attackerDetails);
     }
 
-    @Test
-    @DisplayName("다른 사용자의 식단 기록 단건 조회 시 401 반환")
-    void getDietLog_whenNotOwner_returns401() throws Exception {
-        given(dietLogService.getDietLogById(ATTACKER_ID, LOG_ID))
-                .willThrow(new UnauthorizedException("다른 사용자의 식단 기록에 접근할 수 없습니다."));
-
-        mockMvc.perform(get("/api/v1/diet/logs/{id}", LOG_ID)
-                        .header("Authorization", "Bearer " + ATTACKER_TOKEN))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
+    @TestFactory
+    @DisplayName("식단 기록 권한 경계 시나리오")
+    Stream<DynamicTest> dietLogAuthorizationBoundaryScenarios() {
+        return Stream.of(
+                new AuthorizationBoundaryScenario(
+                        "다른 사용자의 식단 기록 단건 조회 시 401 반환",
+                        get("/api/v1/diet/logs/{id}", LOG_ID)
+                                .header("Authorization", "Bearer " + ATTACKER_TOKEN),
+                        () -> given(dietLogService.getDietLogById(ATTACKER_ID, LOG_ID))
+                                .willThrow(new UnauthorizedException("다른 사용자의 식단 기록에 접근할 수 없습니다."))),
+                new AuthorizationBoundaryScenario(
+                        "다른 사용자의 식단 기록 삭제 시 401 반환",
+                        delete("/api/v1/diet/logs/{id}", LOG_ID)
+                                .header("Authorization", "Bearer " + ATTACKER_TOKEN),
+                        () -> doThrow(new UnauthorizedException("다른 사용자의 식단 기록에 접근할 수 없습니다."))
+                                .when(dietLogService).deleteDietLog(ATTACKER_ID, LOG_ID)),
+                new AuthorizationBoundaryScenario(
+                        "인증 토큰 없이 식단 기록 조회 시 401 반환",
+                        get("/api/v1/diet/logs/{id}", LOG_ID),
+                        () -> {
+                        })
+        ).map(scenario -> DynamicTest.dynamicTest(scenario.displayName(), () -> {
+            scenario.stub().execute();
+            mockMvc.perform(scenario.request())
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
+        }));
     }
 
-    @Test
-    @DisplayName("다른 사용자의 식단 기록 삭제 시 401 반환")
-    void deleteDietLog_whenNotOwner_returns401() throws Exception {
-        doThrow(new UnauthorizedException("다른 사용자의 식단 기록에 접근할 수 없습니다."))
-                .when(dietLogService).deleteDietLog(ATTACKER_ID, LOG_ID);
-
-        mockMvc.perform(delete("/api/v1/diet/logs/{id}", LOG_ID)
-                        .header("Authorization", "Bearer " + ATTACKER_TOKEN))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
-    }
-
-    @Test
-    @DisplayName("인증 토큰 없이 식단 기록 조회 시 401 반환")
-    void getDietLog_withoutToken_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/diet/logs/{id}", LOG_ID))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
+    private record AuthorizationBoundaryScenario(
+            String displayName,
+            RequestBuilder request,
+            Executable stub
+    ) {
     }
 }
