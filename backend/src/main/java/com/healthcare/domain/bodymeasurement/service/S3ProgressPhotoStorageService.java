@@ -3,7 +3,13 @@ package com.healthcare.domain.bodymeasurement.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -20,6 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3ProgressPhotoStorageService implements ProgressPhotoStorageService {
 
+    private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
     @Value("${app.s3.bucket}")
@@ -74,6 +81,41 @@ public class S3ProgressPhotoStorageService implements ProgressPhotoStorageServic
 
         PresignedGetObjectRequest presigned = s3Presigner.presignGetObject(presignRequest);
         return presigned.url().toString();
+    }
+
+    @Override
+    public StoredObject getObject(String storageKey) {
+        GetObjectRequest request = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(storageKey)
+                .build();
+        ResponseBytes<GetObjectResponse> response = s3Client.getObjectAsBytes(request);
+        return new StoredObject(
+                response.asByteArray(),
+                response.response().contentType(),
+                response.response().contentLength()
+        );
+    }
+
+    @Override
+    public void putObject(String storageKey, String contentType, byte[] bytes) {
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(storageKey)
+                .contentType(contentType)
+                .contentLength((long) bytes.length)
+                .build();
+        s3Client.putObject(request, RequestBody.fromBytes(bytes));
+    }
+
+    @Override
+    public ObjectMetadata getObjectMetadata(String storageKey) {
+        HeadObjectRequest request = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(storageKey)
+                .build();
+        HeadObjectResponse response = s3Client.headObject(request);
+        return new ObjectMetadata(response.contentType(), response.contentLength());
     }
 
     private String extractExtension(String fileName, String contentType) {

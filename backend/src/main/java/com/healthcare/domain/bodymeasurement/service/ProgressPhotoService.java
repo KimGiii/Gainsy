@@ -26,6 +26,7 @@ public class ProgressPhotoService {
 
     private final ProgressPhotoRepository progressPhotoRepository;
     private final ProgressPhotoStorageService progressPhotoStorageService;
+    private final ProgressPhotoImageProcessor progressPhotoImageProcessor;
 
     public InitiatePhotoUploadResponse initiateUpload(Long userId, InitiatePhotoUploadRequest request) {
         validateImageRequest(request.getContentType(), request.getFileSizeBytes());
@@ -54,6 +55,20 @@ public class ProgressPhotoService {
                     throw new DuplicateResourceException("이미 등록된 사진입니다.");
                 });
 
+        ProgressPhotoStorageService.ObjectMetadata uploadedMetadata =
+                progressPhotoStorageService.getObjectMetadata(request.getStorageKey());
+        validateUploadedObject(request, uploadedMetadata);
+
+        ProgressPhotoStorageService.StoredObject uploadedObject =
+                progressPhotoStorageService.getObject(request.getStorageKey());
+        ProgressPhotoImageProcessor.ProcessedImageSet processedImage =
+                progressPhotoImageProcessor.process(uploadedObject.bytes(), request.getContentType(), request.getStorageKey());
+
+        progressPhotoStorageService.putObject(request.getStorageKey(), request.getContentType(), processedImage.strippedOriginal());
+        progressPhotoStorageService.putObject(processedImage.thumbnail150().storageKey(), request.getContentType(), processedImage.thumbnail150().bytes());
+        progressPhotoStorageService.putObject(processedImage.thumbnail400().storageKey(), request.getContentType(), processedImage.thumbnail400().bytes());
+        progressPhotoStorageService.putObject(processedImage.thumbnail800().storageKey(), request.getContentType(), processedImage.thumbnail800().bytes());
+
         if (Boolean.TRUE.equals(request.getIsBaseline())) {
             progressPhotoRepository.findByUserIdAndPhotoTypeAndIsBaselineTrue(userId, request.getPhotoType())
                     .ifPresent(existing -> {
@@ -69,13 +84,19 @@ public class ProgressPhotoService {
                 .photoDate(request.getCapturedAt().toLocalDate())
                 .storageKey(request.getStorageKey())
                 .contentType(request.getContentType())
-                .fileSizeBytes(request.getFileSizeBytes())
+                .fileSizeBytes((long) processedImage.strippedOriginal().length)
                 .bodyWeightKg(request.getBodyWeightKg())
                 .bodyFatPct(request.getBodyFatPct())
                 .waistCm(request.getWaistCm())
                 .notes(request.getNotes())
                 .isBaseline(Boolean.TRUE.equals(request.getIsBaseline()))
                 .build();
+        photo.completeUploadProcessing(
+                processedImage.thumbnail150().storageKey(),
+                processedImage.thumbnail400().storageKey(),
+                processedImage.thumbnail800().storageKey(),
+                (long) processedImage.strippedOriginal().length
+        );
 
         ProgressPhoto saved = progressPhotoRepository.save(photo);
         return toResponse(saved);
@@ -140,6 +161,20 @@ public class ProgressPhotoService {
         String userPrefix = "progress-photos/" + userId + "/";
         if (storageKey == null || !storageKey.startsWith(userPrefix)) {
             throw new ValidationException("현재 사용자에게 허용되지 않은 storageKey입니다.");
+        }
+    }
+
+    private void validateUploadedObject(CreateProgressPhotoRequest request,
+                                        ProgressPhotoStorageService.ObjectMetadata metadata) {
+        if (metadata == null || metadata.contentLength() <= 0) {
+            throw new ValidationException("업로드된 원본 사진을 확인할 수 없습니다.");
+        }
+        if (request.getFileSizeBytes() != null && !request.getFileSizeBytes().equals(metadata.contentLength())) {
+            throw new ValidationException("업로드된 파일 크기가 등록 요청과 일치하지 않습니다.");
+        }
+        if (metadata.contentType() != null && !metadata.contentType().isBlank()
+                && !metadata.contentType().equalsIgnoreCase(request.getContentType())) {
+            throw new ValidationException("업로드된 파일 형식이 등록 요청과 일치하지 않습니다.");
         }
     }
 }

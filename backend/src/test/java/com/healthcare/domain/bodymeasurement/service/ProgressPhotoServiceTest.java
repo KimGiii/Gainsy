@@ -41,6 +41,7 @@ class ProgressPhotoServiceTest {
 
     @Mock private ProgressPhotoRepository progressPhotoRepository;
     @Mock private ProgressPhotoStorageService progressPhotoStorageService;
+    @Mock private ProgressPhotoImageProcessor progressPhotoImageProcessor;
 
     @InjectMocks
     private ProgressPhotoService progressPhotoService;
@@ -89,6 +90,12 @@ class ProgressPhotoServiceTest {
 
         given(progressPhotoRepository.findByStorageKeyAndUserId("progress-photos/1/new-photo.jpg", 1L))
                 .willReturn(Optional.empty());
+        given(progressPhotoStorageService.getObjectMetadata("progress-photos/1/new-photo.jpg"))
+                .willReturn(new ProgressPhotoStorageService.ObjectMetadata("image/jpeg", 2_048L));
+        given(progressPhotoStorageService.getObject("progress-photos/1/new-photo.jpg"))
+                .willReturn(new ProgressPhotoStorageService.StoredObject(new byte[]{1, 2, 3}, "image/jpeg", 2_048L));
+        given(progressPhotoImageProcessor.process(any(byte[].class), eq("image/jpeg"), eq("progress-photos/1/new-photo.jpg")))
+                .willReturn(processedImageSet("progress-photos/1/new-photo.jpg"));
         given(progressPhotoRepository.findByUserIdAndPhotoTypeAndIsBaselineTrue(1L, PhotoType.FRONT))
                 .willReturn(Optional.of(existingBaseline));
         given(progressPhotoRepository.save(any(ProgressPhoto.class))).willAnswer(invocation -> {
@@ -99,17 +106,43 @@ class ProgressPhotoServiceTest {
             return photo;
         });
         given(progressPhotoStorageService.generateDownloadUrl(anyString())).willReturn("https://download.example.com/photo");
-        given(progressPhotoStorageService.generateDownloadUrl(isNull())).willReturn(null);
 
         ProgressPhotoResponse response = progressPhotoService.registerPhoto(1L, request);
 
         assertThat(response.getPhotoId()).isEqualTo(2L);
         assertThat(response.isBaseline()).isTrue();
+        assertThat(response.isExifStripped()).isTrue();
+        assertThat(response.getThumbnailStatus()).isEqualTo("READY");
 
         ArgumentCaptor<ProgressPhoto> photoCaptor = ArgumentCaptor.forClass(ProgressPhoto.class);
         verify(progressPhotoRepository, times(2)).save(photoCaptor.capture());
         assertThat(photoCaptor.getAllValues().get(0).isBaseline()).isFalse();
         assertThat(photoCaptor.getAllValues().get(1).isBaseline()).isTrue();
+        assertThat(photoCaptor.getAllValues().get(1).getThumbnailKey400()).contains("_thumb_400");
+        verify(progressPhotoStorageService).putObject(eq("progress-photos/1/new-photo.jpg"), eq("image/jpeg"), any(byte[].class));
+        verify(progressPhotoStorageService).putObject(contains("_thumb_150"), eq("image/jpeg"), any(byte[].class));
+        verify(progressPhotoStorageService).putObject(contains("_thumb_400"), eq("image/jpeg"), any(byte[].class));
+        verify(progressPhotoStorageService).putObject(contains("_thumb_800"), eq("image/jpeg"), any(byte[].class));
+    }
+
+    @Test
+    @DisplayName("등록 요청의 파일 크기와 실제 업로드된 객체 크기가 다르면 ValidationException이 발생한다")
+    void registerPhoto_withMismatchedUploadedSize_throwsValidationException() {
+        CreateProgressPhotoRequest request = new CreateProgressPhotoRequest();
+        setField(request, "storageKey", "progress-photos/1/new-photo.jpg");
+        setField(request, "contentType", "image/jpeg");
+        setField(request, "capturedAt", OffsetDateTime.parse("2026-04-20T09:00:00+09:00"));
+        setField(request, "photoType", PhotoType.FRONT);
+        setField(request, "fileSizeBytes", 2_048L);
+
+        given(progressPhotoRepository.findByStorageKeyAndUserId("progress-photos/1/new-photo.jpg", 1L))
+                .willReturn(Optional.empty());
+        given(progressPhotoStorageService.getObjectMetadata("progress-photos/1/new-photo.jpg"))
+                .willReturn(new ProgressPhotoStorageService.ObjectMetadata("image/jpeg", 1_024L));
+
+        assertThatThrownBy(() -> progressPhotoService.registerPhoto(1L, request))
+                .isInstanceOf(ValidationException.class)
+                .hasMessageContaining("파일 크기");
     }
 
     @Test
@@ -209,5 +242,14 @@ class ProgressPhotoServiceTest {
         } catch (Exception e) {
             throw new RuntimeException("Failed to set field: " + fieldName, e);
         }
+    }
+
+    private ProgressPhotoImageProcessor.ProcessedImageSet processedImageSet(String storageKey) {
+        return new ProgressPhotoImageProcessor.ProcessedImageSet(
+                new byte[]{10, 20, 30},
+                new ProgressPhotoImageProcessor.Thumbnail(storageKey.replace(".jpg", "_thumb_150.jpg"), new byte[]{1}),
+                new ProgressPhotoImageProcessor.Thumbnail(storageKey.replace(".jpg", "_thumb_400.jpg"), new byte[]{2}),
+                new ProgressPhotoImageProcessor.Thumbnail(storageKey.replace(".jpg", "_thumb_800.jpg"), new byte[]{3})
+        );
     }
 }

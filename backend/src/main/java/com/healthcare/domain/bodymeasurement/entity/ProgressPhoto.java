@@ -51,6 +51,9 @@ public class ProgressPhoto {
     @Column(name = "file_size_bytes")
     private Long fileSizeBytes;
 
+    @Column(name = "upload_completed_at")
+    private OffsetDateTime uploadCompletedAt;
+
     @Column(name = "exif_stripped", nullable = false)
     @Builder.Default
     private boolean exifStripped = false;
@@ -109,6 +112,16 @@ public class ProgressPhoto {
 
     public void delete() {
         this.deletedAt = OffsetDateTime.now();
+    }
+
+    public void completeUploadProcessing(String thumbnailKey150, String thumbnailKey400, String thumbnailKey800,
+                                         Long processedFileSizeBytes) {
+        this.thumbnailKey150 = thumbnailKey150;
+        this.thumbnailKey400 = thumbnailKey400;
+        this.thumbnailKey800 = thumbnailKey800;
+        this.fileSizeBytes = processedFileSizeBytes;
+        this.exifStripped = true;
+        this.uploadCompletedAt = OffsetDateTime.now();
     }
 
     public enum PhotoType {
