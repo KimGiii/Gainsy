@@ -27,4 +27,8 @@ Desktop.ini
 .terraform/
 *.tfstate
 *.tfstate.*
+terraform.tfvars
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl
 .gstack/

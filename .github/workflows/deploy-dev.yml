@@ -10,6 +10,7 @@ env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: healthcare-api
   IMAGE_TAG: dev-${{ github.sha }}
+  SPRING_PROFILE: dev
 
 jobs:
   deploy:
