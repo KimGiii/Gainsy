@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:healthcare_test}
+    username: ${POSTGRES_USER:healthcare}
+    password: ${POSTGRES_PASSWORD:test_password}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:test-secret-key-for-ci-min-32-chars-required}
+  s3:
+    bucket: healthcare-photos-test
+    region: ap-northeast-2
+    endpoint: ""
+    path-style-access: false
+  ai:
+    meal:
+      openai-api-key: ""
+  notifications:
+    scheduler:
+      enabled: false
+
+logging:
+  level:
+    com.healthcare: WARN
