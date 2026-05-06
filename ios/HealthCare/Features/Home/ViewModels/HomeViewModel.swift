@@ -25,6 +25,7 @@ extension APIClient: HomeDashboardLoading {
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published var isLoading = false
+    @Published var errorMessage: String? = nil
     @Published var todayDietLogs: [DietLogSummary] = []
     @Published var recentSessions: [SessionSummary] = []
     @Published var activeGoal: GoalSummary? = nil
@@ -68,6 +69,7 @@ final class HomeViewModel: ObservableObject {
 
     func loadDashboard(apiClient: any HomeDashboardLoading) async {
         isLoading = true
+        errorMessage = nil
         defer { isLoading = false }
 
         do {
@@ -83,8 +85,10 @@ final class HomeViewModel: ObservableObject {
             } else {
                 activeGoal = nil
             }
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
         } catch {
-            // 대시보드 로딩 실패는 조용히 처리 — 빈 상태 유지
+            errorMessage = "데이터를 불러오지 못했습니다."
         }
     }
 

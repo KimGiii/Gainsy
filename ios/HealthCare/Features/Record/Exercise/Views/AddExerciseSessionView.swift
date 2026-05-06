@@ -35,13 +35,6 @@ struct AddExerciseSessionView: View {
                     // 저장 버튼
                     saveButton
 
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color.brandDanger)
-                            .padding(.horizontal, 20)
-                    }
-
                     Color.clear.frame(height: 20)
                 }
                 .padding(.top, 8)
@@ -54,6 +47,14 @@ struct AddExerciseSessionView: View {
                     Button("취소") { dismiss() }
                         .foregroundStyle(Color.textSecondary)
                 }
+            }
+            .alert("오류", isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
+                Button("확인", role: .cancel) { viewModel.errorMessage = nil }
+            } message: {
+                Text(viewModel.errorMessage ?? "")
             }
             .sheet(isPresented: $viewModel.showCatalogPicker) {
                 ExerciseCatalogPickerView(viewModel: viewModel)

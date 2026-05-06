@@ -44,6 +44,13 @@ struct DiaryView: View {
             .background(Color.surfaceGrouped)
             .navigationTitle("다이어리")
             .navigationBarTitleDisplayMode(.large)
+            .overlay(alignment: .center) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding(20)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                }
+            }
             .refreshable { await viewModel.load(apiClient: container.apiClient) }
             .alert("오류", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },

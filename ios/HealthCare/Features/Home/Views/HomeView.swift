@@ -19,6 +19,23 @@ struct HomeView: View {
         }
         .background(Color.brandBone.ignoresSafeArea())
         .ignoresSafeArea(edges: .top)
+        .overlay(alignment: .center) {
+            if viewModel.isLoading {
+                ProgressView()
+                    .tint(Color.brandAccentGlow)
+                    .scaleEffect(1.4)
+                    .padding(24)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+            }
+        }
+        .alert("오류", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("확인", role: .cancel) { viewModel.errorMessage = nil }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
+        }
         .task { await viewModel.loadDashboard(apiClient: container.apiClient) }
         .refreshable { await viewModel.loadDashboard(apiClient: container.apiClient) }
     }
