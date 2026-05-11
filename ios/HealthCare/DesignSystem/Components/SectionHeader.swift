@@ -21,7 +21,7 @@ struct SectionHeader: View {
                 }
                 Text(title)
                     .font(.system(size: 20, weight: .bold, design: .serif))
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
             }
 
             Spacer()
@@ -34,7 +34,7 @@ struct SectionHeader: View {
                         Image(systemName: "arrow.up.right")
                             .font(.system(size: 10, weight: .heavy))
                     }
-                    .foregroundStyle(Color.brandDusk.opacity(0.7))
+                    .foregroundStyle(Color.textHeadline.opacity(0.7))
                 }
             }
         }

@@ -43,17 +43,17 @@ private struct ActiveGoalContent: View {
                     .eyebrowStyle()
                 Text("\(goal.goalType.emoji)  \(goal.goalType.displayName)")
                     .font(.system(size: 17, weight: .bold, design: .serif))
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
 
                 if let days = goal.daysRemaining {
                     HStack(spacing: 6) {
                         Capsule()
-                            .fill(Color.brandDusk)
+                            .fill(Color.textHeadline)
                             .frame(width: 48, height: 20)
                             .overlay(
                                 Text("D-\(days)")
                                     .font(.system(size: 10, weight: .heavy, design: .rounded))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Color.surfaceCard)
                             )
                         Text("\(String(format: "%.0f", goal.progressRatio * 100))% 완료")
                             .font(.system(size: 12, weight: .medium))
@@ -66,16 +66,16 @@ private struct ActiveGoalContent: View {
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(Color.brandDusk.opacity(0.30))
+                .foregroundStyle(Color.textHeadline.opacity(0.30))
                 .accessibilityHidden(true)
         }
         .padding(18)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.surfaceCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(Color.brandDusk.opacity(0.06), lineWidth: 1)
+                        .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
         .elevation(.low)
@@ -101,7 +101,7 @@ private struct EmptyGoalContent: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("목표 없음")
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
                 Text("목표를 세우고 여정을 시작하세요")
                     .font(.system(size: 12))
                     .foregroundStyle(Color.textSecondary)
@@ -115,10 +115,10 @@ private struct EmptyGoalContent: View {
         .padding(18)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.surfaceCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(Color.brandDusk.opacity(0.06), lineWidth: 1)
+                        .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
         .elevation(.low)

@@ -67,7 +67,7 @@ struct HomeView: View {
                 }
                 .padding(.top, 4)
             }
-            .background(Color.brandBone.ignoresSafeArea())
+            .background(Color.backgroundPage.ignoresSafeArea())
             .overlay(alignment: .center) {
                 if viewModel.isLoading {
                     ProgressView()
@@ -123,7 +123,7 @@ private struct DashboardHeaderBar: View {
                     .foregroundStyle(Color.textTertiary)
                 Text(greetingText)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
             }
 
             Spacer()
@@ -150,12 +150,12 @@ private struct HeaderIconButton: View {
     var body: some View {
         Image(systemName: system)
             .font(.system(size: 14, weight: .semibold))
-            .foregroundStyle(Color.brandDusk.opacity(0.65))
+            .foregroundStyle(Color.textHeadline.opacity(0.65))
             .frame(width: 38, height: 38)
             .background(
                 Circle()
-                    .fill(Color.white)
-                    .overlay(Circle().stroke(Color.brandDusk.opacity(0.07), lineWidth: 1))
+                    .fill(Color.surfaceCard)
+                    .overlay(Circle().stroke(Color.cardStroke, lineWidth: 1))
             )
             .elevation(.low)
             .accessibilityLabel(accessibilityLabel)
@@ -225,9 +225,9 @@ private struct MealCard: View {
             .overlay(alignment: .topTrailing) {
                 Text(log.mealType.displayName)
                     .font(.system(size: 9, weight: .heavy)).tracking(1.0).textCase(.uppercase)
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
                     .padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(Capsule().fill(Color.white))
+                    .background(Capsule().fill(Color.surfaceCard))
                     .padding(9)
             }
 
@@ -235,7 +235,7 @@ private struct MealCard: View {
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(String(format: "%.0f", log.totalCalories ?? 0))
                         .font(.system(size: 20, weight: .heavy, design: .rounded))
-                        .foregroundStyle(Color.brandDusk)
+                        .foregroundStyle(Color.textHeadline)
                     Text("kcal")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Color.textSecondary)
@@ -258,9 +258,9 @@ private struct EmptyMealCard: View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color.brandBone)
+                    .fill(Color.backgroundPage)
                     .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(Color.brandDusk.opacity(0.08), style: StrokeStyle(lineWidth: 1, dash: [4])))
+                        .stroke(Color.textHeadline.opacity(0.08), style: StrokeStyle(lineWidth: 1, dash: [4])))
                 VStack(spacing: 8) {
                     Text("🌱").font(.system(size: 30)).opacity(0.5)
                     Text("아직 기록 없음").font(.system(size: 11, weight: .medium)).foregroundStyle(Color.textTertiary)
@@ -288,7 +288,7 @@ private struct AddMealCard: View {
             }
             .frame(width: 140, height: 114)
             Text("+ 새 식단")
-                .font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.brandDusk)
+                .font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.textHeadline)
                 .frame(width: 140, alignment: .leading).padding(.top, 9)
         }
     }
@@ -405,7 +405,7 @@ private struct SectionLabel: View {
                 Text(eyebrow).eyebrowStyle(Color.textTertiary)
                 Text(title)
                     .font(.system(size: 18, weight: .bold, design: .serif))
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
             }
             Spacer()
         }

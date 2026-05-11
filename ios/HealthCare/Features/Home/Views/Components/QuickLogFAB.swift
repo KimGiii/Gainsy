@@ -67,12 +67,12 @@ private struct FABMenuItem: View {
             HStack(spacing: 10) {
                 Text(label)
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.brandDusk)
+                    .foregroundStyle(Color.textHeadline)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 9)
                     .background(
                         Capsule()
-                            .fill(Color.white)
+                            .fill(Color.surfaceCard)
                             .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 3)
                     )
 

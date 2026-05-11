@@ -25,7 +25,7 @@ struct RecordHubView: View {
                     .padding(.top, -30) // lift body into hero
             }
         }
-        .background(Color.brandBone.ignoresSafeArea())
+        .background(Color.backgroundPage.ignoresSafeArea())
         .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
     }
@@ -137,7 +137,7 @@ private struct HubBackdrop: View {
                 VStack(spacing: 0) {
                     Spacer()
                     Rectangle()
-                        .fill(Color.brandBone)
+                        .fill(Color.backgroundPage)
                         .frame(height: 30)
                         .mask(
                             LinearGradient(
@@ -166,7 +166,7 @@ private struct HubBody: View {
                     Text("WHAT TO LOG").eyebrowStyle(Color.textTertiary)
                     Text("무엇을 기록할까요?")
                         .font(.system(size: 22, weight: .bold, design: .serif))
-                        .foregroundStyle(Color.brandDusk)
+                        .foregroundStyle(Color.textHeadline)
                 }
                 Spacer()
             }
@@ -208,7 +208,7 @@ private struct HubBody: View {
         .padding(.bottom, 64)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            Color.brandBone
+            Color.backgroundPage
                 .clipShape(RoundedCorner(radius: 32, corners: [.topLeft, .topRight]))
         )
     }
@@ -294,10 +294,10 @@ private struct DietRouteCard: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.surfaceCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(Color.brandDusk.opacity(0.06), lineWidth: 1)
+                        .stroke(Color.cardStroke, lineWidth: 1)
                 )
 
             // warm corner
@@ -318,7 +318,7 @@ private struct DietRouteCard: View {
                     Spacer()
                     Image(systemName: "arrow.up.right")
                         .font(.system(size: 12, weight: .heavy))
-                        .foregroundStyle(Color.brandDusk.opacity(0.35))
+                        .foregroundStyle(Color.textHeadline.opacity(0.35))
                 }
 
                 Spacer()
@@ -332,7 +332,7 @@ private struct DietRouteCard: View {
                     Text("식단").eyebrowStyle(Color.textTertiary)
                     Text("오늘 먹은 것")
                         .font(.system(size: 17, weight: .bold, design: .serif))
-                        .foregroundStyle(Color.brandDusk)
+                        .foregroundStyle(Color.textHeadline)
                     Text("한 끼, 한 숟갈까지")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Color.textSecondary)
@@ -462,10 +462,10 @@ private struct PhotoRouteCard: View {
                     }
                     Text("진행 사진")
                         .font(.system(size: 22, weight: .bold, design: .serif))
-                        .foregroundStyle(Color.brandDusk)
+                        .foregroundStyle(Color.textHeadline)
                     Text("변화를 눈으로 확인하는 가장\n강력한 동기부여")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(Color.brandDusk.opacity(0.55))
+                        .foregroundStyle(Color.textHeadline.opacity(0.55))
                         .lineSpacing(2)
                 }
 

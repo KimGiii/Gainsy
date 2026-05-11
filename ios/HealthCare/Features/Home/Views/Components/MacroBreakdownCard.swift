@@ -52,10 +52,10 @@ struct MacroBreakdownCard: View {
         .padding(18)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.surfaceCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(Color.brandDusk.opacity(0.06), lineWidth: 1)
+                        .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
         .elevation(.low)
