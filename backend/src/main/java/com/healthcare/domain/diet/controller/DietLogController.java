@@ -69,6 +69,21 @@ public class DietLogController {
     }
 
     /**
+     * PUT /api/v1/diet/logs/{id}
+     * 식사 기록 수정 (식품 항목 전체 교체)
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<CreateDietLogResponse>> updateDietLog(
+            @RequestHeader("Authorization") String bearerToken,
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDietLogRequest request) {
+
+        Long userId = resolveUserId(bearerToken);
+        CreateDietLogResponse response = dietLogService.updateDietLog(userId, id, request);
+        return ResponseEntity.ok(ApiResponse.ok("식사 기록이 수정되었습니다.", response));
+    }
+
+    /**
      * DELETE /api/v1/diet/logs/{id}
      * 식사 기록 소프트 삭제
      */

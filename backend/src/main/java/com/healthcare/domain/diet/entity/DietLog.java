@@ -65,6 +65,18 @@ public class DietLog {
         updatedAt = OffsetDateTime.now();
     }
 
+    public void update(MealType mealType, LocalDate logDate, String notes,
+                       Double totalCalories, Double totalProteinG,
+                       Double totalCarbsG, Double totalFatG) {
+        this.mealType      = mealType;
+        this.logDate       = logDate;
+        this.notes         = notes;
+        this.totalCalories = totalCalories;
+        this.totalProteinG = totalProteinG;
+        this.totalCarbsG   = totalCarbsG;
+        this.totalFatG     = totalFatG;
+    }
+
     public void softDelete() {
         this.deletedAt = OffsetDateTime.now();
     }

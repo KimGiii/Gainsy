@@ -163,6 +163,88 @@ public class DietLogService {
         return DietLogListResponse.from(page);
     }
 
+    // ─────────────────────────── 식사 기록 수정 ───────────────────────────
+
+    @Transactional
+    public CreateDietLogResponse updateDietLog(Long userId, Long logId, UpdateDietLogRequest request) {
+        DietLog log = dietLogRepository.findById(logId)
+                .orElseThrow(() -> new ResourceNotFoundException("DietLog", logId));
+
+        if (!log.isOwnedBy(userId)) {
+            throw new UnauthorizedException("다른 사용자의 식사 기록을 수정할 수 없습니다.");
+        }
+
+        // 기존 항목 제거 (usage_count 감소)
+        List<FoodEntry> oldEntries = foodEntryRepository.findByDietLogIdOrderById(logId);
+        oldEntries.stream()
+                .map(FoodEntry::getFoodCatalogId)
+                .distinct()
+                .forEach(foodCatalogRepository::decrementUsageCount);
+        foodEntryRepository.deleteAll(oldEntries);
+
+        // 새 항목 생성 및 영양소 합산
+        Map<Long, FoodCatalog> catalogMap = loadAndValidateCatalogs(userId, request.getEntries());
+
+        List<FoodEntry> newEntries = new ArrayList<>();
+        double totalCalories = 0.0;
+        double totalProteinG = 0.0;
+        double totalCarbsG   = 0.0;
+        double totalFatG     = 0.0;
+
+        for (CreateFoodEntryRequest entryReq : request.getEntries()) {
+            FoodCatalog food = catalogMap.get(entryReq.getFoodCatalogId());
+            double factor = entryReq.getServingG() / 100.0;
+
+            double calories = round(food.getCaloriesPer100g() * factor);
+            double proteinG = round(orZero(food.getProteinPer100g()) * factor);
+            double carbsG   = round(orZero(food.getCarbsPer100g()) * factor);
+            double fatG     = round(orZero(food.getFatPer100g()) * factor);
+
+            totalCalories += calories;
+            totalProteinG += proteinG;
+            totalCarbsG   += carbsG;
+            totalFatG     += fatG;
+
+            newEntries.add(FoodEntry.builder()
+                    .dietLogId(logId)
+                    .foodCatalogId(entryReq.getFoodCatalogId())
+                    .servingG(entryReq.getServingG())
+                    .calories(calories)
+                    .proteinG(proteinG)
+                    .carbsG(carbsG)
+                    .fatG(fatG)
+                    .notes(entryReq.getNotes())
+                    .build());
+        }
+
+        foodEntryRepository.saveAll(newEntries);
+        request.getEntries().stream()
+                .map(CreateFoodEntryRequest::getFoodCatalogId)
+                .forEach(foodCatalogRepository::incrementUsageCount);
+
+        log.update(
+                request.getMealType(),
+                request.getLogDate(),
+                request.getNotes(),
+                round(totalCalories),
+                round(totalProteinG),
+                round(totalCarbsG),
+                round(totalFatG)
+        );
+        dietLogRepository.save(log);
+
+        return CreateDietLogResponse.builder()
+                .dietLogId(log.getId())
+                .logDate(log.getLogDate())
+                .mealType(log.getMealType())
+                .entryCount(newEntries.size())
+                .totalCalories(log.getTotalCalories())
+                .totalProteinG(log.getTotalProteinG())
+                .totalCarbsG(log.getTotalCarbsG())
+                .totalFatG(log.getTotalFatG())
+                .build();
+    }
+
     // ─────────────────────────── 식사 기록 삭제 (소프트) ───────────────────────────
 
     @Transactional
