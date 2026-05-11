@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>HealthCare</string>
+	<string>VITALITY</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,10 +22,18 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>진행 사진을 찍기 위해 카메라 접근 권한이 필요합니다.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>건강 데이터를 읽어 운동 및 식단 목표 달성을 지원합니다.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>운동 및 식단 기록을 건강 앱에 저장합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>진행 사진을 저장하기 위해 사진 라이브러리 접근 권한이 필요합니다.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>주간 건강 요약 및 목표 달성 알림을 받습니다.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -35,6 +43,8 @@
 		<key>UIColorName</key>
 		<string>SplashBackground</string>
 	</dict>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
