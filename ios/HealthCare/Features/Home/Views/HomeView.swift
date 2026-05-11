@@ -138,6 +138,15 @@ private struct DashboardHeaderBar: View {
 
 private struct HeaderIconButton: View {
     let system: String
+
+    private var accessibilityLabel: String {
+        switch system {
+        case "bell":               return "알림"
+        case "person.crop.circle": return "프로필"
+        default:                   return system
+        }
+    }
+
     var body: some View {
         Image(systemName: system)
             .font(.system(size: 14, weight: .semibold))
@@ -149,6 +158,7 @@ private struct HeaderIconButton: View {
                     .overlay(Circle().stroke(Color.brandDusk.opacity(0.07), lineWidth: 1))
             )
             .elevation(.low)
+            .accessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -192,6 +202,14 @@ private struct MealsSectionCompact: View {
 private struct MealCard: View {
     let log: DietLogSummary
 
+    private var accessibilityDescription: String {
+        var parts = ["\(log.mealType.displayName): \(String(format: "%.0f", log.totalCalories ?? 0)) kcal"]
+        if let p = log.totalProteinG, let c = log.totalCarbsG {
+            parts.append("단백질 \(String(format: "%.0f", p))g, 탄수화물 \(String(format: "%.0f", c))g")
+        }
+        return parts.joined(separator: ", ")
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topLeading) {
@@ -201,6 +219,7 @@ private struct MealCard: View {
                     .font(.system(size: 52))
                     .offset(x: 16, y: 14)
                     .rotationEffect(.degrees(-4))
+                    .accessibilityHidden(true)
             }
             .frame(width: 140, height: 114)
             .overlay(alignment: .topTrailing) {
@@ -229,6 +248,8 @@ private struct MealCard: View {
             .frame(width: 140, alignment: .leading)
             .padding(.top, 9)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
     }
 }
 
@@ -340,6 +361,7 @@ private struct WorkoutCompactCard: View {
                         .font(.system(size: 16, weight: .heavy))
                         .foregroundStyle(Color.brandDusk)
                 }
+                .accessibilityHidden(true)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 18)
@@ -353,7 +375,10 @@ private struct WorkoutChip: View {
     let icon: String; let value: String; let unit: String
     var body: some View {
         HStack(spacing: 5) {
-            Image(systemName: icon).font(.system(size: 9, weight: .bold)).foregroundStyle(Color.brandAccentGlow)
+            Image(systemName: icon)
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(Color.brandAccentGlow)
+                .accessibilityHidden(true)
             HStack(alignment: .lastTextBaseline, spacing: 3) {
                 Text(value).font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(.white)
                 Text(unit).font(.system(size: 9, weight: .medium)).foregroundStyle(.white.opacity(0.6))

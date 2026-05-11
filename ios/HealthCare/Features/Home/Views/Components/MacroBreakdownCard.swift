@@ -106,7 +106,10 @@ private struct MacroRow: View {
                 }
             }
             .frame(height: 6)
+            .accessibilityHidden(true)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(label): \(String(format: "%.0f", current))\(unit) / \(Int(goal))\(unit)")
     }
 }
 

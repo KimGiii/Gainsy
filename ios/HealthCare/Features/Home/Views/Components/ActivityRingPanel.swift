@@ -116,6 +116,7 @@ struct ActivityRingPanel: View {
             Image(systemName: icon)
                 .font(.system(size: 11, weight: .bold))
                 .foregroundStyle(color)
+                .accessibilityHidden(true)
             HStack(alignment: .lastTextBaseline, spacing: 3) {
                 Text(value)
                     .font(.system(size: 15, weight: .heavy, design: .rounded))

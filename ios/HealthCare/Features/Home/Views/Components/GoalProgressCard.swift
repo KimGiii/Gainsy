@@ -67,6 +67,7 @@ private struct ActiveGoalContent: View {
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .bold))
                 .foregroundStyle(Color.brandDusk.opacity(0.30))
+                .accessibilityHidden(true)
         }
         .padding(18)
         .background(
@@ -78,6 +79,8 @@ private struct ActiveGoalContent: View {
                 )
         )
         .elevation(.low)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("목표: \(goal.goalType.displayName), \(Int(goal.progressRatio * 100))% 완료\(goal.daysRemaining.map { ", \($0)일 남음" } ?? "")")
     }
 }
 
@@ -94,6 +97,7 @@ private struct EmptyGoalContent: View {
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(Color.brandAccentGlow)
             }
+            .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
                 Text("목표 없음")
                     .font(.system(size: 15, weight: .bold))
@@ -106,6 +110,7 @@ private struct EmptyGoalContent: View {
             Image(systemName: "plus.circle.fill")
                 .font(.system(size: 24))
                 .foregroundStyle(Color.brandAccent)
+                .accessibilityHidden(true)
         }
         .padding(18)
         .background(

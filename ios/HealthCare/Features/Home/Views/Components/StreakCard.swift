@@ -27,6 +27,8 @@ struct StreakCard: View {
                     .foregroundStyle(Color.textSecondary)
                     .padding(.bottom, 4)
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("연속 기록: \(streakDays)일")
 
             // 7일 도트 캘린더
             HStack(spacing: 6) {
@@ -37,6 +39,7 @@ struct StreakCard: View {
                     )
                 }
             }
+            .accessibilityHidden(true)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
