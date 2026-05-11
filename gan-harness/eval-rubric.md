@@ -1,78 +1,78 @@
-# 디자인 평가 루브릭
+# Design Evaluation Rubric — VITALITY Dashboard
 
-## 가중치 배분
+## Scoring Weights
 
-| 항목 | 가중치 | 설명 |
-|------|--------|------|
-| Design Quality | 0.35 | 시각적 완성도, 계층 구조, 색상/타이포 사용 |
-| Originality | 0.30 | 템플릿 탈피, 창의적 레이아웃, 독특한 인터랙션 |
-| Craft | 0.25 | 코드 품질, SwiftUI 관용구, 일관성 |
-| Functionality | 0.10 | 기능 보존, 데이터 흐름 유지 |
+| Dimension | Weight | Description |
+|-----------|--------|-------------|
+| Design Quality | 0.35 | Visual polish, hierarchy, color/type use, depth |
+| Originality | 0.30 | Template escape, creative layout, unexpected moves |
+| Craft | 0.25 | HTML/CSS quality, SVG correctness, token use |
+| Functionality | 0.10 | All spec sections present, data plausible, scrollable |
 
-## 세부 평가 기준
+## Scoring Scale (each dimension 0–10)
 
-### Design Quality (0–10점)
-- **9–10**: 앱스토어 피처드/어워드 수준. 모든 요소가 의도적이고 조화롭다.
-- **7–8**: 프로페셔널한 완성도. 명확한 계층, 일관된 간격, 강한 브랜드 아이덴티티.
-- **5–6**: 평균적. 기능은 하지만 특별하지 않다.
-- **3–4**: 기본 템플릿에서 크게 벗어나지 않음.
-- **1–2**: 엉성하거나 일관성 없음.
+### Design Quality (weight 0.35)
+- **9–10**: App Store "App of the Day" worthy. Every element deliberate, harmonious depth.
+- **7–8**: Professional finish. Clear hierarchy, brand identity strong, spacing rhythmic.
+- **5–6**: Looks okay but generic.
+- **3–4**: Barely above default Bootstrap.
+- **1–2**: Inconsistent, cluttered, or unfinished.
 
-체크리스트:
-- [ ] 타이포그래피 계층이 명확한가? (크기 대비 최소 1.4×)
-- [ ] 간격이 의도적인가? (균일한 패딩 vs 리듬감 있는 패딩)
-- [ ] 색상이 의미론적으로 사용되는가?
-- [ ] 빈 상태(empty state)가 설계되어 있는가?
-- [ ] 카드/컴포넌트에 깊이감(depth)이 있는가?
-- [ ] 브랜드 팔레트가 강하게 표현되는가?
+Checklist:
+- [ ] Hero has genuine layered depth (≥3 layers: gradient + aurora glows + glass)?
+- [ ] Typography scale shows clear contrast (hero numeral vs body vs caption)?
+- [ ] Bone paper body overlaps dark hero with pull-up card effect?
+- [ ] Rings use actual SVG gradient fills (not CSS border tricks)?
+- [ ] Spacing varies — asymmetric rhythm, not identical padding everywhere?
+- [ ] Color is semantic — mint for progress/positive, amber for activity, bone for calm?
+- [ ] Empty meal slots have designed empty states (not just blank)?
 
-### Originality (0–10점)
-- **9–10**: "이런 헬스앱 처음 봤다" 수준의 창의적 솔루션.
-- **7–8**: 일반적인 패턴을 영리하게 비틀었다.
-- **5–6**: 새로운 요소가 있지만 전체적으로 익숙하다.
-- **3–4**: 대부분 표준 컴포넌트.
-- **1–2**: 완전히 템플릿.
+### Originality (weight 0.30)
+- **9–10**: "I've never seen a health dashboard look like this." Unexpected creative leaps.
+- **7–8**: Familiar patterns twisted intelligently.
+- **5–6**: Some fresh element but mostly predictable.
+- **3–4**: Standard card-grid health dashboard.
+- **1–2**: Full template.
 
-체크리스트:
-- [ ] 기본 SwiftUI/HIG 컴포넌트를 그대로 쓰지 않는가?
-- [ ] 레이아웃이 예상을 벗어나는 순간이 있는가?
-- [ ] 데이터 시각화가 단순 진행 바 이상인가?
-- [ ] 전환/애니메이션이 의도적으로 설계되었는가?
-- [ ] 헬스 앱의 클리셰(파란 고리, 심박수 선)를 피했는가?
+Checklist:
+- [ ] Avoids blue rings (Apple Watch cliché)?
+- [ ] Hero aurora effect creates genuine atmosphere?
+- [ ] Macro strip is a designed component, not just text?
+- [ ] Sparkline is real SVG, not a fake bar?
+- [ ] Quick-action row has personality (not just 3 identical buttons)?
+- [ ] Tab bar has a designed active state (not just an underline)?
 
-### Craft (0–10점)
-- **9–10**: SwiftUI 베스트 프랙티스 완벽 준수. 재사용 가능한 추상화.
-- **7–8**: 깔끔하고 읽기 쉬운 코드. 적절한 ViewBuilder 사용.
-- **5–6**: 작동하지만 중복이 있거나 구조가 아쉽다.
-- **3–4**: 매직 넘버, 하드코딩, 중복 코드.
-- **1–2**: 컴파일이나 기능에 문제가 있을 수 있다.
+### Craft (weight 0.25)
+- **9–10**: CSS custom properties for all tokens, semantic HTML, SVGs correct, no magic numbers.
+- **7–8**: Clean code, consistent token use, only minor shortcuts.
+- **5–6**: Works but has hardcoded values or repetition.
+- **3–4**: Lots of magic numbers, inline styles everywhere.
+- **1–2**: Broken layout or incorrect SVG math.
 
-체크리스트:
-- [ ] 디자인 토큰(Colors, Typography)을 사용하는가?
-- [ ] ViewBuilder로 컴포넌트가 분리되어 있는가?
-- [ ] 매직 넘버 없이 상수 사용?
-- [ ] SwiftUI 생명주기(.task, .onAppear) 적절히 사용?
-- [ ] Swift 6 strict concurrency 호환?
+Checklist:
+- [ ] CSS variables defined for all brand colors?
+- [ ] SVG ring math correct (circumference = 2π×r, dashoffset = circumference × (1 - progress))?
+- [ ] Sparkline polyline points match the data array?
+- [ ] Mobile viewport meta tag present?
+- [ ] Bottom tab bar is fixed (not static)?
+- [ ] No Lorem ipsum — all Korean content?
 
-### Functionality (0–10점)
-- **9–10**: 기존 기능 100% 보존, 데이터 바인딩 완벽.
-- **7–8**: 핵심 기능 보존, 사소한 것 누락.
-- **5–6**: 주요 기능 보존, 일부 상태 처리 누락.
-- **3–4**: 일부 기능 손상.
-- **1–2**: 빌드 실패 또는 큰 회귀.
+### Functionality (weight 0.10)
+- [ ] All 8 spec sections present?
+- [ ] Page scrolls (body content taller than viewport)?
+- [ ] Bottom tab stays fixed while scrolling?
+- [ ] Data is realistic (calorie math adds up roughly)?
 
-## 최종 점수 계산
-
+## Final Score Formula
 ```
 Score = (DesignQuality × 0.35) + (Originality × 0.30) + (Craft × 0.25) + (Functionality × 0.10)
 ```
+**Pass threshold: 7.5**
 
-**Pass threshold: 7.5점**
+## Evaluator Instructions
+1. Open `gan-harness/index.html` via Playwright screenshot — evaluate what you actually see
+2. Read the HTML/CSS source to check Craft dimension
+3. Ask yourself: "Would this win a design award at a developer conference?"
+4. Write structured feedback to `gan-harness/feedback-{N}.md` with specific line-level suggestions
+5. Never write "make it better" — write "change X on line Y to Z because..."
 
-## 평가자 지침
-
-Evaluator는 반드시:
-1. 각 파일의 코드를 **실제로 읽어서** 평가한다 — 설명만 보고 점수 주지 말 것
-2. "이 디자인이 디자인 어워드를 받을 수 있나?" 질문으로 Originality를 평가
-3. 구체적인 개선 피드백 제공 — "더 좋게 만들어라" 금지
-4. `gan-harness/feedback-N.md`에 구조화된 피드백 작성

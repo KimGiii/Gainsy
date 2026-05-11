@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=390, initial-scale=1, viewport-fit=cover" />
+<title>VITALITY — 오늘의 건강</title>
+<style>
+  :root {
+    --device-w: 390px;
+
+    --brand-primary: #0F3B24;
+    --brand-secondary: #2D6A4F;
+    --brand-accent: #52B788;
+    --brand-accent-deep: #3FA176;
+    --brand-accent-glow: #95E2B5;
+    --brand-sunrise: #F6C177;
+    --brand-sunrise-deep: #E8A85A;
+    --brand-sunrise-light: #FFD99B;
+    --brand-ember: #E07856;
+    --brand-ember-soft: #F0A07F;
+    --brand-dusk: #0B2A1C;
+    --brand-bone: #EFEAE0;
+    --brand-bone-deep: #E4DDCE;
+    --brand-bone-paper: #FFFDF7;
+    --brand-moss: #6FA287;
+    --ink: #1A1F1B;
+    --ink-soft: #4B5550;
+    --ink-mute: #8A8A7E;
+
+    --radius-card: 22px;
+    --radius-pill: 999px;
+
+    --shadow-glass: 0 1px 0 rgba(255,255,255,.18) inset, 0 8px 24px -10px rgba(0,0,0,.35);
+    --shadow-card:
+      0 1px 0 rgba(255,255,255,.6) inset,
+      0 18px 32px -22px color-mix(in oklab, var(--brand-primary) 25%, transparent),
+      0 2px 6px -2px color-mix(in oklab, var(--brand-primary) 8%, transparent);
+
+    --eyebrow-tracking: .22em;
+    --eyebrow-tracking-tight: .15em;
+    --display-serif: "Iowan Old Style", "Apple Garamond", "Georgia", "Times New Roman", serif;
+    --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Pretendard", "Noto Sans KR", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+  html, body {
+    background: #0a0f0c;
+    font-family: var(--ui);
+    color: var(--ink);
+  }
+
+  body {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+
+  .device {
+    width: var(--device-w);
+    min-height: 100vh;
+    background: var(--brand-bone);
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 110px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    padding: 56px 22px 76px;
+    color: #F2F5EF;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #1d4f33 0%, var(--brand-primary) 45%, var(--brand-dusk) 100%);
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .hero::before, .hero::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(2px);
+    z-index: 0;
+  }
+  .hero::before {
+    width: 360px; height: 360px;
+    right: -120px; top: -90px;
+    background: radial-gradient(closest-side, rgba(149,226,181,.55), rgba(82,183,136,.18) 55%, transparent 75%);
+  }
+  .hero::after {
+    width: 320px; height: 320px;
+    left: -110px; bottom: -120px;
+    background: radial-gradient(closest-side, rgba(246,193,119,.45), rgba(224,120,86,.18) 55%, transparent 75%);
+  }
+
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/></svg>");
+    opacity: .12;
+    mix-blend-mode: overlay;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .chrome {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    font-size: 13px;
+    letter-spacing: .02em;
+  }
+  .chrome .time { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .chrome .meta { display: flex; align-items: center; gap: 10px; opacity: .9; }
+  .chrome .dot { width:6px; height:6px; border-radius:50%; background: var(--brand-accent-glow); box-shadow: 0 0 8px var(--brand-accent-glow);}
+  .chrome .bell { font-size: 14px; }
+
+  .greeting {
+    position: relative; z-index: 2;
+    margin: 32px 4px 0;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: var(--eyebrow-tracking);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--brand-accent-glow);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 18px; height: 1px;
+    background: var(--brand-accent-glow);
+    opacity: .8;
+  }
+  .hello {
+    margin-top: 14px;
+    font-family: var(--display-serif);
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -.01em;
+  }
+  .hello em {
+    font-style: italic;
+    color: var(--brand-accent-glow);
+  }
+  .hello-sub {
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(242,245,239,.66);
+    line-height: 1.5;
+    max-width: 280px;
+  }
+
+  /* ---------- SNAPSHOT — bento layout with concentric rings ---------- */
+  .snapshot {
+    position: relative;
+    z-index: 2;
+    margin: 28px -4px 0 8px; /* off-grid editorial shift */
+    padding: 22px 18px 18px;
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+    border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    box-shadow: var(--shadow-glass);
+  }
+  .snapshot-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .snapshot-head .title {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: rgba(242,245,239,.92);
+  }
+  .snapshot-head .target {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: var(--eyebrow-tracking);
+    color: rgba(149,226,181,.85);
+  }
+
+  /* Concentric ring composition: outer = calorie, inner = activity */
+  .ring-stage {
+    display: grid;
+    grid-template-columns: 168px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+  .ring-stack {
+    position: relative;
+    width: 168px; height: 168px;
+  }
+  .ring-stack svg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+  }
+  .ring-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    pointer-events: none;
+  }
+  .ring-num {
+    font-family: var(--display-serif);
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-num-cap {
+    display: block;
+    font-family: var(--ui);
+    font-size: 9px;
+    letter-spacing: var(--eyebrow-tracking-tight);
+    text-transform: uppercase;
+    color: rgba(242,245,239,.55);
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  .ring-divider {
+    width: 28px; height: 1px;
+    margin: 9px auto 7px;
+    background: rgba(255,255,255,.22);
+  }
+  .ring-inner-num {
+    font-family: var(--display-serif);
+    font-size: 16px;
+    color: var(--brand-sunrise-light);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+  }
+  .ring-inner-num small {
+    font-family: var(--ui);
+    font-size: 9px;
+    color: rgba(255,217,155,.7);
+    letter-spacing: var(--eyebrow-tracking-tight);
+    text-transform: uppercase;
+    margin-left: 3px;
+    font-weight: 500;
+  }
+
+  /* Ring legend — vertical stack, semantic color dots */
+  .ring-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .legend-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 14px;
+    position: relative;
+  }
+  .legend-item::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 6px;
+    width: 5px; height: 28px;
+    border-radius: 3px;
+  }
+  .legend-item.calorie::before {
+    background: linear-gradient(180deg, var(--brand-accent-glow), var(--brand-accent));
+  }
+  .legend-item.activity::before {
+    background: linear-gradient(180deg, var(--brand-sunrise-light), var(--brand-ember));
+  }
+  .legend-eyebrow {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: var(--eyebrow-tracking);
+    color: rgba(242,245,239,.55);
+    font-weight: 600;
+  }
+  .legend-val {
+    font-family: var(--display-serif);
+    font-size: 18px;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+  }
+  .legend-val .of {
+    font-family: var(--ui);
+    font-size: 11px;
+    color: rgba(242,245,239,.55);
+    margin-left: 3px;
+    letter-spacing: 0;
+  }
+  .legend-pct {
+    font-size: 10px;
+    color: var(--brand-accent-glow);
+    letter-spacing: var(--eyebrow-tracking-tight);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 1px;
+  }
+  .legend-item.activity .legend-pct { color: var(--brand-sunrise-light); }
+
+  /* macro strip */
+  .macros {
+    margin-top: 16px;
+    padding: 14px 14px 12px;
+    border-radius: 16px;
+    background: rgba(11,42,28,.42);
+    border: 1px solid rgba(255,255,255,.10);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .macro { display: flex; flex-direction: column; gap: 6px; }
+  .macro-top { display: flex; align-items: baseline; justify-content: space-between; }
+  .macro-name {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: var(--eyebrow-tracking);
+    color: rgba(242,245,239,.55);
+  }
+  .macro-val {
+    font-family: var(--display-serif);
+    font-size: 15px;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .macro-val span { font-size: 10px; color: rgba(242,245,239,.5); margin-left: 2px; }
+  .macro-bar {
+    position: relative;
+    height: 3px; border-radius: 3px;
+    background: rgba(255,255,255,.10);
+    overflow: hidden;
+  }
+  .macro-bar i {
+    position: absolute; left:0; top:0; bottom:0;
+    border-radius: 3px;
+  }
+  .macro.p i { width: 65%; background: linear-gradient(90deg, var(--brand-accent), var(--brand-accent-glow)); }
+  .macro.c i { width: 73%; background: linear-gradient(90deg, var(--brand-sunrise), var(--brand-sunrise-light)); }
+  .macro.f i { width: 58%; background: linear-gradient(90deg, var(--brand-ember), var(--brand-ember-soft)); }
+
+  /* ---------- BONE BODY ---------- */
+  .body {
+    position: relative;
+    margin-top: -36px;
+    background: var(--brand-bone);
+    border-radius: 28px 28px 0 0;
+    padding: 30px 20px 24px;
+    z-index: 3;
+    box-shadow: 0 -10px 30px -16px rgba(11,42,28,.45);
+  }
+  .body::before {
+    content: "";
+    position: absolute;
+    top: 12px; left: 50%;
+    width: 38px; height: 4px;
+    border-radius: 4px;
+    background: rgba(15,59,36,.12);
+    transform: translateX(-50%);
+  }
+
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 6px 4px 12px;
+  }
+  .section-head--spaced { margin-top: 22px; }
+  .section-head h2 {
+    font-family: var(--display-serif);
+    font-weight: 400;
+    font-size: 21px;
+    letter-spacing: -.01em;
+    color: var(--brand-primary);
+  }
+  .section-head .more {
+    font-size: 11px;
+    letter-spacing: var(--eyebrow-tracking);
+    text-transform: uppercase;
+    color: var(--brand-secondary);
+    text-decoration: none;
+  }
+
+  .card {
+    background: var(--brand-bone-paper);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(15,59,36,.06);
+  }
+
+  /* meals card */
+  .meals { padding: 6px 4px; }
+  .meal {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px dashed rgba(15,59,36,.08);
+  }
+  .meal:last-child { border-bottom: none; }
+  .meal-emoji {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, #F4EFE2, #E8E0CC);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 2px 6px -3px rgba(15,59,36,.18);
+  }
+  .meal.empty .meal-emoji {
+    background: repeating-linear-gradient(135deg, rgba(15,59,36,.04) 0 6px, transparent 6px 12px), #FBF8F0;
+    border: 1px dashed rgba(15,59,36,.18);
+    box-shadow: none;
+    color: rgba(15,59,36,.35);
+  }
+  .meal-info { display: flex; flex-direction: column; gap: 3px; min-width:0; }
+  .meal-slot {
+    font-size: 10.5px;
+    letter-spacing: var(--eyebrow-tracking);
+    text-transform: uppercase;
+    color: var(--brand-secondary);
+    font-weight: 600;
+  }
+  .meal.empty .meal-slot { color: var(--ink-mute); }
+  .meal-name {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .meal.empty .meal-name { color: var(--ink-mute); font-weight: 400; font-style: italic; }
+  .kcal {
+    font-family: var(--display-serif);
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--brand-primary);
+    background: rgba(82,183,136,.12);
+    padding: 6px 10px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(82,183,136,.25);
+    white-space: nowrap;
+  }
+  .kcal small { font-family: var(--ui); font-size: 9.5px; opacity: .7; margin-left: 2px; }
+  .kcal.add {
+    color: var(--ink-mute);
+    background: transparent;
+    border: 1px dashed rgba(15,59,36,.18);
+    font-family: var(--ui);
+    font-size: 11.5px;
+  }
+
+  .meal-totals {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px 14px;
+    border-top: 1px solid rgba(15,59,36,.06);
+    background: linear-gradient(180deg, transparent, rgba(15,59,36,.02));
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+  }
+  .meal-totals .label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: var(--eyebrow-tracking);
+    color: var(--ink-mute);
+  }
+  .meal-totals .value {
+    font-family: var(--display-serif);
+    font-size: 16px;
+    color: var(--brand-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .meal-totals .value span { color: var(--ink-mute); font-size: 12px; }
+
+  /* ---------- BENTO: exercise (taller, wider) + trend (full-width below) ---------- */
+  .bento {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 12px;
+  }
+  .ex-card {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+    min-height: 220px;
+    padding: 18px 16px 18px;
+    background:
+      radial-gradient(120% 100% at 100% 0%, rgba(246,193,119,.35) 0%, transparent 55%),
+      linear-gradient(160deg, #fff5e2 0%, var(--brand-bone-paper) 60%);
+    border: 1px solid rgba(224,120,86,.18);
+    border-radius: var(--radius-card);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .ex-card::after {
+    content: "";
+    position: absolute;
+    right: -30px; bottom: -30px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(224,120,86,.22), transparent 70%);
+  }
+  .ex-eyebrow {
+    font-size: 10.5px; letter-spacing: var(--eyebrow-tracking); text-transform: uppercase;
+    color: var(--brand-ember); font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ex-eyebrow .pulse {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--brand-ember);
+    box-shadow: 0 0 0 4px rgba(224,120,86,.18);
+  }
+  .ex-title {
+    font-family: var(--display-serif);
+    font-size: 22px;
+    color: var(--brand-primary);
+    margin-top: 12px;
+    line-height: 1.1;
+    font-weight: 400;
+  }
+  .ex-detail {
+    margin-top: 8px;
+    font-size: 12px; color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .ex-meta {
+    margin-top: auto;
+    padding-top: 16px;
+    display: flex; gap: 14px;
+    align-items: baseline;
+  }
+  .ex-stat .n {
+    font-family: var(--display-serif);
+    font-size: 22px;
+    color: var(--brand-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+  }
+  .ex-stat .n .unit {
+    font-size: 11px;
+    font-family: var(--ui);
+    color: var(--ink-soft);
+    margin-left: 2px;
+    font-variant-numeric: normal;
+  }
+  .ex-stat .l {
+    font-size: 9.5px; letter-spacing: var(--eyebrow-tracking); text-transform: uppercase;
+    color: var(--ink-mute);
+    display: block; margin-top: 3px;
+    font-weight: 600;
+  }
+  .ex-divider { width:1px; align-self:stretch; background: rgba(15,59,36,.1); margin: 4px 0; }
+
+  /* compact trend tile (top-right of bento) */
+  .trend-tile {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    padding: 14px 14px 12px;
+    background: linear-gradient(180deg, var(--brand-bone-paper) 0%, #F6F0DF 100%);
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(111,162,135,.22);
+    display: flex; flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .trend-tile-eyebrow {
+    font-size: 9.5px; letter-spacing: var(--eyebrow-tracking); text-transform: uppercase;
+    color: var(--brand-secondary); font-weight: 600;
+  }
+  .trend-tile-num {
+    font-family: var(--display-serif);
+    font-size: 30px;
+    color: var(--brand-primary);
+    line-height: 1;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+    margin-top: 8px;
+  }
+  .trend-tile-num span {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-left: 3px;
+    font-family: var(--ui);
+  }
+  .trend-tile-chip {
+    margin-top: 8px;
+    align-self: flex-start;
+    font-size: 10px;
+    color: var(--brand-secondary);
+    background: rgba(82,183,136,.14);
+    border: 1px solid rgba(82,183,136,.3);
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: .01em;
+  }
+
+  /* full-width sparkline tile below */
+  .spark-tile {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    padding: 12px 14px 12px;
+    background: var(--brand-bone-paper);
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(15,59,36,.06);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+  }
+  .spark-tile-label {
+    font-size: 9px; letter-spacing: var(--eyebrow-tracking); text-transform: uppercase;
+    color: var(--ink-mute); font-weight: 600;
+  }
+  .spark { width: 100%; height: 56px; display:block; margin-top: 4px; }
+  .spark-foot {
+    display:flex; justify-content: space-between;
+    font-size: 9px; letter-spacing: var(--eyebrow-tracking-tight);
+    text-transform: uppercase; color: var(--ink-mute);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* quick actions */
+  .quick {
+    display: flex;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 0 2px;
+  }
+  .qbtn {
+    flex: 1;
+    padding: 14px 10px;
+    border-radius: 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    transition: transform .15s ease;
+    font-family: var(--ui);
+  }
+  .qbtn:active { transform: scale(.97); }
+  .qbtn .ico {
+    width: 30px; height: 30px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .qbtn.mint {
+    background: linear-gradient(160deg, var(--brand-accent) 0%, var(--brand-accent-deep) 100%);
+    color: #fff;
+    box-shadow: 0 8px 18px -10px rgba(82,183,136,.7), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .qbtn.mint .ico { background: rgba(255,255,255,.2); }
+  .qbtn.amber {
+    background: linear-gradient(160deg, var(--brand-sunrise) 0%, var(--brand-sunrise-deep) 100%);
+    color: #5a3a0d;
+    box-shadow: 0 8px 18px -10px rgba(246,193,119,.8), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .qbtn.amber .ico { background: rgba(255,255,255,.35); }
+  .qbtn.glass {
+    background: rgba(255,253,247,.7);
+    color: var(--brand-primary);
+    border: 1px solid rgba(15,59,36,.12);
+    backdrop-filter: blur(6px);
+  }
+  .qbtn.glass .ico { background: rgba(15,59,36,.06); }
+
+  /* tip strip */
+  .tip {
+    margin-top: 22px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: linear-gradient(100deg, rgba(15,59,36,.92), rgba(45,106,79,.92));
+    color: #f5f7f1;
+    display: flex; align-items: center; gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tip::before {
+    content: "";
+    position: absolute; right: -20px; top: -20px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(149,226,181,.45), transparent 70%);
+  }
+  .tip-icon {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    background: rgba(149,226,181,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .tip-body {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .tip-body b { color: var(--brand-accent-glow); font-weight: 600; }
+
+  /* ---------- TAB BAR ---------- */
+  .tabs {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--device-w);
+    padding: 10px 14px calc(20px + env(safe-area-inset-bottom));
+    background: rgba(255,253,247,.78);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border-top: 1px solid rgba(15,59,36,.08);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    z-index: 50;
+  }
+  .tab {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: .02em;
+    padding: 6px 0;
+    position: relative;
+    text-decoration: none;
+  }
+  .tab .ico {
+    font-size: 18px;
+    width: 38px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    transition: background .2s ease;
+  }
+  .tab.active { color: var(--brand-primary); font-weight: 600; }
+  .tab.active .ico {
+    background: linear-gradient(160deg, rgba(82,183,136,.22), rgba(149,226,181,.4));
+    color: var(--brand-primary);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .tab.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 22px; height: 3px;
+    border-radius: 3px;
+    background: var(--brand-accent);
+  }
+
+  .signature {
+    text-align: center;
+    margin-top: 26px;
+    font-size: 10px;
+    letter-spacing: var(--eyebrow-tracking);
+    text-transform: uppercase;
+    color: rgba(15,59,36,.32);
+  }
+  .signature b {
+    font-family: var(--display-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: .05em;
+    color: rgba(15,59,36,.55);
+  }
+</style>
+</head>
+<body>
+<main class="device" role="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-label="오늘의 요약">
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="chrome" aria-label="상태 표시줄">
+      <span class="time">9:41</span>
+      <span class="meta">
+        <span class="dot" aria-hidden="true"></span>
+        <span>오늘의 컨디션 · 양호</span>
+        <span class="bell" aria-hidden="true">🔔</span>
+      </span>
+    </div>
+
+    <header class="greeting">
+      <span class="eyebrow">5월 8일 · 목요일</span>
+      <h1 class="hello">안녕하세요,<br/><em>김민준</em> 님 👋</h1>
+      <p class="hello-sub">목표까지 <b>4.6kg</b> 남았어요. 오늘은 단백질 한 끼 더 채우면 완벽해요.</p>
+    </header>
+
+    <!-- Snapshot glass panel — concentric rings -->
+    <section class="snapshot" aria-label="오늘의 활력 지표">
+      <div class="snapshot-head">
+        <span class="title">오늘의 활력</span>
+        <span class="target">목표 -5kg · D+12</span>
+      </div>
+
+      <!--
+        Concentric ring math:
+          Outer (calorie):  r=64, C = 2π·64 = 402.12, progress = 1420/2000 = 0.71, offset = 402.12·0.29 = 116.62
+          Inner (activity): r=46, C = 2π·46 = 289.03, progress = 45/60   = 0.75, offset = 289.03·0.25 =  72.26
+        viewBox 168×168, center (84, 84)
+      -->
+      <div class="ring-stage">
+        <div class="ring-stack" role="img" aria-label="칼로리 1420 / 2000, 활동 45 / 60분">
+          <svg viewBox="0 0 168 168" aria-hidden="true">
+            <defs>
+              <linearGradient id="gMint" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#95E2B5"/>
+                <stop offset="100%" stop-color="#52B788"/>
+              </linearGradient>
+              <linearGradient id="gSun" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FFE0A8"/>
+                <stop offset="55%" stop-color="#F6C177"/>
+                <stop offset="100%" stop-color="#E07856"/>
+              </linearGradient>
+            </defs>
+
+            <!-- outer track + calorie ring -->
+            <circle cx="84" cy="84" r="64" fill="none"
+                    stroke="rgba(255,255,255,.10)" stroke-width="10"/>
+            <circle cx="84" cy="84" r="64" fill="none"
+                    stroke="url(#gMint)" stroke-width="10" stroke-linecap="round"
+                    stroke-dasharray="402.12" stroke-dashoffset="116.62"/>
+
+            <!-- inner track + activity ring -->
+            <circle cx="84" cy="84" r="46" fill="none"
+                    stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+            <circle cx="84" cy="84" r="46" fill="none"
+                    stroke="url(#gSun)" stroke-width="10" stroke-linecap="round"
+                    stroke-dasharray="289.03" stroke-dashoffset="72.26"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num">1,420</div>
+            <span class="ring-num-cap">/ 2,000 KCAL</span>
+            <div class="ring-divider" aria-hidden="true"></div>
+            <div class="ring-inner-num">45<small>/ 60 MIN</small></div>
+          </div>
+        </div>
+
+        <div class="ring-legend" aria-hidden="true">
+          <div class="legend-item calorie">
+            <span class="legend-eyebrow">섭취 칼로리</span>
+            <span class="legend-val">1,420<span class="of">/ 2,000</span></span>
+            <span class="legend-pct">71% · 580 남음</span>
+          </div>
+          <div class="legend-item activity">
+            <span class="legend-eyebrow">활동 시간</span>
+            <span class="legend-val">45<span class="of">/ 60분</span></span>
+            <span class="legend-pct">75% · 15분 더</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- macro strip -->
+      <div class="macros" aria-label="대량영양소">
+        <div class="macro p">
+          <div class="macro-top">
+            <span class="macro-name">단백질</span>
+            <span class="macro-val">98<span>g</span></span>
+          </div>
+          <div class="macro-bar"><i></i></div>
+        </div>
+        <div class="macro c">
+          <div class="macro-top">
+            <span class="macro-name">탄수화물</span>
+            <span class="macro-val">165<span>g</span></span>
+          </div>
+          <div class="macro-bar"><i></i></div>
+        </div>
+        <div class="macro f">
+          <div class="macro-top">
+            <span class="macro-name">지방</span>
+            <span class="macro-val">42<span>g</span></span>
+          </div>
+          <div class="macro-bar"><i></i></div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ============ BONE BODY ============ -->
+  <section class="body">
+
+    <header class="section-head">
+      <h2>오늘의 식단</h2>
+      <a href="#" class="more">전체 보기 →</a>
+    </header>
+
+    <article class="card">
+      <div class="meals">
+        <div class="meal">
+          <div class="meal-emoji" aria-hidden="true">🥣</div>
+          <div class="meal-info">
+            <span class="meal-slot">아침 · 08:20</span>
+            <span class="meal-name">귀리죽 + 삶은달걀 2개</span>
+          </div>
+          <span class="kcal">380<small>kcal</small></span>
+        </div>
+        <div class="meal">
+          <div class="meal-emoji" aria-hidden="true">🥗</div>
+          <div class="meal-info">
+            <span class="meal-slot">점심 · 12:45</span>
+            <span class="meal-name">닭가슴살 샐러드 + 통밀빵</span>
+          </div>
+          <span class="kcal">520<small>kcal</small></span>
+        </div>
+        <div class="meal empty">
+          <div class="meal-emoji" aria-hidden="true">＋</div>
+          <div class="meal-info">
+            <span class="meal-slot">저녁</span>
+            <span class="meal-name">아직 기록되지 않았어요</span>
+          </div>
+          <span class="kcal add">기록하기</span>
+        </div>
+        <div class="meal empty">
+          <div class="meal-emoji" aria-hidden="true">＋</div>
+          <div class="meal-info">
+            <span class="meal-slot">간식</span>
+            <span class="meal-name">아몬드 한 줌 어떠세요?</span>
+          </div>
+          <span class="kcal add">기록하기</span>
+        </div>
+      </div>
+      <div class="meal-totals">
+        <span class="label">합계</span>
+        <span class="value">900 <span>/ 2,000 kcal</span></span>
+      </div>
+    </article>
+
+    <!-- Bento: tall exercise card | trend tile + sparkline tile -->
+    <header class="section-head section-head--spaced">
+      <h2>오늘의 활동</h2>
+      <a href="#" class="more">상세 →</a>
+    </header>
+
+    <div class="bento">
+      <article class="ex-card">
+        <span class="ex-eyebrow"><span class="pulse"></span>오늘 완료 · 18:30</span>
+        <h3 class="ex-title">상체 루틴<br/>3 sets · 9 reps</h3>
+        <p class="ex-detail">벤치프레스 3×10<br/>덤벨 로우 3×12<br/>숄더프레스 3×10</p>
+        <div class="ex-meta">
+          <div class="ex-stat">
+            <span class="n">42<span class="unit">분</span></span>
+            <span class="l">운동 시간</span>
+          </div>
+          <div class="ex-divider"></div>
+          <div class="ex-stat">
+            <span class="n">320</span>
+            <span class="l">소모 KCAL</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="trend-tile">
+        <span class="trend-tile-eyebrow">체중</span>
+        <div class="trend-tile-num">72.4<span>kg</span></div>
+        <span class="trend-tile-chip">▼ 0.8kg · 7일</span>
+      </article>
+
+      <article class="spark-tile">
+        <span class="spark-tile-label">7일 추이</span>
+        <!--
+          Sparkline (7 points):
+          data = [73.2, 73.0, 72.9, 72.7, 72.6, 72.5, 72.4]
+          x = 8 + i*26  (i=0..6) → 8, 34, 60, 86, 112, 138, 164
+          y = 6 + (1 - (v-72.4)/0.8) * 36
+            → (8,6) (34,15) (60,21) (86,30) (112,34.5) (138,38) (164,42)
+        -->
+        <svg class="spark" viewBox="0 0 172 50" preserveAspectRatio="xMidYMid meet" aria-label="7일간 체중 추이">
+          <defs>
+            <linearGradient id="gSparkLine" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#6FA287"/>
+              <stop offset="100%" stop-color="#52B788"/>
+            </linearGradient>
+            <linearGradient id="gSparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#52B788" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#52B788" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="8" y1="46" x2="164" y2="46" stroke="rgba(15,59,36,.08)" stroke-dasharray="2 3"/>
+          <polygon
+            fill="url(#gSparkFill)"
+            points="8,6 34,15 60,21 86,30 112,34.5 138,38 164,42 164,50 8,50"/>
+          <polyline
+            fill="none"
+            stroke="url(#gSparkLine)"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            points="8,6 34,15 60,21 86,30 112,34.5 138,38 164,42"/>
+          <circle cx="164" cy="42" r="9" fill="#52B788" opacity=".15"/>
+          <circle cx="164" cy="42" r="3.6" fill="#fff" stroke="#52B788" stroke-width="2"/>
+        </svg>
+        <div class="spark-foot">
+          <span>5/2</span><span>오늘</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="quick" role="group" aria-label="빠른 기록">
+      <button class="qbtn mint" type="button">
+        <span class="ico" aria-hidden="true">🍽️</span>
+        식단 기록
+      </button>
+      <button class="qbtn amber" type="button">
+        <span class="ico" aria-hidden="true">🏋️</span>
+        운동 기록
+      </button>
+      <button class="qbtn glass" type="button">
+        <span class="ico" aria-hidden="true">🤖</span>
+        AI 추정
+      </button>
+    </div>
+
+    <!-- Coach tip -->
+    <div class="tip" role="note">
+      <div class="tip-icon" aria-hidden="true">🌿</div>
+      <div class="tip-body">
+        <b>비탈리티 코치</b> · 단백질 섭취가 <b>훌륭</b>해요. 저녁엔 <b>가벼운 채소 위주</b>로 마무리해 보세요.
+      </div>
+    </div>
+
+    <p class="signature">— curated for <b>김민준</b> · vitality —</p>
+  </section>
+
+  <!-- ============ TAB BAR ============ -->
+  <nav class="tabs" aria-label="주요 메뉴">
+    <a class="tab active" href="#" aria-current="page">
+      <span class="ico" aria-hidden="true">🏠</span>홈
+    </a>
+    <a class="tab" href="#"><span class="ico" aria-hidden="true">📝</span>기록</a>
+    <a class="tab" href="#"><span class="ico" aria-hidden="true">🔍</span>탐색</a>
+    <a class="tab" href="#"><span class="ico" aria-hidden="true">📖</span>일기</a>
+    <a class="tab" href="#"><span class="ico" aria-hidden="true">👤</span>마이</a>
+  </nav>
+
+</main>
+</body>
+</html>
