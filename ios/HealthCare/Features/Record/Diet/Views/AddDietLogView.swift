@@ -16,6 +16,13 @@ struct AddDietLogView: View {
         self.onSaved = onSaved
     }
 
+    init(editing log: DietLogDetailResponse, onSaved: @escaping () -> Void) {
+        _viewModel = StateObject(
+            wrappedValue: AddDietLogViewModel(editing: log)
+        )
+        self.onSaved = onSaved
+    }
+
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -37,7 +44,7 @@ struct AddDietLogView: View {
                 }
                 saveButton
             }
-            .navigationTitle("식단 기록")
+            .navigationTitle(viewModel.editingLogId != nil ? "식단 수정" : "식단 기록")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

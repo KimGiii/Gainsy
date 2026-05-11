@@ -1,7 +1,7 @@
 import Foundation
 
 enum HTTPMethod: String {
-    case GET, POST, PATCH, DELETE
+    case GET, POST, PUT, PATCH, DELETE
 }
 
 enum APIEndpoint {
@@ -26,6 +26,7 @@ enum APIEndpoint {
 
     // Diet - Logs
     case createDietLog(body: Data)
+    case updateDietLog(id: Int, body: Data)
     case getDietLogs(from: String?, to: String?, page: Int, size: Int)
     case getDietLog(id: Int)
     case deleteDietLog(id: Int)
@@ -86,6 +87,7 @@ extension APIEndpoint {
         case .getExerciseCatalog, .createCustomExercise: return "/api/v1/exercise/catalog"
         case .createDietLog, .getDietLogs:       return "/api/v1/diet/logs"
         case .getDietLog(let id),
+             .updateDietLog(let id, _),
              .deleteDietLog(let id):             return "/api/v1/diet/logs/\(id)"
         case .initiateMealPhotoAnalysis:         return "/api/v1/diet/photo-analyses/initiate"
         case .analyzeMealPhoto(let id, _):       return "/api/v1/diet/photo-analyses/\(id)/analyze"
@@ -128,6 +130,8 @@ extension APIEndpoint {
             return .POST
         case .updateProfile, .updateGoal:
             return .PATCH
+        case .updateDietLog:
+            return .PUT
         case .deleteAccount, .deleteExerciseSession, .deleteDietLog,
              .deleteGoal, .deleteBodyMeasurement, .deleteProgressPhoto:
             return .DELETE
@@ -141,7 +145,7 @@ extension APIEndpoint {
         case .register(let b), .login(let b), .refreshToken(let b),
              .updateProfile(let b),
              .createExerciseSession(let b),
-             .createDietLog(let b), .initiateMealPhotoAnalysis(let b),
+             .createDietLog(let b), .updateDietLog(_, let b), .initiateMealPhotoAnalysis(let b),
              .analyzeMealPhoto(_, let b), .confirmMealPhotoAnalysis(_, let b),
              .importExternalFood(let b),
              .createBodyMeasurement(let b), .initiatePhotoUpload(let b), .registerProgressPhoto(let b),

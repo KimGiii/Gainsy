@@ -47,6 +47,8 @@ final class AddDietLogViewModel: ObservableObject {
     @Published var photoAnalysisId: Int?
     @Published var photoPreviewURL: String?
 
+    private(set) var editingLogId: Int?
+
     private let debounceDuration: Duration
     private var searchDebounceTask: Task<Void, Never>?
     private var searchTask: Task<Void, Never>?
@@ -67,7 +69,6 @@ final class AddDietLogViewModel: ObservableObject {
     init(initialDate: Date = Date(), debounceDuration: Duration = .milliseconds(500)) {
         self.debounceDuration = debounceDuration
         logDate = dateFormatter.string(from: initialDate)
-        // 현재 시간에 따라 기본 식사 타입 설정
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
         case 6..<10:  selectedMealType = .BREAKFAST
@@ -75,6 +76,15 @@ final class AddDietLogViewModel: ObservableObject {
         case 14..<20: selectedMealType = .DINNER
         default:      selectedMealType = .SNACK
         }
+    }
+
+    init(editing log: DietLogDetailResponse, debounceDuration: Duration = .milliseconds(500)) {
+        self.debounceDuration = debounceDuration
+        self.editingLogId     = log.dietLogId
+        self.logDate          = log.logDate
+        self.selectedMealType = log.mealType
+        self.notes            = log.notes ?? ""
+        self.draftEntries     = log.entries.map(DraftFoodEntry.init(existingEntry:))
     }
 
     var canSave: Bool {
@@ -476,15 +486,25 @@ final class AddDietLogViewModel: ObservableObject {
                         notes: $0.notes.isEmpty ? nil : $0.notes
                     )
                 }
-                let request = CreateDietLogRequest(
-                    logDate: logDate,
-                    mealType: selectedMealType.rawValue,
-                    entries: entries,
-                    notes: notes.isEmpty ? nil : notes
-                )
-                let encoder = JSONEncoder()
-                let body = try encoder.encode(request)
-                let _: CreateDietLogResponse = try await apiClient.request(.createDietLog(body: body))
+                if let logId = editingLogId {
+                    let request = UpdateDietLogRequest(
+                        logDate: logDate,
+                        mealType: selectedMealType.rawValue,
+                        entries: entries,
+                        notes: notes.isEmpty ? nil : notes
+                    )
+                    let body = try JSONEncoder().encode(request)
+                    let _: CreateDietLogResponse = try await apiClient.request(.updateDietLog(id: logId, body: body))
+                } else {
+                    let request = CreateDietLogRequest(
+                        logDate: logDate,
+                        mealType: selectedMealType.rawValue,
+                        entries: entries,
+                        notes: notes.isEmpty ? nil : notes
+                    )
+                    let body = try JSONEncoder().encode(request)
+                    let _: CreateDietLogResponse = try await apiClient.request(.createDietLog(body: body))
+                }
             }
             onSuccess()
         } catch let error as APIError {

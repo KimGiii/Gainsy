@@ -31,6 +31,7 @@ struct DietLogDetailView: View {
     @EnvironmentObject private var container: AppContainer
     @StateObject private var viewModel = DietLogDetailViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var showingEdit = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -68,6 +69,31 @@ struct DietLogDetailView: View {
             }
             .padding(.leading, 16)
             .padding(.top, 56)
+        }
+        .overlay(alignment: .topTrailing) {
+            if viewModel.detail != nil {
+                Button {
+                    showingEdit = true
+                } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .background(Color.black.opacity(0.25))
+                        .clipShape(Circle())
+                }
+                .padding(.trailing, 16)
+                .padding(.top, 56)
+            }
+        }
+        .sheet(isPresented: $showingEdit) {
+            if let detail = viewModel.detail {
+                AddDietLogView(editing: detail) {
+                    showingEdit = false
+                    Task { await viewModel.load(id: logId, apiClient: container.apiClient) }
+                }
+                .environmentObject(container)
+            }
         }
         .task { await viewModel.load(id: logId, apiClient: container.apiClient) }
     }

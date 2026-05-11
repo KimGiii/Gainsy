@@ -204,6 +204,13 @@ struct CreateFoodEntryRequest: Codable {
     let notes: String?
 }
 
+struct UpdateDietLogRequest: Codable {
+    let logDate: String
+    let mealType: String
+    let entries: [CreateFoodEntryRequest]
+    let notes: String?
+}
+
 struct ImportFoodRequest: Codable {
     let source: String            // FoodDataSource.rawValue
     let externalId: String
@@ -324,6 +331,25 @@ struct DraftFoodEntry: Identifiable {
 }
 
 extension DraftFoodEntry {
+    init(existingEntry: FoodEntryResponse) {
+        let factor = existingEntry.servingG > 0 ? existingEntry.servingG / 100.0 : 1.0
+        self.food = FoodCatalogItem(
+            id: existingEntry.foodCatalogId,
+            name: existingEntry.foodName,
+            nameKo: existingEntry.foodNameKo,
+            category: existingEntry.category,
+            caloriesPer100g: (existingEntry.calories ?? 0) / factor,
+            proteinPer100g: (existingEntry.proteinG ?? 0) / factor,
+            carbsPer100g: (existingEntry.carbsG ?? 0) / factor,
+            fatPer100g: (existingEntry.fatG ?? 0) / factor,
+            custom: false,
+            usageCount: nil,
+            createdByUserId: nil
+        )
+        self.servingGText = String(format: "%.0f", existingEntry.servingG)
+        self.notes = existingEntry.notes ?? ""
+    }
+
     init(food: FoodCatalogItem) {
         self.food = food
         self.servingGText = "100"
@@ -372,7 +398,7 @@ struct AiNutritionEstimateResponse: Decodable {
     let fatPer100g: Double
     let confidence: Double
     let disclaimer: String
-    let isAiEstimated: Bool
+    let aiEstimated: Bool
 }
 
 struct AiNutritionEstimateRequest: Encodable {
