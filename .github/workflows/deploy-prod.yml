@@ -95,7 +95,7 @@ jobs:
             # green 헬스체크
             for i in $(seq 1 18); do
               STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-                http://localhost:${GREEN_PORT}/actuator/health || echo "000")
+                http://localhost:${GREEN_PORT}/actuator/health 2>/dev/null || true)
               if [ "$STATUS" = "200" ]; then
                 echo "Green (port $GREEN_PORT) healthy — swapping nginx"
 
@@ -132,7 +132,7 @@ jobs:
           script: |
             ACTIVE_PORT=$(cat /etc/healthcare/active_port 2>/dev/null || echo "8080")
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              http://localhost:${ACTIVE_PORT}/actuator/health || echo "000")
+              http://localhost:${ACTIVE_PORT}/actuator/health 2>/dev/null || true)
             if [ "$STATUS" != "200" ]; then
               echo "Production health check failed: $STATUS"
               exit 1
