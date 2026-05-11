@@ -8,15 +8,19 @@ struct RootView: View {
         ZStack {
             // ── Main Content ──────────────────────────────────────────
             Group {
-                switch authState.status {
-                case .unauthenticated:
-                    OnboardingView()
-                case .profileSetup:
-                    ProfileSetupView()
-                case .authenticated:
-                    MainTabView()
-                case .loading:
-                    Color(hex: "#F5F4EC").ignoresSafeArea()
+                if ProcessInfo.processInfo.arguments.contains("UI_TEST_LOGIN_SCREEN") {
+                    LoginView()
+                } else {
+                    switch authState.status {
+                    case .unauthenticated:
+                        OnboardingView()
+                    case .profileSetup:
+                        ProfileSetupView()
+                    case .authenticated:
+                        MainTabView()
+                    case .loading:
+                        Color(hex: "#F5F4EC").ignoresSafeArea()
+                    }
                 }
             }
 

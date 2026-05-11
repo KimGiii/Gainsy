@@ -143,7 +143,7 @@ final class AddDietLogViewModelTests: XCTestCase {
             fatPer100g: 5,
             confidence: 0.8,
             disclaimer: "test",
-            isAiEstimated: true
+            aiEstimated: true
         )
     }
 }

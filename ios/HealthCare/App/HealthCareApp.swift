@@ -13,6 +13,9 @@ struct HealthCareApp: App {
         if ProcessInfo.processInfo.arguments.contains("UI_TEST_RESET_STATE") {
             tokenStore.clearTokens()
         }
+        if ProcessInfo.processInfo.arguments.contains("UI_TEST_AUTHENTICATED") {
+            tokenStore.save(accessToken: "ui-test-access-token", refreshToken: "ui-test-refresh-token")
+        }
         _authState = StateObject(wrappedValue: AuthState(tokenStore: tokenStore))
     }
 

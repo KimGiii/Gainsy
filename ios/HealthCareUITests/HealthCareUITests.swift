@@ -6,12 +6,33 @@ final class HealthCareUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        app.launchArguments.append("UI_TEST_RESET_STATE")
-        app.launch()
     }
 
     func testOnboardingAppears() throws {
+        launchApp()
         XCTAssertTrue(app.staticTexts["HealthCare"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["로그인"].exists)
+    }
+
+    func testLoginScreenAppears() throws {
+        launchApp(arguments: ["UI_TEST_LOGIN_SCREEN"])
+        XCTAssertTrue(app.staticTexts["다시 만나서 반가워요"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.textFields["이메일"].exists)
+        XCTAssertTrue(app.secureTextFields["비밀번호"].exists)
+    }
+
+    func testMainTabsAppearWhenAuthenticated() throws {
+        launchApp(arguments: ["UI_TEST_AUTHENTICATED"])
+
+        XCTAssertTrue(app.tabBars.buttons["대시보드"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.tabBars.buttons["다이어리"].exists)
+        XCTAssertTrue(app.tabBars.buttons["기록"].exists)
+        XCTAssertTrue(app.tabBars.buttons["탐색"].exists)
+        XCTAssertTrue(app.tabBars.buttons["프로필"].exists)
+    }
+
+    private func launchApp(arguments: [String] = []) {
+        app.launchArguments = ["UI_TEST_RESET_STATE"] + arguments
+        app.launch()
     }
 }
