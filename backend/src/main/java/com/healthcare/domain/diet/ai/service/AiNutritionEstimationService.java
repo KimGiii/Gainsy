@@ -75,11 +75,27 @@ public class AiNutritionEstimationService {
                 ))
         );
 
-        JsonNode response = client.post()
-                .uri("/v1/responses")
-                .body(requestBody)
-                .retrieve()
-                .body(JsonNode.class);
+        JsonNode response;
+        try {
+            response = client.post()
+                    .uri("/v1/responses")
+                    .body(requestBody)
+                    .retrieve()
+                    .body(JsonNode.class);
+        } catch (Exception e) {
+            log.error("AI API 호출 실패: foodName={}, error={}", foodName, e.getMessage());
+            return AiNutritionEstimateResponse.builder()
+                    .foodName(foodName)
+                    .category(FoodCategory.OTHER)
+                    .caloriesPer100g(0.0)
+                    .proteinPer100g(0.0)
+                    .carbsPer100g(0.0)
+                    .fatPer100g(0.0)
+                    .confidence(0.0)
+                    .disclaimer(DISCLAIMER)
+                    .aiEstimated(true)
+                    .build();
+        }
 
         String rawText = extractOutputText(response);
         String jsonText = stripMarkdownFences(rawText);
