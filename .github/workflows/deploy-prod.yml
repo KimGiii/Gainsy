@@ -5,6 +5,7 @@ on:
     branches: [prod]
     paths:
       - 'backend/**'
+  workflow_dispatch:
 
 env:
   AWS_REGION: ap-northeast-2
