@@ -84,10 +84,10 @@
 ### 3. iOS 테스트 보강
 
 - [x] `AddDietLogViewModel` 검색 디바운스/즉시 검색/검색어 삭제/느린 응답 역전 방지 단위 테스트 추가
-- [ ] `APIClient` 토큰 refresh 및 401 재시도 테스트
-- [ ] 주요 ViewModel 테스트 (`HomeViewModel`, `GoalProgressViewModel`, `ProgressPhotoViewModel`, `MyPageViewModel`)
-- [ ] `ProgressPhotoViewModel` 삭제·비교 모드 테스트
-- [ ] 인증/온보딩/메인 진입 smoke UI 테스트 추가
+- [x] `APIClient` 토큰 refresh 및 401 재시도 테스트
+- [x] 주요 ViewModel 테스트 (`HomeViewModel`, `GoalProgressViewModel`, `ProgressPhotoViewModel`, `MyPageViewModel`)
+- [x] `ProgressPhotoViewModel` 삭제·비교 모드 테스트
+- [x] 인증/온보딩/메인 진입 smoke UI 테스트 추가
 - [ ] 핵심 작성 플로우 UI 테스트 추가 (운동 기록, 식단 기록, 신체 측정)
 
 완료 기준:
