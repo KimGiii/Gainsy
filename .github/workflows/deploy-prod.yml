@@ -55,18 +55,28 @@ jobs:
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
+            set -euo pipefail
+
             aws ecr get-login-password --region ${{ env.AWS_REGION }} \
               | docker login --username AWS --password-stdin ${{ steps.ecr-login.outputs.registry }}
 
             docker pull ${{ env.IMAGE }}
 
-            # 포트 8081로 새 컨테이너 기동
-            docker stop healthcare-api-green || true
-            docker rm  healthcare-api-green || true
+            # 현재 활성 포트 파악 (없으면 8080이 blue 기본)
+            ACTIVE_PORT=$(cat /etc/healthcare/active_port 2>/dev/null || echo "8080")
+            if [ "$ACTIVE_PORT" = "8080" ]; then
+              GREEN_PORT=8081; BLUE_NAME=healthcare-api-8080; GREEN_NAME=healthcare-api-8081
+            else
+              GREEN_PORT=8080; BLUE_NAME=healthcare-api-8081; GREEN_NAME=healthcare-api-8080
+            fi
+
+            # 잔여 green 정리
+            docker stop $GREEN_NAME || true
+            docker rm   $GREEN_NAME || true
 
             docker run -d \
-              --name healthcare-api-green \
-              -p 8081:8080 \
+              --name $GREEN_NAME \
+              -p ${GREEN_PORT}:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e DB_URL="${{ secrets.PROD_DB_URL }}" \
               -e DB_USERNAME="${{ secrets.PROD_DB_USERNAME }}" \
@@ -81,24 +91,35 @@ jobs:
               -v /etc/healthcare/fcm-credentials.json:/app/fcm-credentials.json:ro \
               ${{ env.IMAGE }}
 
-            # 헬스체크 통과 후 트래픽 전환 (nginx upstream 교체)
+            # green 헬스체크
             for i in $(seq 1 18); do
-              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/actuator/health || echo "000")
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                http://localhost:${GREEN_PORT}/actuator/health || echo "000")
               if [ "$STATUS" = "200" ]; then
-                echo "Green instance healthy — swapping traffic"
-                sudo nginx -s reload
-                docker stop healthcare-api-blue || true
-                docker rm  healthcare-api-blue  || true
-                docker rename healthcare-api-green healthcare-api-blue
+                echo "Green (port $GREEN_PORT) healthy — swapping nginx"
+
+                # nginx upstream을 green 포트로 교체
+                sudo sed -i \
+                  "s|proxy_pass http://127.0.0.1:[0-9]*;|proxy_pass http://127.0.0.1:${GREEN_PORT};|g" \
+                  /etc/nginx/sites-available/healthcare
+                sudo nginx -t && sudo nginx -s reload
+
+                # 활성 포트 기록
+                echo "$GREEN_PORT" | sudo tee /etc/healthcare/active_port > /dev/null
+
+                # 구 blue 컨테이너 제거
+                docker stop $BLUE_NAME || true
+                docker rm   $BLUE_NAME || true
                 docker image prune -f
                 exit 0
               fi
               echo "Attempt $i: status=$STATUS, retrying in 10s..."
               sleep 10
             done
+
             echo "Green instance failed health check — rolling back"
-            docker stop healthcare-api-green || true
-            docker rm  healthcare-api-green  || true
+            docker stop $GREEN_NAME || true
+            docker rm   $GREEN_NAME || true
             exit 1
 
       - name: Verify production health

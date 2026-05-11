@@ -55,9 +55,10 @@ ln -sf /etc/nginx/sites-available/healthcare /etc/nginx/sites-enabled/healthcare
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
 
-# ── FCM 자격증명 디렉토리 ────────────────────────────────────────────────────
+# ── 앱 런타임 디렉토리 (FCM 자격증명, blue-green 상태 파일) ─────────────────
 mkdir -p /etc/healthcare
 chown ubuntu:ubuntu /etc/healthcare
+echo "8080" > /etc/healthcare/active_port
 
 # ── ECR 로그인 cron (12시간마다 토큰 갱신) ───────────────────────────────────
 cat > /etc/cron.d/ecr-login <<CRON
