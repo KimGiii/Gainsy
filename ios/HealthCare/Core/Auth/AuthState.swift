@@ -7,6 +7,10 @@ enum AuthStatus: Equatable {
     case unauthenticated
 }
 
+extension Notification.Name {
+    static let sessionDidExpire = Notification.Name("com.healthcare.sessionDidExpire")
+}
+
 @MainActor
 final class AuthState: ObservableObject {
     @Published private(set) var status: AuthStatus = .loading
@@ -16,6 +20,13 @@ final class AuthState: ObservableObject {
     init(tokenStore: TokenStore = TokenStore()) {
         self.tokenStore = tokenStore
         checkPersistedAuth()
+        NotificationCenter.default.addObserver(
+            forName: .sessionDidExpire,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.setUnauthenticated()
+        }
     }
 
     func saveAndAuthenticate(tokenResponse: TokenResponse) {

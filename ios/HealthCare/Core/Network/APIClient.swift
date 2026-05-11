@@ -132,6 +132,7 @@ actor APIClient {
 
         do {
             guard let refreshToken = tokenStore.refreshToken else {
+                NotificationCenter.default.post(name: .sessionDidExpire, object: nil)
                 throw APIError.unauthorized
             }
             let body = try encoder.encode(["refreshToken": refreshToken])
@@ -152,6 +153,9 @@ actor APIClient {
             isRefreshing = false
             let waiters = refreshWaiters
             refreshWaiters = []
+            if case APIError.unauthorized = error {
+                NotificationCenter.default.post(name: .sessionDidExpire, object: nil)
+            }
             waiters.forEach { $0.resume(throwing: error) }
             throw error
         }
