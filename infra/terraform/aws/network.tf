@@ -67,7 +67,7 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_security_group" "ec2" {
   name        = "${var.project_name}-${var.environment}-sg-ec2"
-  description = "EC2 애플리케이션 서버"
+  description = "EC2 application server"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -106,7 +106,7 @@ resource "aws_security_group" "ec2" {
 
 resource "aws_security_group" "rds" {
   name        = "${var.project_name}-${var.environment}-sg-rds"
-  description = "RDS PostgreSQL — EC2에서만 접근"
+  description = "RDS PostgreSQL - EC2 access only"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -129,7 +129,7 @@ resource "aws_security_group" "rds" {
 
 resource "aws_security_group" "redis" {
   name        = "${var.project_name}-${var.environment}-sg-redis"
-  description = "ElastiCache Redis — EC2에서만 접근"
+  description = "ElastiCache Redis - EC2 access only"
   vpc_id      = aws_vpc.main.id
 
   ingress {
