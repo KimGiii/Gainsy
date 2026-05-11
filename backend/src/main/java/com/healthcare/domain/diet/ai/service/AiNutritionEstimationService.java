@@ -52,7 +52,7 @@ public class AiNutritionEstimationService {
         String instructions = """
                 당신은 한국 식단 기록 서비스의 영양성분 추정기입니다.
                 사용자가 한국어 음식 이름을 입력하면 100g 기준 영양성분을 추정해 JSON으로 반환하세요.
-                응답은 반드시 JSON 객체 하나여야 하며, 설명 문장은 포함하지 마세요.
+                응답은 반드시 순수 JSON 객체 하나여야 하며, 마크다운 코드 블록이나 설명 문장은 포함하지 마세요.
                 추정값은 신중하게 제시하고 불확실하면 confidence를 낮게 설정하세요.
                 category는 반드시 다음 중 하나: GRAIN, PROTEIN_SOURCE, VEGETABLE, FRUIT, DAIRY, FAT, BEVERAGE, PROCESSED, OTHER
                 JSON schema:
@@ -66,7 +66,7 @@ public class AiNutritionEstimationService {
                 }
                 """;
 
-        Map<String, Object> body = Map.of(
+        Map<String, Object> requestBody = Map.of(
                 "model", model,
                 "instructions", instructions,
                 "input", List.of(Map.of(
@@ -75,16 +75,17 @@ public class AiNutritionEstimationService {
                 ))
         );
 
+        JsonNode response = client.post()
+                .uri("/v1/responses")
+                .body(requestBody)
+                .retrieve()
+                .body(JsonNode.class);
+
+        String rawText = extractOutputText(response);
+        String jsonText = stripMarkdownFences(rawText);
+
         try {
-            JsonNode response = client.post()
-                    .uri("/v1/responses")
-                    .body(body)
-                    .retrieve()
-                    .body(JsonNode.class);
-
-            String outputText = extractOutputText(response);
-            JsonNode parsed = objectMapper.readTree(outputText);
-
+            JsonNode parsed = objectMapper.readTree(jsonText);
             FoodCategory category = parseCategory(parsed.path("category").asText("OTHER"));
 
             return AiNutritionEstimateResponse.builder()
@@ -94,24 +95,14 @@ public class AiNutritionEstimationService {
                     .proteinPer100g(parsed.path("proteinPer100g").asDouble(0.0))
                     .carbsPer100g(parsed.path("carbsPer100g").asDouble(0.0))
                     .fatPer100g(parsed.path("fatPer100g").asDouble(0.0))
-                    .confidence(parsed.path("confidence").asDouble(0.5))
+                    .confidence(parseConfidence(parsed.path("confidence")))
                     .disclaimer(DISCLAIMER)
-                    .isAiEstimated(true)
+                    .aiEstimated(true)
                     .build();
-
         } catch (Exception e) {
-            log.warn("AI 영양성분 추정 실패: foodName={}, error={}", foodName, e.getMessage());
-            return AiNutritionEstimateResponse.builder()
-                    .foodName(foodName)
-                    .category(FoodCategory.OTHER)
-                    .caloriesPer100g(0.0)
-                    .proteinPer100g(0.0)
-                    .carbsPer100g(0.0)
-                    .fatPer100g(0.0)
-                    .confidence(0.0)
-                    .disclaimer(DISCLAIMER)
-                    .isAiEstimated(true)
-                    .build();
+            log.error("AI 응답 JSON 파싱 실패: foodName={}, rawText={}, error={}",
+                    foodName, rawText, e.getMessage());
+            throw new IllegalStateException("AI 응답을 파싱할 수 없습니다: " + e.getMessage());
         }
     }
 
@@ -135,11 +126,38 @@ public class AiNutritionEstimationService {
         return "{}";
     }
 
+    // OpenAI가 ```json ... ``` 형태로 감싸서 반환할 때 제거
+    private String stripMarkdownFences(String text) {
+        if (text == null) return "{}";
+        String stripped = text.strip();
+        if (stripped.startsWith("```")) {
+            int firstNewline = stripped.indexOf('\n');
+            if (firstNewline >= 0) {
+                stripped = stripped.substring(firstNewline + 1).strip();
+            }
+            if (stripped.endsWith("```")) {
+                stripped = stripped.substring(0, stripped.lastIndexOf("```")).strip();
+            }
+        }
+        return stripped;
+    }
+
     private FoodCategory parseCategory(String raw) {
         try {
             return FoodCategory.valueOf(raw.toUpperCase());
         } catch (IllegalArgumentException e) {
             return FoodCategory.OTHER;
         }
+    }
+
+    // 모델이 "high"/"medium"/"low" 문자열로 반환하는 경우 대비
+    private double parseConfidence(JsonNode node) {
+        if (node.isNumber()) return node.asDouble();
+        return switch (node.asText("").toLowerCase()) {
+            case "high"   -> 0.9;
+            case "medium" -> 0.6;
+            case "low"    -> 0.3;
+            default       -> 0.5;
+        };
     }
 }

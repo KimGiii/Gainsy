@@ -16,5 +16,5 @@ public class AiNutritionEstimateResponse {
     private final Double fatPer100g;
     private final Double confidence;
     private final String disclaimer;
-    private final boolean isAiEstimated;
+    private final boolean aiEstimated;
 }
