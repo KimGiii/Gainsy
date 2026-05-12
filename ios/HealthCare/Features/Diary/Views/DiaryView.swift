@@ -19,6 +19,7 @@ struct DiaryView: View {
                         selectedDate: viewModel.selectedDate,
                         hasExercise: viewModel.hasExerciseRecord(on: viewModel.selectedDate),
                         hasDiet: viewModel.hasDietRecord(on: viewModel.selectedDate),
+                        hasMeasurement: viewModel.hasMeasurementRecord(on: viewModel.selectedDate),
                         onSelect: { activeAddSheet = $0 }
                     )
 
@@ -155,6 +156,7 @@ private struct QuickAddSection: View {
     let selectedDate: Date
     let hasExercise: Bool
     let hasDiet: Bool
+    let hasMeasurement: Bool
     let onSelect: (DiaryAddSheet) -> Void
 
     private var dateText: String {
@@ -164,54 +166,62 @@ private struct QuickAddSection: View {
         return formatter.string(from: selectedDate)
     }
 
+    private var hasAnyQuickAction: Bool {
+        !hasExercise || !hasDiet || !hasMeasurement
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("빠른 기록")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Color.textPrimary)
-                    Text(dateText)
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.textSecondary)
+        if hasAnyQuickAction {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("빠른 기록")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(Color.textPrimary)
+                        Text(dateText)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.textSecondary)
+                    }
+                    Spacer()
                 }
-                Spacer()
-            }
 
-            HStack(spacing: 10) {
-                if !hasExercise {
-                    QuickAddButton(
-                        icon: "figure.strengthtraining.traditional",
-                        title: "운동 추가",
-                        tint: .green
-                    ) {
-                        onSelect(.exercise)
+                HStack(spacing: 10) {
+                    if !hasExercise {
+                        QuickAddButton(
+                            icon: "figure.strengthtraining.traditional",
+                            title: "운동 추가",
+                            tint: .green
+                        ) {
+                            onSelect(.exercise)
+                        }
+                    }
+
+                    if !hasDiet {
+                        QuickAddButton(
+                            icon: "fork.knife",
+                            title: "식단 추가",
+                            tint: .orange
+                        ) {
+                            onSelect(.diet)
+                        }
+                    }
+
+                    if !hasMeasurement {
+                        QuickAddButton(
+                            icon: "scalemass.fill",
+                            title: "측정 추가",
+                            tint: Color.brandAccent
+                        ) {
+                            onSelect(.measurement)
+                        }
                     }
                 }
-
-                if !hasDiet {
-                    QuickAddButton(
-                        icon: "fork.knife",
-                        title: "식단 추가",
-                        tint: .orange
-                    ) {
-                        onSelect(.diet)
-                    }
-                }
-
-                QuickAddButton(
-                    icon: "scalemass.fill",
-                    title: "측정 추가",
-                    tint: Color.brandAccent
-                ) {
-                    onSelect(.measurement)
-                }
             }
+            .padding(16)
+            .background(Color.surfaceCard)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
         }
-        .padding(16)
-        .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
 
