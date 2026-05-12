@@ -37,10 +37,14 @@ public class S3Config {
     @Bean
     public S3Presigner s3Presigner(
             @Value("${app.s3.region}") String region,
-            @Value("${app.s3.endpoint:}") String endpoint) {
+            @Value("${app.s3.endpoint:}") String endpoint,
+            @Value("${app.s3.path-style-access:false}") boolean pathStyleAccess) {
         var builder = S3Presigner.builder()
                 .region(Region.of(region))
-                .credentialsProvider(DefaultCredentialsProvider.create());
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(pathStyleAccess)
+                        .build());
 
         if (StringUtils.hasText(endpoint)) {
             builder.endpointOverride(URI.create(endpoint));

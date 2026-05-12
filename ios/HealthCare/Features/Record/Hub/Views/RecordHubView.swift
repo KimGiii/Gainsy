@@ -154,6 +154,9 @@ private struct HubBackdrop: View {
 // MARK: - Body
 
 private struct HubBody: View {
+    @EnvironmentObject private var container: AppContainer
+    @State private var latestWeight: Double? = nil
+
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
             // Prompt row — like an editorial kicker
@@ -187,7 +190,7 @@ private struct HubBody: View {
                     .buttonStyle(.plain)
 
                     NavigationLink(destination: BodyMeasurementView()) {
-                        BodyRouteCard()
+                        BodyRouteCard(latestWeight: latestWeight)
                     }
                     .buttonStyle(.plain)
                 }
@@ -211,6 +214,10 @@ private struct HubBody: View {
             Color.backgroundPage
                 .clipShape(RoundedCorner(radius: 32, corners: [.topLeft, .topRight]))
         )
+        .task {
+            let response: MeasurementResponse? = try? await container.apiClient.request(.getLatestBodyMeasurement)
+            latestWeight = response?.weightKg
+        }
     }
 }
 
@@ -349,6 +356,8 @@ private struct DietRouteCard: View {
 // MARK: - Body (cool accent — intentional color break)
 
 private struct BodyRouteCard: View {
+    let latestWeight: Double?
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -383,13 +392,19 @@ private struct BodyRouteCard: View {
                 Spacer()
 
                 HStack(alignment: .bottom, spacing: 4) {
-                    Text("62")
-                        .font(.system(size: 44, weight: .heavy, design: .rounded))
-                        .foregroundStyle(.white)
-                    Text("kg")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.55))
-                        .padding(.bottom, 8)
+                    if let w = latestWeight {
+                        Text(String(format: "%.1f", w))
+                            .font(.system(size: 44, weight: .heavy, design: .rounded))
+                            .foregroundStyle(.white)
+                        Text("kg")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.55))
+                            .padding(.bottom, 8)
+                    } else {
+                        Image(systemName: "scalemass.fill")
+                            .font(.system(size: 34, weight: .heavy))
+                            .foregroundStyle(.white.opacity(0.45))
+                    }
                 }
                 .padding(.bottom, 6)
 
