@@ -23,7 +23,7 @@ struct MyPageView: View {
                 }
                 .padding(.bottom, 40)
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("마이")
             .navigationBarTitleDisplayMode(.large)
             .alert("오류", isPresented: Binding(

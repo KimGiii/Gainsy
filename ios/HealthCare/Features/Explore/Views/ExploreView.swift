@@ -13,7 +13,7 @@ struct ExploreView: View {
             .padding(.top, 8)
             .padding(.bottom, 40)
         }
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .navigationTitle("탐색")
         .navigationBarTitleDisplayMode(.large)
     }
