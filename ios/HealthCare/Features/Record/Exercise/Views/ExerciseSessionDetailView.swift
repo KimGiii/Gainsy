@@ -137,7 +137,7 @@ struct ExerciseSessionDetailView: View {
                     )
                 }
                 .padding(.vertical, 16)
-                .background(.white)
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 18))
                 .shadow(color: .black.opacity(0.10), radius: 12, x: 0, y: 4)
                 .padding(.horizontal, 20)
@@ -185,7 +185,7 @@ struct ExerciseSessionDetailView: View {
             Spacer()
         }
         .padding(14)
-        .background(Color(hex: "#FFFBEB"))
+        .background(Color.brandWarning.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(
             RoundedRectangle(cornerRadius: 14)
@@ -295,7 +295,7 @@ private struct ExerciseGroupCard: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.brandLight)
+            .background(Color.surfaceCard)
 
             // 세트 행
             ForEach(sets) { set in
@@ -321,7 +321,7 @@ private struct SetRow: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(Color.brandPrimary)
                 .frame(width: 28, height: 28)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 .clipShape(Circle())
 
             // 내용

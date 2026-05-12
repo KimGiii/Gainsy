@@ -438,7 +438,7 @@ private struct PhotoRouteCard: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [Color(hex: "#F0FAF3"), Color(hex: "#D8F3DC")],
+                        colors: [Color.backgroundPage, Color.surfaceCard],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -504,7 +504,7 @@ private struct HubFootnote: View {
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color.brandSurface.opacity(0.5))
+                .fill(Color.surfaceCard.opacity(0.5))
         )
     }
 }

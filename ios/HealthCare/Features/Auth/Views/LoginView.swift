@@ -7,7 +7,7 @@ struct LoginView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "#F5F4EC").ignoresSafeArea()
+            Color.backgroundPage.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
@@ -105,7 +105,7 @@ struct StyledTextField: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(Color.white)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -144,7 +144,7 @@ struct StyledSecureField: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(Color.white)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)

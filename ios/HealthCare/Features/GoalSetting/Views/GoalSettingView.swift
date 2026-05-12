@@ -256,7 +256,7 @@ private struct ActiveGoalCard<Destination: View>: View {
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color.brandPrimary)
                         .frame(width: 40, height: 40)
-                        .background(Color.brandSurface)
+                        .background(Color.surfaceCard)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     VStack(alignment: .leading, spacing: 2) {
                         Text("진행 중인 목표")
@@ -348,7 +348,7 @@ private struct EmptyGoalCard: View {
         Button(action: onTap) {
             VStack(spacing: 16) {
                 ZStack {
-                    Circle().fill(Color.brandSurface).frame(width: 68, height: 68)
+                    Circle().fill(Color.surfaceCard).frame(width: 68, height: 68)
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 30))
                         .foregroundStyle(Color.brandPrimary)

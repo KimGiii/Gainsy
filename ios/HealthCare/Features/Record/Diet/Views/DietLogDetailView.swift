@@ -35,7 +35,7 @@ struct DietLogDetailView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            Color.brandLight.ignoresSafeArea()
+            Color.backgroundPage.ignoresSafeArea()
             if viewModel.isLoading {
                 VStack { Spacer(); ProgressView(); Spacer() }
             } else if let detail = viewModel.detail {
@@ -187,7 +187,7 @@ private struct DietDetailHeader: View {
         ZStack(alignment: .bottom) {
             Color.brandPrimary
             DietDetailWaveCurve()
-                .fill(Color.brandLight)
+                .fill(Color.backgroundPage)
                 .frame(height: 40)
                 .offset(y: 1)
 
@@ -263,7 +263,7 @@ private struct FoodEntryRow: View {
             Text(entry.category?.emoji ?? "🍽")
                 .font(.title3)
                 .frame(width: 40, height: 40)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {

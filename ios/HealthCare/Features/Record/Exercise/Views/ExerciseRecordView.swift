@@ -424,7 +424,7 @@ struct DateBadge: View {
                 .foregroundStyle(Color.brandPrimary)
         }
         .frame(width: 52, height: 60)
-        .background(Color.brandSurface)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

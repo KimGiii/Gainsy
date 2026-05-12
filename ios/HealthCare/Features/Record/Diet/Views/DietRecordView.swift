@@ -375,7 +375,7 @@ private struct DietLogCard: View {
             }
             .frame(width: 52)
             .padding(.vertical, 10)
-            .background(Color.brandSurface)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 4) {

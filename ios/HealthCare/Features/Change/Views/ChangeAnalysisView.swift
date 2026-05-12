@@ -70,7 +70,7 @@ private struct DateRangeSection: View {
                             .foregroundStyle(Color.brandPrimary)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 7)
-                            .background(Color.brandSurface)
+                            .background(Color.surfaceCard)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)

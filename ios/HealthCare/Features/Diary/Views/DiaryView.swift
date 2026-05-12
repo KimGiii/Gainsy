@@ -322,7 +322,7 @@ private struct CalendarDayCell: View {
                     Text("\(dayNumber)")
                         .font(.system(size: 15, weight: isToday || isSelected ? .semibold : .regular))
                         .foregroundStyle(
-                            isSelected ? Color.brandDusk :
+                            isSelected ? Color.textHeadline :
                             isToday ? Color.brandAccent :
                             Color.textPrimary
                         )
