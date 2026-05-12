@@ -90,8 +90,8 @@ struct ProgressRing: View {
     /// 링 아래 작은 캡션 (예: "섭취", "운동"). nil이면 숨김
     var label: String? = nil
 
-    /// 트랙(미진행) 색상. 기본값은 배경에 따라 자동 선택
-    var trackColor: Color = Color.brandDusk.opacity(0.12)
+    /// 트랙(미진행) 색상. 기본값은 light/dark 자동 적응
+    var trackColor: Color = Color.ringTrack
 
     /// 달성 완료 시 반짝이는 pulse 효과 여부
     var showCompletionPulse: Bool = true
@@ -105,7 +105,7 @@ struct ProgressRing: View {
         value: String? = nil,
         unit: String? = nil,
         label: String? = nil,
-        trackColor: Color = Color.brandDusk.opacity(0.12),
+        trackColor: Color = Color.ringTrack,
         showCompletionPulse: Bool = true
     ) {
         self.progress = progress

@@ -41,7 +41,7 @@ struct DiaryView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 20)
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("다이어리")
             .navigationBarTitleDisplayMode(.large)
             .overlay(alignment: .center) {
@@ -112,9 +112,9 @@ private struct MonthPickerHeader: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                     .frame(width: 36, height: 36)
-                    .background(Color.brandLight)
+                    .background(Color.brandAccent.opacity(0.15))
                     .clipShape(Circle())
             }
 
@@ -131,9 +131,9 @@ private struct MonthPickerHeader: View {
             } label: {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                     .frame(width: 36, height: 36)
-                    .background(Color.brandLight)
+                    .background(Color.brandAccent.opacity(0.15))
                     .clipShape(Circle())
             }
         }
@@ -194,14 +194,14 @@ private struct QuickAddSection: View {
                 QuickAddButton(
                     icon: "scalemass.fill",
                     title: "측정 추가",
-                    tint: Color.brandPrimary
+                    tint: Color.brandAccent
                 ) {
                     onSelect(.measurement)
                 }
             }
         }
         .padding(16)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
@@ -255,7 +255,7 @@ private struct CalendarGrid: View {
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(
                             index == 0 ? Color.brandDanger :
-                            index == 6 ? Color.brandPrimary :
+                            index == 6 ? Color.brandAccent :
                             Color.textSecondary
                         )
                         .frame(maxWidth: .infinity)
@@ -284,7 +284,7 @@ private struct CalendarGrid: View {
             }
         }
         .padding(16)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
@@ -311,19 +311,19 @@ private struct CalendarDayCell: View {
                     // 선택된 날짜 배경
                     if isSelected {
                         Circle()
-                            .fill(Color.brandPrimary)
+                            .fill(Color.brandAccent)
                             .frame(width: 36, height: 36)
                     } else if isToday {
                         Circle()
-                            .stroke(Color.brandPrimary, lineWidth: 1.5)
+                            .stroke(Color.brandAccent, lineWidth: 1.5)
                             .frame(width: 36, height: 36)
                     }
 
                     Text("\(dayNumber)")
                         .font(.system(size: 15, weight: isToday || isSelected ? .semibold : .regular))
                         .foregroundStyle(
-                            isSelected ? .white :
-                            isToday ? Color.brandPrimary :
+                            isSelected ? Color.brandDusk :
+                            isToday ? Color.brandAccent :
                             Color.textPrimary
                         )
                 }
@@ -401,7 +401,7 @@ private struct ExerciseRecordsSection: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
         }
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
@@ -417,9 +417,9 @@ private struct ExerciseSessionSummaryCard: View {
             // 아이콘
             Image(systemName: "figure.strengthtraining.traditional")
                 .font(.system(size: 18))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
                 .frame(width: 40, height: 40)
-                .background(Color.brandLight)
+                .background(Color.brandAccent.opacity(0.15))
                 .clipShape(Circle())
 
             // 정보
@@ -468,14 +468,14 @@ private struct ExerciseSessionSummaryCard: View {
         HStack(spacing: 3) {
             Image(systemName: icon)
                 .font(.system(size: 10))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
             Text(value)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 3)
-        .background(Color.brandLight.opacity(0.5))
+        .background(Color.brandAccent.opacity(0.12))
         .clipShape(Capsule())
     }
 }
@@ -528,7 +528,7 @@ private struct DietRecordsSection: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
         }
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
@@ -550,7 +550,7 @@ private struct DietLogSummaryCard: View {
                     .foregroundStyle(Color.brandAccent)
             }
             .frame(width: 40, height: 40)
-            .background(Color.brandLight)
+            .background(Color.brandAccent.opacity(0.15))
             .clipShape(Circle())
 
             // 정보
