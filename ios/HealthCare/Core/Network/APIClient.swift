@@ -162,13 +162,17 @@ actor APIClient {
     }
 
     private func buildRequest(for endpoint: APIEndpoint) throws -> URLRequest {
-        guard let url = URL(string: endpoint.path, relativeTo: baseURL) else {
+        var components = URLComponents()
+        components.scheme = baseURL.scheme
+        components.host = baseURL.host
+        components.port = baseURL.port
+        components.path = endpoint.path
+        components.queryItems = endpoint.queryItems
+
+        guard let resolvedURL = components.url else {
             throw APIError.invalidURL
         }
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        if let params = endpoint.queryItems { components?.queryItems = params }
 
-        guard let resolvedURL = components?.url else { throw APIError.invalidURL }
         var request = URLRequest(url: resolvedURL, timeoutInterval: 30)
         request.httpMethod = endpoint.method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
