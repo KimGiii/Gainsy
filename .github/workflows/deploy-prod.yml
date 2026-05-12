@@ -100,8 +100,7 @@ jobs:
                 echo "Green (port $GREEN_PORT) healthy — swapping nginx"
 
                 # nginx upstream을 green 포트로 교체 (공백 무관 매칭)
-                sudo sed -i "s|proxy_pass[[:space:]]*http://127.0.0.1:[0-9]*;|proxy_pass http://127.0.0.1:${GREEN_PORT};|g" \
-                  /etc/nginx/sites-available/healthcare
+                sudo sed -i "s|proxy_pass[[:space:]]*http://127.0.0.1:[0-9]*;|proxy_pass http://127.0.0.1:${GREEN_PORT};|g" /etc/nginx/sites-available/healthcare
                 sudo nginx -t && sudo nginx -s reload
 
                 # 활성 포트 기록
