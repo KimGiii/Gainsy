@@ -1,5 +1,5 @@
 import XCTest
-@testable import HealthCare
+@testable import Gainsy
 
 @MainActor
 final class HomeViewModelTests: XCTestCase {

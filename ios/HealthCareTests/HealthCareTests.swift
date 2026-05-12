@@ -1,5 +1,5 @@
 import XCTest
-@testable import HealthCare
+@testable import Gainsy
 
 final class HealthCareTests: XCTestCase {
     override func tearDown() {
