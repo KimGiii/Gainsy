@@ -10,7 +10,7 @@ final class HealthCareUITests: XCTestCase {
 
     func testOnboardingAppears() throws {
         launchApp()
-        XCTAssertTrue(app.staticTexts["HealthCare"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Gainsy"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["로그인"].exists)
     }
 
