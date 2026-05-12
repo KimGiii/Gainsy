@@ -7,6 +7,7 @@ final class DiaryViewModel: ObservableObject {
     @Published var selectedDate = Date()
     @Published var exerciseSessions: [SessionSummary] = []
     @Published var dietLogs: [DietLogSummary] = []
+    @Published var bodyMeasurements: [MeasurementResponse] = []
 
     private let calendar = Calendar.current
     private let dateFormatter: DateFormatter = {
@@ -69,6 +70,12 @@ final class DiaryViewModel: ObservableObject {
         return dietLogs.contains { $0.logDate == dateString }
     }
 
+    /// 특정 날짜에 신체 측정 기록이 있는지 확인
+    func hasMeasurementRecord(on date: Date) -> Bool {
+        let dateString = dateFormatter.string(from: date)
+        return bodyMeasurements.contains { $0.measuredAt == dateString }
+    }
+
     /// 특정 날짜의 운동 세션 가져오기
     func exerciseSessions(on date: Date) -> [SessionSummary] {
         let dateString = dateFormatter.string(from: date)
@@ -79,6 +86,12 @@ final class DiaryViewModel: ObservableObject {
     func dietLogs(on date: Date) -> [DietLogSummary] {
         let dateString = dateFormatter.string(from: date)
         return dietLogs.filter { $0.logDate == dateString }
+    }
+
+    /// 특정 날짜의 신체 측정 가져오기
+    func measurements(on date: Date) -> [MeasurementResponse] {
+        let dateString = dateFormatter.string(from: date)
+        return bodyMeasurements.filter { $0.measuredAt == dateString }
     }
 
     func previousMonth() {
@@ -104,17 +117,21 @@ final class DiaryViewModel: ObservableObject {
         let toDate = dateFormatter.string(from: monthEnd)
 
         do {
-            // 운동 기록과 식단 기록을 병렬로 로드
+            // 운동·식단·신체 측정 기록을 병렬로 로드
             async let exerciseResponse: SessionListResponse = apiClient.request(
                 .getExerciseSessions(from: fromDate, to: toDate, page: 0, size: 100)
             )
             async let dietResponse: DietLogListResponse = apiClient.request(
                 .getDietLogs(from: fromDate, to: toDate, page: 0, size: 100)
             )
+            async let measurementResponse: [MeasurementResponse] = apiClient.request(
+                .getBodyMeasurementsRange(from: fromDate, to: toDate)
+            )
 
-            let (exercises, diets) = try await (exerciseResponse, dietResponse)
+            let (exercises, diets, measurements) = try await (exerciseResponse, dietResponse, measurementResponse)
             exerciseSessions = exercises.content
             dietLogs = diets.content
+            bodyMeasurements = measurements
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
