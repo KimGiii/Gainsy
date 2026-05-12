@@ -101,7 +101,7 @@ private struct GoalTypeCard: View {
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     .frame(width: 52, height: 52)
                     .background(
-                        isSelected ? Color.brandPrimary : Color.brandSurface
+                        isSelected ? Color.brandPrimary : Color.surfaceCard
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 14))
 
@@ -273,7 +273,7 @@ private struct PresetChip: View {
                 .foregroundStyle(Color.brandPrimary)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 7)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)

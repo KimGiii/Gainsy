@@ -7,6 +7,11 @@ struct MyPageView: View {
 
     @State private var showEditSheet = false
     @State private var showDeleteConfirm = false
+    @AppStorage("appTheme") private var appThemeRawValue = AppTheme.system.rawValue
+
+    private var selectedTheme: AppTheme {
+        AppTheme(rawValue: appThemeRawValue) ?? .system
+    }
 
     var body: some View {
         NavigationStack {
@@ -133,6 +138,12 @@ struct MyPageView: View {
                 MenuRow(icon: "person.crop.circle", iconColor: Color.brandSecondary, label: "프로필 수정") {
                     viewModel.populateEditFields()
                     showEditSheet = true
+                }
+            }
+
+            MenuSection(title: "앱 설정") {
+                ThemeMenuRow(selectedTheme: selectedTheme) { theme in
+                    appThemeRawValue = theme.rawValue
                 }
             }
 
@@ -332,6 +343,48 @@ private struct MenuRow: View {
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(Color.textTertiary)
                 }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+        }
+    }
+}
+
+private struct ThemeMenuRow: View {
+    let selectedTheme: AppTheme
+    let onSelect: (AppTheme) -> Void
+
+    var body: some View {
+        Menu {
+            ForEach(AppTheme.allCases) { theme in
+                Button {
+                    onSelect(theme)
+                } label: {
+                    Label(theme.title, systemImage: theme == selectedTheme ? "checkmark" : theme.iconName)
+                }
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: selectedTheme.iconName)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(Color.brandAccent)
+                    .frame(width: 30, height: 30)
+                    .background(Color.brandAccent.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Text("화면 모드")
+                    .font(.bodyMedium)
+                    .foregroundStyle(Color.textPrimary)
+
+                Spacer()
+
+                Text(selectedTheme.title)
+                    .font(.bodySmall)
+                    .foregroundStyle(Color.textTertiary)
+
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.textTertiary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)

@@ -56,7 +56,7 @@ private struct WeekNavigationBar: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Color.brandPrimary)
                     .frame(width: 36, height: 36)
-                    .background(Color.brandSurface)
+                    .background(Color.surfaceCard)
                     .clipShape(Circle())
             }
             Spacer()
@@ -69,7 +69,7 @@ private struct WeekNavigationBar: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(canGoNext ? Color.brandPrimary : Color.textSecondary)
                     .frame(width: 36, height: 36)
-                    .background(Color.brandSurface)
+                    .background(Color.surfaceCard)
                     .clipShape(Circle())
             }
             .disabled(!canGoNext)

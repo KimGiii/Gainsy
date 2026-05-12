@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 
+@MainActor
 struct AddProgressPhotoView: View {
     @ObservedObject var viewModel: ProgressPhotoViewModel
     @EnvironmentObject private var container: AppContainer
@@ -78,7 +79,7 @@ struct AddProgressPhotoView: View {
                     VStack(spacing: 14) {
                         ZStack {
                             Circle()
-                                .fill(Color.brandSurface)
+                                .fill(Color.surfaceCard)
                                 .frame(width: 64, height: 64)
                             Image(systemName: "camera.fill")
                                 .font(.system(size: 24, weight: .semibold))

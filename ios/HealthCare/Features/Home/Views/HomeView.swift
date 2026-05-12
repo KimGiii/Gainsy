@@ -214,7 +214,7 @@ private struct MealCard: View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color.brandLight)
+                    .fill(Color.surfaceCard)
                 Text(log.mealType.emoji)
                     .font(.system(size: 52))
                     .offset(x: 16, y: 14)

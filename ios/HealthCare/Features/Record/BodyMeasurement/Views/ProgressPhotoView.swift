@@ -127,7 +127,7 @@ struct ProgressPhotoView: View {
                                     .background(
                                         viewModel.selectedType == type
                                             ? Color.white.opacity(0.25)
-                                            : Color.brandSurface
+                                            : Color.surfaceCard
                                     )
                                     .clipShape(Capsule())
                             }
@@ -189,7 +189,7 @@ struct ProgressPhotoView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(Color.brandSurface)
+        .background(Color.surfaceCard)
         .overlay(Rectangle().fill(Color.hairline).frame(height: 0.5), alignment: .bottom)
     }
 
@@ -248,7 +248,7 @@ struct ProgressPhotoView: View {
             Spacer()
             ZStack {
                 Circle()
-                    .fill(Color.brandSurface)
+                    .fill(Color.surfaceCard)
                     .frame(width: 96, height: 96)
                 Image(systemName: "camera")
                     .font(.system(size: 36, weight: .light))
@@ -318,7 +318,7 @@ private struct PhotoGridCell: View {
                     if photo.isBaseline {
                         Text("기준")
                             .font(.system(size: 9, weight: .heavy))
-                            .foregroundStyle(Color.brandDusk)
+                            .foregroundStyle(Color.textHeadline)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
                             .background(Color.brandAccentGlow)

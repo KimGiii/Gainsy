@@ -174,7 +174,7 @@ struct AddExerciseSessionView: View {
                         Spacer()
                     }
                     .padding(16)
-                    .background(Color.brandLight)
+                    .background(Color.surfaceCard)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
@@ -210,7 +210,7 @@ struct AddExerciseSessionView: View {
                     .foregroundStyle(Color.brandPrimary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color.brandLight)
+                    .background(Color.surfaceCard)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.horizontal, 16)
@@ -341,7 +341,7 @@ private struct ExerciseGroupCard: View {
                     }
                     .foregroundStyle(Color.brandPrimary)
                     .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(Color.brandLight).clipShape(Capsule())
+                    .background(Color.surfaceCard).clipShape(Capsule())
                 }
                 Button(action: onDeleteGroup) {
                     Image(systemName: "trash").font(.system(size: 14))
@@ -349,7 +349,7 @@ private struct ExerciseGroupCard: View {
                 }
             }
             .padding(14)
-            .background(Color.brandSurface)
+            .background(Color.surfaceCard)
 
             Divider()
 
@@ -385,7 +385,7 @@ private struct DraftSetRow: View {
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(Color.brandPrimary)
                     .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(Color.brandSurface).clipShape(Capsule())
+                    .background(Color.surfaceCard).clipShape(Capsule())
 
                 // 세트 타입 피커
                 HStack(spacing: 4) {
@@ -395,7 +395,7 @@ private struct DraftSetRow: View {
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(draft.setType == opt ? .white : Color.brandPrimary)
                                 .padding(.horizontal, 9).padding(.vertical, 4)
-                                .background(draft.setType == opt ? Color.brandPrimary : Color.brandLight)
+                                .background(draft.setType == opt ? Color.brandPrimary : Color.surfaceCard)
                                 .clipShape(Capsule())
                         }
                     }
@@ -546,7 +546,7 @@ struct ExerciseCatalogPickerView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 Divider()
             }
             List(viewModel.catalogResults) { item in
@@ -688,7 +688,7 @@ struct ExerciseCatalogPickerView: View {
             .foregroundStyle(Color.brandPrimary)
             .padding(.horizontal, 8)
             .padding(.vertical, 5)
-            .background(Color.brandSurface)
+            .background(Color.surfaceCard)
             .clipShape(Capsule())
     }
 }
@@ -731,7 +731,7 @@ private struct CatalogRow: View {
                 .font(.system(size: 18))
                 .foregroundStyle(Color.brandPrimary)
                 .frame(width: 40, height: 40)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 3) {

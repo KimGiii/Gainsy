@@ -7,17 +7,17 @@ struct OnboardingView: View {
         NavigationStack {
             ZStack {
                 // ── Background ──────────────────────────────────────
-                Color(hex: "#F5F4EC").ignoresSafeArea()
+                Color.backgroundPage.ignoresSafeArea()
 
                 // ── Decorative blobs ─────────────────────────────────
                 Circle()
-                    .fill(Color.brandSurface)
+                    .fill(Color.surfaceCard)
                     .frame(width: 320, height: 320)
                     .blur(radius: 2)
                     .offset(x: -80, y: -260)
 
                 Circle()
-                    .fill(Color.brandSurface.opacity(0.6))
+                    .fill(Color.surfaceCard.opacity(0.6))
                     .frame(width: 200, height: 200)
                     .offset(x: 130, y: 200)
 

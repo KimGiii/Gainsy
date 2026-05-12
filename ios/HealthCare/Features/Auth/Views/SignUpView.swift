@@ -7,7 +7,7 @@ struct SignUpView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "#F5F4EC").ignoresSafeArea()
+            Color.backgroundPage.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header

@@ -211,7 +211,7 @@ struct AddDietLogView: View {
                 .foregroundColor(.brandPrimary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
@@ -338,7 +338,7 @@ private struct DraftEntryCard: View {
                     .multilineTextAlignment(.trailing)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.brandSurface)
+                    .background(Color.surfaceCard)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 Text("g")
                     .font(.caption)
@@ -380,7 +380,7 @@ private struct DraftEntryCard: View {
         .foregroundColor(.brandPrimary)
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
-        .background(Color.brandSurface)
+        .background(Color.surfaceCard)
         .clipShape(Capsule())
     }
 }
@@ -603,7 +603,7 @@ struct FoodSearchSheet: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(Color.brandSurface)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -623,7 +623,7 @@ private struct CatalogFoodRow: View {
             Text(item.category?.emoji ?? "🍽")
                 .font(.title2)
                 .frame(width: 40, height: 40)
-                .background(Color.brandSurface)
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
