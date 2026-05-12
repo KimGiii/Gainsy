@@ -31,7 +31,7 @@ struct OnboardingView: View {
 
                     // Copy
                     VStack(spacing: 10) {
-                        Text("HealthCare")
+                        Text("Gainsy")
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(Color.brandPrimary)
 

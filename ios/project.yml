@@ -1,6 +1,6 @@
 name: HealthCare
 options:
-  bundleIdPrefix: com.healthcare
+  bundleIdPrefix: com.kingloo.gainsy
   deploymentTarget:
     iOS: "16.0"
   defaultConfig: Debug
@@ -21,7 +21,13 @@ settings:
 
 configs:
   Debug: debug
+  Staging: debug
   Release: release
+
+configFiles:
+  Debug: Configs/Debug.xcconfig
+  Staging: Configs/Staging.xcconfig
+  Release: Configs/Release.xcconfig
 
 packages:
   FirebaseSDK:
@@ -39,23 +45,33 @@ targets:
     info:
       path: HealthCare/Resources/Info.plist
       properties:
-        CFBundleDisplayName: HealthCare
-        CFBundleIdentifier: com.healthcare.ios
+        CFBundleDisplayName: Vitae
+        CFBundleIdentifier: com.kingloo.gainsy.ios
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen:
           UIColorName: SplashBackground
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        UIRequiresFullScreen: true
         NSCameraUsageDescription: "진행 사진을 찍기 위해 카메라 접근 권한이 필요합니다."
         NSPhotoLibraryUsageDescription: "진행 사진을 저장하기 위해 사진 라이브러리 접근 권한이 필요합니다."
+        NSHealthShareUsageDescription: "건강 데이터를 읽어 운동 및 식단 목표 달성을 지원합니다."
+        NSHealthUpdateUsageDescription: "운동 및 식단 기록을 건강 앱에 저장합니다."
+        NSUserNotificationUsageDescription: "주간 건강 요약 및 목표 달성 알림을 받습니다."
         UIBackgroundModes:
           - remote-notification
         FirebaseAppDelegateProxyEnabled: false
+        ITSAppUsesNonExemptEncryption: false
+        API_BASE_URL: "$(BASE_URL)"
+        NSAppTransportSecurity:
+          NSExceptionDomains:
+            13.209.216.146:
+              NSExceptionAllowsInsecureHTTPLoads: true
     settings:
       base:
         INFOPLIST_FILE: HealthCare/Resources/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.healthcare.ios
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingloo.gainsy.ios
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies:
       - package: FirebaseSDK
@@ -78,7 +94,7 @@ targets:
       base:
         PRODUCT_NAME: "$(TARGET_NAME)"
         PRODUCT_MODULE_NAME: HealthCareTests
-        PRODUCT_BUNDLE_IDENTIFIER: com.healthcare.ios.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingloo.gainsy.ios.tests
         GENERATE_INFOPLIST_FILE: YES
 
   HealthCareUITests:
@@ -92,7 +108,7 @@ targets:
       base:
         PRODUCT_NAME: "$(TARGET_NAME)"
         PRODUCT_MODULE_NAME: HealthCareUITests
-        PRODUCT_BUNDLE_IDENTIFIER: com.healthcare.ios.uitests
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingloo.gainsy.ios.uitests
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:
@@ -106,7 +122,7 @@ schemes:
       config: Debug
       environmentVariables:
         - variable: BASE_URL
-          value: http://localhost:8080
+          value: http://13.209.216.146
           isEnabled: true
     test:
       config: Debug
@@ -119,5 +135,22 @@ schemes:
       config: Release
     analyze:
       config: Debug
+    archive:
+      config: Release
+
+  HealthCare-Staging:
+    build:
+      targets:
+        HealthCare: all
+    run:
+      config: Staging
+      environmentVariables:
+        - variable: BASE_URL
+          value: http://13.209.216.146
+          isEnabled: true
+    profile:
+      config: Staging
+    analyze:
+      config: Staging
     archive:
       config: Release

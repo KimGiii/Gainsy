@@ -9,19 +9,32 @@ final class AppContainer: ObservableObject {
     init() {
         let tokenStore = TokenStore()
 
-        #if DEBUG
-        let defaultBaseURL = "http://localhost:8080"
-        #else
-        let defaultBaseURL = "https://api.healthcare.app"
-        #endif
-
-        let baseURL = URL(
-            string: ProcessInfo.processInfo.environment["BASE_URL"] ?? defaultBaseURL
-        )!
+        let configuredBaseURL = Bundle.main.object(forInfoDictionaryKey: "API_BASE_URL") as? String
+        let environmentBaseURL = ProcessInfo.processInfo.environment["BASE_URL"]
+        let baseURL = Self.makeBaseURL(from: environmentBaseURL)
+            ?? Self.makeBaseURL(from: configuredBaseURL)
+            ?? Self.makeBaseURL(from: Constants.API.defaultBaseURL)!
 
         let apiClient = APIClient(baseURL: baseURL, tokenStore: tokenStore)
         self.tokenStore = tokenStore
         self.apiClient  = apiClient
         self.fcmTokenUploader = FcmTokenUploader(apiClient: apiClient)
+    }
+
+    private static func makeBaseURL(from rawValue: String?) -> URL? {
+        guard let rawValue else { return nil }
+
+        let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty, !value.contains("$(") else { return nil }
+
+        guard let url = URL(string: value),
+              let scheme = url.scheme,
+              let host = url.host,
+              ["http", "https"].contains(scheme),
+              host != "api" else {
+            return nil
+        }
+
+        return url
     }
 }

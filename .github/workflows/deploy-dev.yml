@@ -86,7 +86,7 @@ jobs:
         run: |
           for i in $(seq 1 12); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              http://${{ secrets.DEV_SSH_HOST }}:8080/actuator/health || echo "000")
+              http://${{ secrets.DEV_SSH_HOST }}/actuator/health || echo "000")
             if [ "$STATUS" = "200" ]; then
               echo "Health check passed"
               exit 0
