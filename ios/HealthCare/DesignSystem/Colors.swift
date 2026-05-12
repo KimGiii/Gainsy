@@ -17,21 +17,96 @@ extension Color {
     static let brandEmber        = Color(hex: "#E07856")   // terracotta
     static let brandMoss         = Color(hex: "#6FA287")   // desaturated sage
     static let brandDusk         = Color(hex: "#0B2A1C")   // near-black forest
-    static let brandBone         = Color(hex: "#EFEAE0")   // warm off-white
+    static let brandBone         = Color(hex: "#EFEAE0")   // warm off-white (light-only brand token)
 
     // Status
     static let brandSuccess      = Color(hex: "#40916C")
     static let brandWarning      = Color(hex: "#F4A261")
     static let brandDanger       = Color(hex: "#E63946")
 
-    // Neutral
+    // Neutral — UIKit semantic (auto dark mode)
     static let surfacePrimary    = Color(.systemBackground)
     static let surfaceSecondary  = Color(.secondarySystemBackground)
     static let surfaceGrouped    = Color(.systemGroupedBackground)
-    static let textPrimary       = Color(hex: "#121815")
-    static let textSecondary     = Color(hex: "#6B7A72")
-    static let textTertiary      = Color(hex: "#9AA79F")
-    static let hairline          = Color(hex: "#E3EAE4")
+
+    // MARK: Adaptive semantic tokens (light / dark)
+
+    /// Page background — warm bone (light) / deep forest night (dark)
+    static let backgroundPage = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#0D1A12")
+            : UIColor(adaptHex: "#EFEAE0")
+    })
+
+    /// Card / elevated surface — white (light) / elevated forest (dark)
+    static let surfaceCard = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#162219")
+            : .white
+    })
+
+    /// Headline text — near-black forest (light) / near-white with green tint (dark)
+    static let textHeadline = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#D8EAE0")
+            : UIColor(adaptHex: "#0B2A1C")
+    })
+
+    /// Progress ring track — dark at low opacity (light) / light at low opacity (dark)
+    static let ringTrack = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(white: 1, alpha: 0.15)
+            : UIColor(adaptHex: "#0B2A1C").withAlphaComponent(0.10)
+    })
+
+    /// Card border stroke — subtle dark-on-light (light) / subtle light-on-dark (dark)
+    static let cardStroke = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(white: 1, alpha: 0.09)
+            : UIColor(adaptHex: "#0B2A1C").withAlphaComponent(0.06)
+    })
+
+    /// Body text — near-black (light) / near-white green-tinted (dark)
+    static let textPrimary = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#E4EDE6")
+            : UIColor(adaptHex: "#121815")
+    })
+
+    /// Secondary text — sage (light) / lighter sage (dark)
+    static let textSecondary = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#7EA28E")
+            : UIColor(adaptHex: "#6B7A72")
+    })
+
+    /// Tertiary text — muted sage (light) / dimmer sage (dark)
+    static let textTertiary = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#526B5E")
+            : UIColor(adaptHex: "#9AA79F")
+    })
+
+    /// Hairline / divider — light warm (light) / dark forest (dark)
+    static let hairline = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#243B2D")
+            : UIColor(adaptHex: "#E3EAE4")
+    })
+}
+
+// MARK: - UIColor hex helper (private)
+
+extension UIColor {
+    convenience init(adaptHex hex: String) {
+        let str = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: str).scanHexInt64(&int)
+        let r = CGFloat((int >> 16) & 0xFF) / 255
+        let g = CGFloat((int >> 8)  & 0xFF) / 255
+        let b = CGFloat(int         & 0xFF) / 255
+        self.init(red: r, green: g, blue: b, alpha: 1)
+    }
 }
 
 // MARK: - Semantic Gradient Tokens

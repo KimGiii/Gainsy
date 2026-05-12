@@ -29,8 +29,7 @@ struct ActivityRingPanel: View {
                     size: .hero,
                     value: caloriesValueText,
                     unit: "kcal",
-                    label: "칼로리 섭취",
-                    trackColor: Color.brandDusk.opacity(0.10)
+                    label: "칼로리 섭취"
                 )
 
                 // 오른쪽 — 운동 + 단백질 (standard × 2)
@@ -41,8 +40,7 @@ struct ActivityRingPanel: View {
                         size: .standard,
                         value: "\(todayDurationMinutes)",
                         unit: "min",
-                        label: "운동",
-                        trackColor: Color.brandDusk.opacity(0.10)
+                        label: "운동"
                     )
 
                     ProgressRing(
@@ -55,8 +53,7 @@ struct ActivityRingPanel: View {
                         size: .standard,
                         value: String(format: "%.0f", todayProteinG),
                         unit: "g",
-                        label: "단백질",
-                        trackColor: Color.brandDusk.opacity(0.10)
+                        label: "단백질"
                     )
                 }
             }
@@ -89,10 +86,10 @@ struct ActivityRingPanel: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.surfaceCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .stroke(Color.brandDusk.opacity(0.06), lineWidth: 1)
+                        .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
         .elevation(.low)
