@@ -9,15 +9,13 @@ final class AppContainer: ObservableObject {
     init() {
         let tokenStore = TokenStore()
 
-        #if DEBUG
-        let defaultBaseURL = "http://localhost:8080"
-        #else
-        let defaultBaseURL = "https://api.healthcare.app"
-        #endif
+        let configuredBaseURL = Bundle.main.object(forInfoDictionaryKey: "API_BASE_URL") as? String
+        let environmentBaseURL = ProcessInfo.processInfo.environment["BASE_URL"]
+        let baseURLString = environmentBaseURL ?? configuredBaseURL ?? Constants.API.defaultBaseURL
 
-        let baseURL = URL(
-            string: ProcessInfo.processInfo.environment["BASE_URL"] ?? defaultBaseURL
-        )!
+        guard let baseURL = URL(string: baseURLString) else {
+            preconditionFailure("Invalid API base URL: \(baseURLString)")
+        }
 
         let apiClient = APIClient(baseURL: baseURL, tokenStore: tokenStore)
         self.tokenStore = tokenStore
