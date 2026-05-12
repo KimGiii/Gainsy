@@ -249,7 +249,7 @@ private struct QuickAddButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color.surfaceSecondary.opacity(0.7))
+            .background(Color.backgroundPage)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
@@ -485,7 +485,7 @@ private struct ExerciseSessionSummaryCard: View {
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(12)
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -641,7 +641,7 @@ private struct MeasurementSummaryCard: View {
             Spacer()
         }
         .padding(12)
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -711,7 +711,7 @@ private struct DietLogSummaryCard: View {
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(12)
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
