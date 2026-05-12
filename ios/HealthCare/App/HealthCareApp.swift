@@ -7,6 +7,11 @@ struct HealthCareApp: App {
 
     @StateObject private var authState: AuthState
     @StateObject private var appContainer = AppContainer()
+    @AppStorage("appTheme") private var appThemeRawValue = AppTheme.system.rawValue
+
+    private var selectedTheme: AppTheme {
+        AppTheme(rawValue: appThemeRawValue) ?? .system
+    }
 
     init() {
         let tokenStore = TokenStore()
@@ -24,6 +29,7 @@ struct HealthCareApp: App {
             RootView()
                 .environmentObject(authState)
                 .environmentObject(appContainer)
+                .preferredColorScheme(selectedTheme.colorScheme)
         }
     }
 }
