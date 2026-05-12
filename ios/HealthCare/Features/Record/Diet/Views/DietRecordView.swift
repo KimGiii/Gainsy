@@ -7,7 +7,7 @@ struct DietRecordView: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            Color.surfaceGrouped.ignoresSafeArea()
+            Color.backgroundPage.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
                     DietHeroSection(viewModel: viewModel, onDismiss: { dismiss() })
@@ -58,26 +58,26 @@ struct DietRecordView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("오늘 섭취")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     Text(String(format: "%.0f kcal", viewModel.todayCalories))
                         .font(.title2.bold())
-                        .foregroundColor(.brandPrimary)
+                        .foregroundColor(Color.brandAccent)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("목표")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     Text(String(format: "%.0f kcal", DietRecordViewModel.dailyCalorieGoal))
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
             // 칼로리 프로그레스 바
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                        .fill(Color.hairline)
                         .frame(height: 8)
                     RoundedRectangle(cornerRadius: 4)
                         .fill(
@@ -120,7 +120,7 @@ struct DietRecordView: View {
             }
         }
         .padding(16)
-        .background(Color(.systemBackground))
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
     }
@@ -157,10 +157,10 @@ struct DietRecordView: View {
                 .padding(.top, 40)
             Text("아직 식단 기록이 없어요")
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textHeadline)
             Text("오늘 먹은 음식을 기록해보세요.\n영양 목표 달성을 도와드립니다.")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
             Button {
                 viewModel.showAddLog = true
@@ -216,7 +216,7 @@ private struct DietHeroSection: View {
                 )
             // Wave 전환
             DietWaveCurve()
-                .fill(Color.surfaceGrouped)
+                .fill(Color.backgroundPage)
                 .frame(height: 50)
                 .offset(y: 1)
 
@@ -339,13 +339,13 @@ private struct MacroProgressCell: View {
                 .foregroundColor(color)
             Text("/ \(Int(goal))g")
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(label)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color(.systemGray5)).frame(height: 4)
+                    Capsule().fill(Color.hairline).frame(height: 4)
                     Capsule().fill(color)
                         .frame(width: geo.size.width * progress, height: 4)
                         .animation(.spring(response: 0.5), value: progress)
@@ -371,7 +371,7 @@ private struct DietLogCard: View {
                     .font(.title2)
                 Text(log.mealType.displayName)
                     .font(.caption2.bold())
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
             }
             .frame(width: 52)
             .padding(.vertical, 10)
@@ -381,7 +381,7 @@ private struct DietLogCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(log.caloriesText)
                     .font(.subheadline.bold())
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
                 // 3대 영양소 요약
                 HStack(spacing: 8) {
                     if let p = log.totalProteinG {
@@ -398,11 +398,11 @@ private struct DietLogCard: View {
             Spacer()
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(Color(.systemBackground))
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
     }
