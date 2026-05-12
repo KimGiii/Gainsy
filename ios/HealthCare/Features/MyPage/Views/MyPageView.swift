@@ -45,6 +45,7 @@ struct MyPageView: View {
                     .environmentObject(container)
             }
         }
+        .refreshable { await viewModel.load(apiClient: container.apiClient) }
         .task { await viewModel.load(apiClient: container.apiClient) }
     }
 

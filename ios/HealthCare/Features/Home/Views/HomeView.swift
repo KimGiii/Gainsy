@@ -130,7 +130,10 @@ private struct DashboardHeaderBar: View {
 
             HStack(spacing: 8) {
                 HeaderIconButton(system: "bell")
-                HeaderIconButton(system: "person.crop.circle")
+                NavigationLink(destination: MyPageView()) {
+                    HeaderIconButton(system: "person.crop.circle")
+                }
+                .buttonStyle(.plain)
             }
         }
     }

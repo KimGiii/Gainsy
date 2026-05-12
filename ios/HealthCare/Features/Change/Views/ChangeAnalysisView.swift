@@ -35,6 +35,7 @@ struct ChangeAnalysisView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
+        .refreshable { await viewModel.load(apiClient: container.apiClient) }
         .task { await viewModel.load(apiClient: container.apiClient) }
     }
 }
