@@ -12,7 +12,7 @@ struct ExerciseSessionDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.surfaceGrouped.ignoresSafeArea()
+            Color.backgroundPage.ignoresSafeArea()
 
             Group {
                 if viewModel.isLoading {
@@ -125,7 +125,7 @@ struct ExerciseSessionDetailView: View {
                         value: session.durationMinutes.map { "\($0)" } ?? "—",
                         unit: "분",
                         label: "운동 시간",
-                        color: Color.brandPrimary
+                        color: Color.brandAccent
                     )
                     Divider().frame(height: 44)
                     detailStat(
@@ -133,7 +133,7 @@ struct ExerciseSessionDetailView: View {
                         value: "\(session.sets.count)",
                         unit: "세트",
                         label: "총 세트",
-                        color: Color.brandPrimary
+                        color: Color.brandAccent
                     )
                 }
                 .padding(.vertical, 16)
@@ -207,7 +207,7 @@ struct ExerciseSessionDetailView: View {
             Spacer()
         }
         .padding(14)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
@@ -226,7 +226,7 @@ struct ExerciseSessionDetailView: View {
             Button("다시 시도") {
                 Task { await viewModel.loadSession(id: sessionId, apiClient: container.apiClient) }
             }
-            .foregroundStyle(Color.brandPrimary)
+            .foregroundStyle(Color.brandAccent)
             .fontWeight(.semibold)
         }
         .padding(32)
@@ -247,7 +247,7 @@ private struct DetailHeaderBackground: View {
                     .offset(x: geo.size.width * 0.20, y: -geo.size.height * 0.05)
                     .rotationEffect(.degrees(-12))
                 DetailWaveCurve()
-                    .fill(Color.surfaceGrouped)
+                    .fill(Color.backgroundPage)
                     .frame(height: 56)
                     .offset(y: geo.size.height - 28)
             }
@@ -290,7 +290,7 @@ private struct ExerciseGroupCard: View {
                     .foregroundStyle(Color.textSecondary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.surfaceSecondary)
+                    .background(Color.backgroundPage)
                     .clipShape(Capsule())
             }
             .padding(.horizontal, 16)
@@ -303,7 +303,7 @@ private struct ExerciseGroupCard: View {
                 SetRow(set: set)
             }
         }
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
     }
@@ -319,7 +319,7 @@ private struct SetRow: View {
             // 세트 번호
             Text("\(set.setNumber)")
                 .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
                 .frame(width: 28, height: 28)
                 .background(Color.surfaceCard)
                 .clipShape(Circle())

@@ -25,7 +25,7 @@ struct WeeklyRetrospectiveView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 40)
         }
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .navigationTitle("주간 회고")
         .navigationBarTitleDisplayMode(.large)
         .alert("오류", isPresented: Binding(
@@ -274,7 +274,7 @@ private struct InsightCard<Content: View>: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }

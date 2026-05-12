@@ -106,7 +106,7 @@ private struct InsightMenuCard: View {
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(16)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }

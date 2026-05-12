@@ -95,7 +95,7 @@ private struct BodyHeroSection: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            BodyWaveBackground().frame(height: 280)
+            BodyWaveBackground().frame(height: 220)
 
             VStack(spacing: 0) {
                 Color.clear.frame(height: 54)
@@ -119,11 +119,11 @@ private struct BodyHeroSection: View {
                 .padding(.horizontal, 20)
 
                 if isLoading {
-                    ProgressView().tint(.white).padding(.top, 30)
+                    ProgressView().tint(.white).padding(.top, 18)
                 } else if let m = latest {
-                    HeroStatsRow(measurement: m).padding(.top, 20)
+                    HeroStatsRow(measurement: m).padding(.top, 14)
                 } else {
-                    HeroEmptyState().padding(.top, 20)
+                    HeroEmptyState().padding(.top, 14)
                 }
             }
         }
@@ -134,21 +134,24 @@ private struct HeroStatsRow: View {
     let measurement: MeasurementResponse
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 28) {
             if let w = measurement.weightKg {
                 HeroStatItem(value: String(format: "%.1f", w), unit: "kg", label: "체중")
-                Spacer()
+            }
+            if measurement.weightKg != nil && measurement.bodyFatPct != nil {
+                Divider().frame(width: 1, height: 36).background(Color.white.opacity(0.2))
             }
             if let bf = measurement.bodyFatPct {
                 HeroStatItem(value: String(format: "%.1f", bf), unit: "%", label: "체지방")
-                Spacer()
+            }
+            if measurement.bodyFatPct != nil && measurement.muscleMassKg != nil {
+                Divider().frame(width: 1, height: 36).background(Color.white.opacity(0.2))
             }
             if let mm = measurement.muscleMassKg {
                 HeroStatItem(value: String(format: "%.1f", mm), unit: "kg", label: "근육량")
             }
         }
-        .padding(.horizontal, 36)
-        .padding(.bottom, 36)
+        .padding(.bottom, 16)
     }
 }
 
@@ -184,7 +187,7 @@ private struct HeroEmptyState: View {
                 .font(.system(size: 13))
                 .foregroundStyle(.white.opacity(0.65))
         }
-        .padding(.bottom, 36)
+        .padding(.bottom, 16)
     }
 }
 
@@ -341,7 +344,7 @@ private struct MeasurementTrendSection: View {
                     Text("변화 추세")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(Color.textPrimary)
-                    Text("백엔드 range / at-or-before 기준으로 계산된 추세입니다")
+                    Text("선택한 기간 동안의 변화 흐름")
                         .font(.system(size: 12))
                         .foregroundStyle(Color.textSecondary)
                 }

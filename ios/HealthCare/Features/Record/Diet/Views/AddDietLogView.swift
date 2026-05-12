@@ -26,7 +26,7 @@ struct AddDietLogView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Color.backgroundPage.ignoresSafeArea()
                 ScrollView {
                     VStack(spacing: 20) {
                         mealTypeSection
@@ -49,7 +49,7 @@ struct AddDietLogView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("취소") { onSaved() }
-                        .foregroundColor(.brandPrimary)
+                        .foregroundColor(Color.brandAccent)
                 }
             }
             .sheet(isPresented: $viewModel.showFoodSearch) {
@@ -90,7 +90,7 @@ struct AddDietLogView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("식사 유형")
                 .font(.subheadline.bold())
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             HStack(spacing: 8) {
                 ForEach(MealType.allCases, id: \.self) { type in
                     MealTypePill(type: type, isSelected: viewModel.selectedMealType == type) {
@@ -111,11 +111,11 @@ struct AddDietLogView: View {
                     ProgressView()
                     Text("AI가 식단 사진을 분석하고 있어요...")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemBackground))
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
 
@@ -123,16 +123,16 @@ struct AddDietLogView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("AI 추정치 안내", systemImage: "sparkles")
                         .font(.subheadline.bold())
-                        .foregroundColor(.brandPrimary)
+                        .foregroundColor(Color.brandAccent)
                     ForEach(viewModel.analysisWarnings, id: \.self) { warning in
                         Text("• \(warning)")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemBackground))
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
@@ -143,7 +143,7 @@ struct AddDietLogView: View {
             HStack {
                 Text("오늘 이 식사")
                     .font(.subheadline.bold())
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
                 Spacer()
                 Text(String(format: "%.0f kcal", viewModel.totalCalories))
                     .font(.title3.bold())
@@ -158,7 +158,7 @@ struct AddDietLogView: View {
             }
         }
         .padding(16)
-        .background(Color(.systemBackground))
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
@@ -171,7 +171,7 @@ struct AddDietLogView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("추가한 식품")
                         .font(.subheadline.bold())
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     ForEach(Array(viewModel.draftEntries.enumerated()), id: \.element.id) { idx, entry in
                         DraftEntryCard(entry: $viewModel.draftEntries[idx]) {
                             viewModel.draftEntries.remove(at: idx)
@@ -208,7 +208,7 @@ struct AddDietLogView: View {
                     Text("식품 추가")
                 }
                 .font(.subheadline.bold())
-                .foregroundColor(.brandPrimary)
+                .foregroundColor(Color.brandAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(Color.surfaceCard)
@@ -221,12 +221,12 @@ struct AddDietLogView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("메모 (선택)")
                 .font(.subheadline.bold())
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             TextField("식사 메모를 입력하세요", text: $viewModel.notes, axis: .vertical)
                 .font(.body)
                 .lineLimit(3...6)
                 .padding(12)
-                .background(Color(.systemBackground))
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }
@@ -276,11 +276,11 @@ private struct MealTypePill: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
-            .background(isSelected ? Color.brandPrimary : Color(.systemBackground))
+            .background(isSelected ? Color.brandPrimary : Color.surfaceCard)
             .foregroundColor(isSelected ? .white : .primary)
             .clipShape(Capsule())
             .overlay(
-                Capsule().stroke(isSelected ? Color.clear : Color(.systemGray4), lineWidth: 1)
+                Capsule().stroke(isSelected ? Color.clear : Color.hairline, lineWidth: 1)
             )
         }
     }
@@ -301,7 +301,7 @@ private struct DraftEntryCard: View {
                     if let cat = entry.food.category {
                         Text(cat.displayName)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
                     if entry.analysisItemId != nil {
                         HStack(spacing: 6) {
@@ -310,12 +310,12 @@ private struct DraftEntryCard: View {
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 3)
                                 .background(Color.brandPrimary.opacity(0.12))
-                                .foregroundColor(.brandPrimary)
+                                .foregroundColor(Color.brandAccent)
                                 .clipShape(Capsule())
                             if let confidence = entry.aiConfidence {
                                 Text("신뢰도 \(Int(confidence * 100))%")
                                     .font(.caption2)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(Color.textSecondary)
                             }
                         }
                     }
@@ -323,14 +323,14 @@ private struct DraftEntryCard: View {
                 Spacer()
                 Button(action: onDelete) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
 
             HStack(spacing: 8) {
                 Text("섭취량")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 TextField("g", text: $entry.servingGText)
                     .keyboardType(.decimalPad)
                     .font(.subheadline.bold())
@@ -342,7 +342,7 @@ private struct DraftEntryCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 Text("g")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 Spacer()
                 Text(String(format: "%.0f kcal", entry.calories))
                     .font(.subheadline.bold())
@@ -366,7 +366,7 @@ private struct DraftEntryCard: View {
             }
         }
         .padding(14)
-        .background(Color(.systemBackground))
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.04), radius: 3, y: 1)
     }
@@ -377,7 +377,7 @@ private struct DraftEntryCard: View {
             entry.servingGText = String(format: "%.0f", updated)
         }
         .font(.caption.bold())
-        .foregroundColor(.brandPrimary)
+        .foregroundColor(Color.brandAccent)
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(Color.surfaceCard)
@@ -399,7 +399,7 @@ struct MacroCell: View {
                 .foregroundColor(color)
             Text(label)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -417,7 +417,7 @@ struct FoodSearchSheet: View {
                 // 검색바
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     TextField("식품명 검색", text: $viewModel.searchQuery)
                         .submitLabel(.search)
                         .onSubmit { triggerSearch() }
@@ -425,12 +425,12 @@ struct FoodSearchSheet: View {
                         Button {
                             viewModel.clearSearch()
                         } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundColor(.secondary)
+                            Image(systemName: "xmark.circle.fill").foregroundColor(Color.textSecondary)
                         }
                     }
                 }
                 .padding(10)
-                .background(Color(.systemGray6))
+                .background(Color.backgroundPage)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
@@ -451,7 +451,7 @@ struct FoodSearchSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("닫기") { viewModel.showFoodSearch = false }
-                        .foregroundColor(.brandPrimary)
+                        .foregroundColor(Color.brandAccent)
                 }
             }
         }
@@ -500,7 +500,7 @@ struct FoodSearchSheet: View {
                 .foregroundColor(.secondary.opacity(0.5))
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
 
             // Codex 작업: 검색 결과가 없을 때 AI 영양 추정 플로우를 화면에 연결합니다.
@@ -509,11 +509,11 @@ struct FoodSearchSheet: View {
                     HStack {
                         Label("AI 영양 추정", systemImage: "sparkles")
                             .font(.subheadline.bold())
-                            .foregroundColor(.brandPrimary)
+                            .foregroundColor(Color.brandAccent)
                         Spacer()
                         Text("신뢰도 \(Int(estimate.confidence * 100))%")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
 
                     Text(estimate.foodName)
@@ -522,7 +522,7 @@ struct FoodSearchSheet: View {
                     if let category = estimate.category {
                         Text(category.displayName)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
 
                     HStack(spacing: 10) {
@@ -550,7 +550,7 @@ struct FoodSearchSheet: View {
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemBackground))
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
                 VStack(spacing: 10) {
@@ -596,10 +596,10 @@ struct FoodSearchSheet: View {
         VStack(spacing: 2) {
             Text(String(format: "%.0f%@", value, unit))
                 .font(.caption.bold())
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textHeadline)
             Text(title)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
@@ -643,14 +643,14 @@ private struct CatalogFoodRow: View {
                 if let kcal = item.caloriesPer100g {
                     Text(String(format: "%.0f kcal / 100g", kcal))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
             Spacer()
             Button(action: onAdd) {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
             }
         }
         .padding(.vertical, 4)
@@ -668,7 +668,7 @@ private struct ExternalFoodRow: View {
             Text(item.category?.emoji ?? "🔍")
                 .font(.title2)
                 .frame(width: 40, height: 40)
-                .background(Color(.systemGray6))
+                .background(Color.backgroundPage)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
@@ -680,11 +680,11 @@ private struct ExternalFoodRow: View {
                         .font(.caption2.bold())
                         .padding(.horizontal, 5)
                         .padding(.vertical, 2)
-                        .background(Color(.systemGray5))
+                        .background(Color.hairline)
                         .clipShape(Capsule())
                     Text(item.nutritionSummary)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                         .lineLimit(1)
                 }
             }
@@ -692,7 +692,7 @@ private struct ExternalFoodRow: View {
             Button(action: onAdd) {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
             }
         }
         .padding(.vertical, 4)
@@ -782,7 +782,7 @@ private struct AddCustomFoodView: View {
             if required {
                 Text("필수")
                     .font(.caption2.bold())
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
             }
             Spacer()
             TextField(unit, text: text)
@@ -791,7 +791,7 @@ private struct AddCustomFoodView: View {
                 .frame(width: 90)
             Text(unit)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
