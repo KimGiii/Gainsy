@@ -85,7 +85,9 @@ jobs:
               -e REDIS_HOST="${{ secrets.PROD_REDIS_HOST }}" \
               -e JWT_SECRET="${{ secrets.PROD_JWT_SECRET }}" \
               -e S3_BUCKET="healthcare-photos-prod" \
-              -e S3_PATH_STYLE_ACCESS="false" \
+              -e S3_ENDPOINT="http://localhost:4566" \
+              -e S3_PUBLIC_ENDPOINT="${{ secrets.PROD_S3_PUBLIC_ENDPOINT }}" \
+              -e S3_PATH_STYLE_ACCESS="true" \
               -e FCM_CREDENTIALS_PATH="/app/fcm-credentials.json" \
               -e OPENAI_API_KEY="${{ secrets.PROD_OPENAI_API_KEY }}" \
               -e PUBLIC_FOOD_API_KEY="${{ secrets.PROD_PUBLIC_FOOD_API_KEY }}" \

@@ -73,7 +73,8 @@ jobs:
               -e JWT_SECRET="${{ secrets.DEV_JWT_SECRET }}" \
               -e S3_BUCKET="healthcare-photos-dev" \
               -e S3_ENDPOINT="${{ secrets.DEV_S3_ENDPOINT }}" \
-              -e S3_PATH_STYLE_ACCESS="false" \
+              -e S3_PUBLIC_ENDPOINT="${{ secrets.DEV_S3_PUBLIC_ENDPOINT }}" \
+              -e S3_PATH_STYLE_ACCESS="true" \
               -e FCM_CREDENTIALS_PATH="/app/fcm-credentials.json" \
               -e OPENAI_API_KEY="${{ secrets.DEV_OPENAI_API_KEY }}" \
               -e PUBLIC_FOOD_API_KEY="${{ secrets.DEV_PUBLIC_FOOD_API_KEY }}" \
