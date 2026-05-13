@@ -439,13 +439,13 @@ private struct MeasurementTrendSection: View {
 
                     HStack(spacing: 12) {
                         TrendSummaryPill(
-                            title: "시작",
-                            value: formattedValue(viewModel.displayTrendPoints.first?.value),
+                            title: "현재",
+                            value: formattedValue(viewModel.displayTrendPoints.last?.value),
                             unit: viewModel.currentMetricUnit
                         )
                         TrendSummaryPill(
-                            title: "현재",
-                            value: formattedValue(viewModel.displayTrendPoints.last?.value),
+                            title: "시작",
+                            value: formattedValue(viewModel.displayTrendPoints.first?.value),
                             unit: viewModel.currentMetricUnit
                         )
                     }
