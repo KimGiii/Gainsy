@@ -71,6 +71,29 @@ jobs:
               GREEN_PORT=8080; BLUE_NAME=healthcare-api-8081; GREEN_NAME=healthcare-api-8080
             fi
 
+            # LocalStack 실행 확인 및 시작 (localhost에만 바인딩)
+            if ! docker ps --format '{{.Names}}' | grep -q '^localstack$'; then
+              docker run -d \
+                --name localstack \
+                --restart unless-stopped \
+                -p 127.0.0.1:4566:4566 \
+                -e SERVICES=s3 \
+                -e DEFAULT_REGION=ap-northeast-2 \
+                localstack/localstack:latest
+              sleep 10
+            fi
+
+            # S3 버킷 생성 (없으면)
+            aws --endpoint-url=http://localhost:4566 \
+              --region ap-northeast-2 \
+              s3 mb s3://healthcare-photos-prod 2>/dev/null || true
+
+            # nginx에 /s3/ 프록시 블록 추가 (없으면)
+            if ! sudo grep -q 'location /s3/' /etc/nginx/sites-available/healthcare; then
+              sudo sed -i 's|location /actuator/health|location /s3/ {\n        proxy_pass http://127.0.0.1:4566/;\n        proxy_buffering off;\n        proxy_request_buffering off;\n        client_max_body_size 25m;\n    }\n\n    location /actuator/health|' /etc/nginx/sites-available/healthcare
+              sudo nginx -t && sudo nginx -s reload
+            fi
+
             # 잔여 green 정리
             docker stop $GREEN_NAME || true
             docker rm   $GREEN_NAME || true

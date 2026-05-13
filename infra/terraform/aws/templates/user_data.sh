@@ -35,6 +35,13 @@ server {
     listen 80;
     server_name _;
 
+    location /s3/ {
+        proxy_pass              http://127.0.0.1:4566/;
+        proxy_buffering         off;
+        proxy_request_buffering off;
+        client_max_body_size    25m;
+    }
+
     location /actuator/health {
         proxy_pass http://127.0.0.1:8080;
     }
