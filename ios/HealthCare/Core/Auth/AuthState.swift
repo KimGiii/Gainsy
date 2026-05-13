@@ -25,7 +25,9 @@ final class AuthState: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.setUnauthenticated()
+            Task { @MainActor [weak self] in
+                self?.setUnauthenticated()
+            }
         }
     }
 
