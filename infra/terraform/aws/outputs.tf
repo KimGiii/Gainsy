@@ -74,3 +74,20 @@ output "github_secrets_guide" {
     ECR_REGISTRY     = ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com
   EOT
 }
+
+# ── DNS ───────────────────────────────────────────────────────────────────────
+
+output "route53_zone_id" {
+  description = "Route 53 호스팅 영역 ID"
+  value       = aws_route53_zone.main.zone_id
+}
+
+output "route53_nameservers" {
+  description = "도메인 등록처에 등록해야 할 Route 53 네임서버 4개"
+  value       = aws_route53_zone.main.name_servers
+}
+
+output "api_fqdn" {
+  description = "API 서브도메인 FQDN"
+  value       = aws_route53_record.api.fqdn
+}
