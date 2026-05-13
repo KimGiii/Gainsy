@@ -33,3 +33,4 @@ terraform.tfvars
 .terraform.lock.hcl
 .gstack/
 tfplan
+ios/HealthCare/App/GoogleService-Info.plist
