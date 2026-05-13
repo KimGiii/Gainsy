@@ -1,3 +1,8 @@
+server:
+  # Nginx 뒤에 위치하므로 X-Forwarded-* 헤더를 신뢰해
+  # Spring이 원본 scheme(https), host, client-ip를 정확히 인식하도록 한다.
+  forward-headers-strategy: native
+
 spring:
   datasource:
     url: ${DB_URL}

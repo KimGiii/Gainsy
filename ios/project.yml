@@ -64,10 +64,6 @@ targets:
         FirebaseAppDelegateProxyEnabled: false
         ITSAppUsesNonExemptEncryption: false
         API_BASE_URL: "$(BASE_URL)"
-        NSAppTransportSecurity:
-          NSExceptionDomains:
-            13.209.216.146:
-              NSExceptionAllowsInsecureHTTPLoads: true
     settings:
       base:
         INFOPLIST_FILE: HealthCare/Resources/Info.plist
@@ -122,7 +118,7 @@ schemes:
       config: Debug
       environmentVariables:
         - variable: BASE_URL
-          value: http://13.209.216.146
+          value: https://api.gainsy.site
           isEnabled: true
     test:
       config: Debug
@@ -146,7 +142,7 @@ schemes:
       config: Staging
       environmentVariables:
         - variable: BASE_URL
-          value: http://13.209.216.146
+          value: https://api.gainsy.site
           isEnabled: true
     profile:
       config: Staging

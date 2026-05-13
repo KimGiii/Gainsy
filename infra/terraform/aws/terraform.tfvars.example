@@ -25,3 +25,7 @@ redis_node_type = "cache.t3.micro"
 # S3
 bucket_name          = "healthcare-photos-dev-YOUR_ACCOUNT_ID"
 cors_allowed_origins = ["*"]
+
+# DNS (Route 53)
+# 도메인 등록처에서 Route 53 NS 4개로 변경해야 동작한다.
+root_domain = "example.com"

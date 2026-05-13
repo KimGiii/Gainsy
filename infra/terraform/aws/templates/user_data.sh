@@ -28,12 +28,26 @@ unzip -q /tmp/awscliv2.zip -d /tmp
 rm -rf /tmp/aws /tmp/awscliv2.zip
 
 # ── nginx ─────────────────────────────────────────────────────────────────────
+#
+# 초기 설치 시점에는 DNS/도메인이 아직 연결되지 않았을 수 있으므로 80번 포트
+# 기본 설정만 깔아둔다. Certbot은 NS 변경 후 운영자가 수동으로 실행한다:
+#
+#   sudo certbot --nginx -d ${api_domain} \
+#     --non-interactive --agree-tos -m <admin-email>
+#
+# Certbot이 성공하면 자동으로 443 서버 블록과 HTTP→HTTPS 리다이렉트가 추가된다.
+
 apt-get install -y nginx certbot python3-certbot-nginx
 
-cat > /etc/nginx/sites-available/healthcare <<'NGINX'
+cat > /etc/nginx/sites-available/healthcare <<NGINX
 server {
     listen 80;
-    server_name _;
+    server_name ${api_domain} _;
+
+    # Let's Encrypt HTTP-01 challenge 경로
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
 
     location /s3/ {
         proxy_pass              http://127.0.0.1:4566/;
@@ -49,10 +63,10 @@ server {
     location / {
         proxy_pass         http://127.0.0.1:8080;
         proxy_http_version 1.1;
-        proxy_set_header   Host              $host;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   Host              \$host;
+        proxy_set_header   X-Real-IP         \$remote_addr;
+        proxy_set_header   X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
         proxy_read_timeout 60s;
     }
 }
@@ -60,7 +74,11 @@ NGINX
 
 ln -sf /etc/nginx/sites-available/healthcare /etc/nginx/sites-enabled/healthcare
 rm -f /etc/nginx/sites-enabled/default
+mkdir -p /var/www/html
 nginx -t && systemctl reload nginx
+
+# Certbot 자동 갱신 — 시스템 timer는 우분투 패키지에 기본 등록되어 있음
+systemctl enable --now certbot.timer || true
 
 # ── 앱 런타임 디렉토리 (FCM 자격증명, blue-green 상태 파일) ─────────────────
 mkdir -p /etc/healthcare
