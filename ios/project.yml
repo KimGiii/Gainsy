@@ -45,7 +45,7 @@ targets:
     info:
       path: HealthCare/Resources/Info.plist
       properties:
-        CFBundleDisplayName: Vitae
+        CFBundleDisplayName: gainsy
         CFBundleIdentifier: com.kingloo.gainsy.ios
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
