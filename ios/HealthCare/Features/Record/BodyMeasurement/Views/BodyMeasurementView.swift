@@ -420,6 +420,7 @@ private struct MeasurementTrendSection: View {
                         .foregroundStyle(Color(hex: viewModel.selectedMetric.accentHex))
                     }
                     .frame(height: 220)
+                    .chartYScale(domain: viewModel.selectedMetric.yAxisDomain)
                     .chartYAxis {
                         AxisMarks(position: .leading)
                     }

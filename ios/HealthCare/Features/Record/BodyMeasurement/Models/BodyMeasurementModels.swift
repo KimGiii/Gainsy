@@ -127,6 +127,15 @@ enum MeasurementMetric: String, CaseIterable, Identifiable {
         }
     }
 
+    var yAxisDomain: ClosedRange<Double> {
+        switch self {
+        case .weight:     return 30...150
+        case .bodyFat:    return 0...70
+        case .muscleMass: return 0...70
+        case .waist:      return 40...150
+        }
+    }
+
     func value(from measurement: MeasurementResponse) -> Double? {
         switch self {
         case .weight:
