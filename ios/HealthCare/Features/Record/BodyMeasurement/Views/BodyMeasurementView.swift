@@ -400,7 +400,8 @@ private struct MeasurementTrendSection: View {
 
                         AreaMark(
                             x: .value("날짜", point.date),
-                            y: .value(viewModel.selectedMetric.title, point.value)
+                            yStart: .value("하한", viewModel.selectedMetric.yAxisDomain.lowerBound),
+                            yEnd: .value(viewModel.selectedMetric.title, point.value)
                         )
                         .foregroundStyle(
                             LinearGradient(
@@ -420,6 +421,7 @@ private struct MeasurementTrendSection: View {
                         .foregroundStyle(Color(hex: viewModel.selectedMetric.accentHex))
                     }
                     .frame(height: 220)
+                    .clipped()
                     .chartYScale(domain: viewModel.selectedMetric.yAxisDomain)
                     .chartYAxis {
                         AxisMarks(position: .leading)
