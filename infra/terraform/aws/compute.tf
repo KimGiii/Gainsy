@@ -67,10 +67,11 @@ resource "aws_instance" "app" {
   }
 
   user_data = base64encode(templatefile("${path.module}/templates/user_data.sh", {
-    aws_region     = var.aws_region
-    ecr_registry   = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
-    project_name   = var.project_name
-    environment    = var.environment
+    aws_region   = var.aws_region
+    ecr_registry = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+    project_name = var.project_name
+    environment  = var.environment
+    api_domain   = "api.${var.root_domain}"
   }))
 
   tags = merge(local.common_tags, {
