@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 @MainActor
@@ -25,11 +26,46 @@ final class AddMeasurementViewModel: ObservableObject {
     @Published var isSubmitting = false
     @Published var errorMessage: String?
 
+    // MARK: - 프로필 키 (BMI 자동 계산용)
+    private(set) var userHeightCm: Double? = nil
+    var isBMIAutoCalculated: Bool { userHeightCm != nil }
+
     private let onSuccess: () -> Void
+    private var cancellables = Set<AnyCancellable>()
 
     init(initialDate: Date = Date(), onSuccess: @escaping () -> Void) {
         measuredAt = min(initialDate, Date())
         self.onSuccess = onSuccess
+
+        $weightKg
+            .sink { [weak self] newWeight in
+                self?.autoCalculateBMI(weightStr: newWeight)
+            }
+            .store(in: &cancellables)
+    }
+
+    // MARK: - 프로필 로드 (키 기반 BMI 자동 계산)
+
+    func loadUserProfile(apiClient: APIClient) async {
+        do {
+            let profile: UserProfile = try await apiClient.request(.getProfile)
+            userHeightCm = profile.heightCm
+            autoCalculateBMI(weightStr: weightKg)
+        } catch {
+            // 키 정보가 없으면 BMI 직접 입력 허용
+        }
+    }
+
+    // MARK: - BMI 자동 계산
+
+    private func autoCalculateBMI(weightStr: String) {
+        guard let heightCm = userHeightCm,
+              heightCm > 0,
+              let weight = Double(weightStr),
+              weight > 0 else { return }
+        let heightM = heightCm / 100.0
+        let calculated = weight / (heightM * heightM)
+        bmi = String(format: "%.1f", calculated)
     }
 
     // MARK: - 제출 가능 여부

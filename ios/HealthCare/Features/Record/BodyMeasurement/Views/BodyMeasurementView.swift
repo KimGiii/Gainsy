@@ -400,7 +400,8 @@ private struct MeasurementTrendSection: View {
 
                         AreaMark(
                             x: .value("날짜", point.date),
-                            y: .value(viewModel.selectedMetric.title, point.value)
+                            yStart: .value("하한", viewModel.selectedMetric.yAxisDomain.lowerBound),
+                            yEnd: .value(viewModel.selectedMetric.title, point.value)
                         )
                         .foregroundStyle(
                             LinearGradient(
@@ -420,6 +421,8 @@ private struct MeasurementTrendSection: View {
                         .foregroundStyle(Color(hex: viewModel.selectedMetric.accentHex))
                     }
                     .frame(height: 220)
+                    .clipped()
+                    .chartYScale(domain: viewModel.selectedMetric.yAxisDomain)
                     .chartYAxis {
                         AxisMarks(position: .leading)
                     }
@@ -439,13 +442,13 @@ private struct MeasurementTrendSection: View {
 
                     HStack(spacing: 12) {
                         TrendSummaryPill(
-                            title: "시작",
-                            value: formattedValue(viewModel.displayTrendPoints.first?.value),
+                            title: "현재",
+                            value: formattedValue(viewModel.displayTrendPoints.last?.value),
                             unit: viewModel.currentMetricUnit
                         )
                         TrendSummaryPill(
-                            title: "현재",
-                            value: formattedValue(viewModel.displayTrendPoints.last?.value),
+                            title: "시작",
+                            value: formattedValue(viewModel.displayTrendPoints.first?.value),
                             unit: viewModel.currentMetricUnit
                         )
                     }
