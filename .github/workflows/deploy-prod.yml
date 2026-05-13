@@ -71,12 +71,12 @@ jobs:
               GREEN_PORT=8080; BLUE_NAME=healthcare-api-8081; GREEN_NAME=healthcare-api-8080
             fi
 
-            # LocalStack 실행 확인 및 시작 (localhost에만 바인딩)
+            # LocalStack 실행 확인 및 시작 (0.0.0.0 바인딩 → 컨테이너에서 host.docker.internal로 접근 가능)
             if ! docker ps --format '{{.Names}}' | grep -q '^localstack$'; then
               docker run -d \
                 --name localstack \
                 --restart unless-stopped \
-                -p 127.0.0.1:4566:4566 \
+                -p 4566:4566 \
                 -e SERVICES=s3 \
                 -e DEFAULT_REGION=ap-northeast-2 \
                 localstack/localstack:latest

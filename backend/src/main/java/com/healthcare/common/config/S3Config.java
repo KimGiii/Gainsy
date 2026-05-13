@@ -12,9 +12,6 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
@@ -67,20 +64,6 @@ public class S3Config {
         }
 
         return builder.build();
-    }
-
-    @Bean
-    public Boolean ensureBucketExists(S3Client s3Client, @Value("${app.s3.bucket}") String bucket) {
-        try {
-            s3Client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
-        } catch (NoSuchBucketException e) {
-            log.info("S3 bucket '{}' not found, creating...", bucket);
-            s3Client.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
-            log.info("S3 bucket '{}' created.", bucket);
-        } catch (Exception e) {
-            log.warn("Could not verify S3 bucket '{}': {}", bucket, e.getMessage());
-        }
-        return Boolean.TRUE;
     }
 
     private AwsCredentialsProvider resolveCredentials(String accessKey, String secretKey) {
