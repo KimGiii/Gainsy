@@ -86,10 +86,10 @@ struct HomeView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
-            // SCREENSHOT: .safeAreaInset(edge: .bottom) {
-            //     BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
-            //         .frame(height: 50)
-            // }
+            .safeAreaInset(edge: .bottom) {
+                BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
+                    .frame(height: 50)
+            }
             .task { await viewModel.loadDashboard(apiClient: container.apiClient) }
             .refreshable { await viewModel.loadDashboard(apiClient: container.apiClient) }
 
