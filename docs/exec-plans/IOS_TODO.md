@@ -1,4 +1,4 @@
-# iOS TODO — 2026년 5월 4일 기준
+# iOS TODO — 2026년 5월 15일 기준
 
 ## 목적
 
@@ -117,11 +117,18 @@
 
 ### 6. 출시 준비용 iOS 작업
 
-- [ ] 실제 배포 환경 Base URL 및 설정값 점검
-- [ ] 접근성 점검 (Dynamic Type, VoiceOver 기본 대응)
-- [ ] 로딩/에러/빈 상태 화면 일관성 정리
-- [ ] 앱 아이콘, 런치, 문구, 개인정보 안내 최종 점검
-- [ ] TestFlight 배포 전 체크리스트 문서화
+- [x] 실제 배포 환경 Base URL 점검 (`api.gainsy.site`, HTTPS 전환 완료)
+- [x] 접근성 점검 — Dynamic Type 전면 적용(Typography 스케일 재구성), VoiceOver 홈 대시보드 대응
+- [x] `PrivacyInfo.xcprivacy` Privacy Manifest 추가 (App Store 필수)
+- [x] `Info.plist` 권한 설명 업데이트 (카메라, 사진 라이브러리 등)
+- [x] 앱 이름 `Gainsy`, Bundle ID `com.kingloo.gainsy.ios`, `DEVELOPMENT_TEAM` 설정
+- [x] App Icon 전체 사이즈 추가 (20pt ~ 1024pt)
+- [x] 개인정보 처리방침/이용약관 URL 확정 (GitHub Pages)
+- [x] 다크모드 전면 지원 (어댑티브 컬러 토큰 전체 적용, Forest 톤 일관성)
+- [ ] **Xcode Archive → TestFlight 업로드** ← 즉시 처리
+- [ ] 로딩/에러/빈 상태 화면 일관성 정리 (남은 화면)
+- [ ] 진행 사진 업로드 실패 fallback 문구 및 재시도 UX
+- [ ] 핵심 플로우 UI 테스트 (운동 기록, 식단 기록, 신체 측정)
 
 ## 메모
 

@@ -56,6 +56,6 @@ health-care/
 
 - [현재 상태](./docs/CURRENT_STATUS.md) — 구현 진행률, 최근 변경사항
 - [아키텍처](./ARCHITECTURE.md)
-- [API 설계](./docs/API_DESIGN.md)
-- [DB 스키마](./docs/DB_SCHEMA.md)
+- [API 설계](./docs/design-docs/API_DESIGN.md)
+- [DB 스키마](./docs/design-docs/DB_SCHEMA.md)
 - [PRD](./docs/design-docs/PRD.md)
