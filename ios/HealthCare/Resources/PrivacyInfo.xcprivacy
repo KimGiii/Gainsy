@@ -166,5 +166,14 @@
 	<!-- ATT 동의 시 광고 추적 발생 -->
 	<key>NSPrivacyTracking</key>
 	<true/>
+
+	<!-- AdMob 광고 추적 도메인 (ATT 동의 시 사용) -->
+	<key>NSPrivacyTrackingDomains</key>
+	<array>
+		<string>googlesyndication.com</string>
+		<string>doubleclick.net</string>
+		<string>googleadservices.com</string>
+		<string>google-analytics.com</string>
+	</array>
 </dict>
 </plist>
