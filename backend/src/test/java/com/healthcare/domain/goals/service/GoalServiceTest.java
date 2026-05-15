@@ -527,7 +527,7 @@ class GoalServiceTest {
                 today.minusDays(20), today.plusDays(40));
         LocalDate firstSunday = goal.getStartDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         List<BodyMeasurement> measurements = List.of(
-                buildMeasurement(userId, firstSunday, 79.8),
+                buildMeasurement(userId, firstSunday, 80.5),
                 buildMeasurement(userId, today, 75.0)
         );
 
@@ -549,7 +549,7 @@ class GoalServiceTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(firstCheckpoint.getActualValue()).isEqualByComparingTo("79.8");
+        assertThat(firstCheckpoint.getActualValue()).isEqualByComparingTo("80.5");
         assertThat(firstCheckpoint.getProjectedValue()).isNotNull();
         assertThat(firstCheckpoint.getIsOnTrack()).isFalse();
     }
