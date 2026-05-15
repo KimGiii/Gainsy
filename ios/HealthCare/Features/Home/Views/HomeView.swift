@@ -1,3 +1,4 @@
+import GoogleMobileAds
 import SwiftUI
 
 // MARK: - HomeView (대시보드)
@@ -84,6 +85,10 @@ struct HomeView: View {
                 Button("확인", role: .cancel) { viewModel.errorMessage = nil }
             } message: {
                 Text(viewModel.errorMessage ?? "")
+            }
+            .safeAreaInset(edge: .bottom) {
+                BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
+                    .frame(height: 50)
             }
             .task { await viewModel.loadDashboard(apiClient: container.apiClient) }
             .refreshable { await viewModel.loadDashboard(apiClient: container.apiClient) }
