@@ -9,12 +9,12 @@ Phase 2: 운동 기록             ███████████████
 Phase 3: 식단 기록             ████████████████████ 100%
 Phase 4: 신체 측정 & 진행 사진    ████████████████████ 100%
 Phase 5: 목표 & 인사이트        ████████████████████ 100%
-Phase 6: MVP 출시 준비          █████████████░░░░░░░  60%
+Phase 6: MVP 출시 준비          █████████████████░░░  85%
 ```
 
 ## 현재 판단 기준
 
-- 2026-05-15 기준, Phase 6 BLOCKER 6개(HTTPS·코드사이닝·Firebase·개인정보 문서·Privacy 라벨·App Icon) 모두 완료, AWS 인프라 Terraform 프로비저닝 완료, 다크모드 전면 도입, Dynamic Type·VoiceOver 접근성 강화로 Phase 6을 60%로 설정했다. TestFlight 업로드 → App Store Connect 메타데이터 → 심사 제출이 남아 있다.
+- 2026-05-15 기준, App Store Connect 메타데이터(설명·키워드·스크린샷 5장·앱 심사 정보·연령 등급 9+·카테고리 건강및피트니스) 입력 완료, Privacy Labels 게시 완료, AdMob 통합(NSPrivacyTrackingDomains 추가, ITMS-91064 수정), prod 502 해결(200 응답 확인)으로 Phase 6을 85%로 설정했다. build 4 TestFlight 업로드 → 심사 제출이 남아 있다.
 - 2026-05-12 기준, 전체 화면에 어댑티브 컬러 토큰 적용(다크/라이트 모드 완전 지원), 식사 기록 수정(PUT API + iOS), 세션 만료 자동 로그아웃, Pull-to-refresh 전면 적용, DiaryView 완성으로 Phase 6을 본격 착수 상태로 전환했다.
 - 2026-05-11 기준, Dynamic Type 지원(Typography 스케일 재구성), PrivacyInfo.xcprivacy 추가, 홈 대시보드 VoiceOver 지원, Terraform Stage 1 AWS 인프라(VPC/EC2/RDS/Redis/ECR) 프로비저닝 완료, CI/CD GitHub Actions 파이프라인 구축 완료로 Phase 6 착수를 확인했다.
 - 2026-05-05 기준, Phase 5 FCM 완료(100%)를 확인하고, EXIF 제거·썸네일 생성 파이프라인(Phase 4 보완), ViewModel 의존성 프로토콜 추출(테스트 가능성 개선), DiaryView 착수로 Phase 6 준비를 시작했다.

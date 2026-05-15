@@ -17,7 +17,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             print("[Firebase] GoogleService-Info.plist not found — skipping configure in dev")
         }
         configurePushNotifications(application)
-        // GADMobileAds.sharedInstance().start(completionHandler: nil) // SCREENSHOT
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
 
@@ -36,7 +36,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // requestTrackingAuthorizationIfNeeded() // SCREENSHOT
+        requestTrackingAuthorizationIfNeeded()
     }
 
     private func requestTrackingAuthorizationIfNeeded() {
