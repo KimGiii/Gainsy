@@ -71,28 +71,9 @@ jobs:
               GREEN_PORT=8080; BLUE_NAME=healthcare-api-8081; GREEN_NAME=healthcare-api-8080
             fi
 
-            # LocalStack 실행 확인 및 시작 (0.0.0.0 바인딩 → 컨테이너에서 host.docker.internal로 접근 가능)
-            if ! docker ps --format '{{.Names}}' | grep -q '^localstack$'; then
-              docker run -d \
-                --name localstack \
-                --restart unless-stopped \
-                -p 4566:4566 \
-                -e SERVICES=s3 \
-                -e DEFAULT_REGION=ap-northeast-2 \
-                localstack/localstack:latest
-              sleep 10
-            fi
-
-            # S3 버킷 생성 (없으면)
-            aws --endpoint-url=http://localhost:4566 \
-              --region ap-northeast-2 \
-              s3 mb s3://healthcare-photos-prod 2>/dev/null || true
-
-            # nginx에 /s3/ 프록시 블록 추가 (없으면)
-            if ! sudo grep -q 'location /s3/' /etc/nginx/sites-available/healthcare; then
-              sudo sed -i 's|location /actuator/health|location /s3/ {\n        proxy_pass http://127.0.0.1:4566/;\n        proxy_buffering off;\n        proxy_request_buffering off;\n        client_max_body_size 25m;\n    }\n\n    location /actuator/health|' /etc/nginx/sites-available/healthcare
-              sudo nginx -t && sudo nginx -s reload
-            fi
+            # LocalStack 컨테이너가 남아있으면 제거 (실 S3로 전환)
+            docker stop localstack 2>/dev/null || true
+            docker rm   localstack 2>/dev/null || true
 
             # 잔여 green 정리
             docker stop $GREEN_NAME || true
@@ -109,9 +90,8 @@ jobs:
               -e REDIS_HOST="${{ secrets.PROD_REDIS_HOST }}" \
               -e JWT_SECRET="${{ secrets.PROD_JWT_SECRET }}" \
               -e S3_BUCKET="healthcare-photos-prod" \
-              -e S3_ENDPOINT="http://host.docker.internal:4566" \
-              -e S3_PUBLIC_ENDPOINT="${{ secrets.PROD_S3_PUBLIC_ENDPOINT }}" \
-              -e S3_PATH_STYLE_ACCESS="true" \
+              -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+              -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
               -e FCM_CREDENTIALS_PATH="/app/fcm-credentials.json" \
               -e OPENAI_API_KEY="${{ secrets.PROD_OPENAI_API_KEY }}" \
               -e PUBLIC_FOOD_API_KEY="${{ secrets.PROD_PUBLIC_FOOD_API_KEY }}" \
