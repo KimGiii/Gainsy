@@ -1,3 +1,4 @@
+import GoogleMobileAds
 import SwiftUI
 
 struct ExploreView: View {
@@ -13,6 +14,10 @@ struct ExploreView: View {
             .padding(.top, 8)
             .padding(.bottom, 40)
         }
+        // SCREENSHOT: .safeAreaInset(edge: .bottom) {
+        //     BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
+        //         .frame(height: 50)
+        // }
         .background(Color.backgroundPage)
         .navigationTitle("탐색")
         .navigationBarTitleDisplayMode(.large)

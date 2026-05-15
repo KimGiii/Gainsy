@@ -236,6 +236,10 @@ struct AddDietLogView: View {
             Task {
                 await viewModel.save(apiClient: container.apiClient) {
                     onSaved()
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .seconds(0.4))
+                        AdsManager.shared.showInterstitialIfReady()
+                    }
                 }
             }
         } label: {

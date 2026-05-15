@@ -1,3 +1,5 @@
+import AppTrackingTransparency
+import GoogleMobileAds
 import UIKit
 import Firebase
 import FirebaseMessaging
@@ -15,6 +17,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             print("[Firebase] GoogleService-Info.plist not found — skipping configure in dev")
         }
         configurePushNotifications(application)
+        // GADMobileAds.sharedInstance().start(completionHandler: nil) // SCREENSHOT
         return true
     }
 
@@ -30,6 +33,17 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
         print("[APNs] Failed to register: \(error.localizedDescription)")
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // requestTrackingAuthorizationIfNeeded() // SCREENSHOT
+    }
+
+    private func requestTrackingAuthorizationIfNeeded() {
+        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
+        Task {
+            await ATTrackingManager.requestTrackingAuthorization()
+        }
     }
 
     private func configurePushNotifications(_ application: UIApplication) {

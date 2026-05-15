@@ -247,6 +247,10 @@ struct AddExerciseSessionView: View {
                 await viewModel.save(apiClient: container.apiClient) { response in
                     onSaved(response)
                     dismiss()
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .seconds(0.4))
+                        AdsManager.shared.showInterstitialIfReady()
+                    }
                 }
             }
         } label: {
