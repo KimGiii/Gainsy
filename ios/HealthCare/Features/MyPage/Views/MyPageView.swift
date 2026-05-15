@@ -167,6 +167,20 @@ struct MyPageView: View {
                     trailingText: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
                     action: {}
                 )
+                Divider().padding(.leading, 60)
+                MenuLinkRow(
+                    icon: "doc.text",
+                    iconColor: Color.brandSecondary,
+                    label: "이용약관",
+                    url: URL(string: "https://kimgiii.github.io/health-care/docs/legal/terms.html")!
+                )
+                Divider().padding(.leading, 60)
+                MenuLinkRow(
+                    icon: "hand.raised",
+                    iconColor: Color.brandSecondary,
+                    label: "개인정보처리방침",
+                    url: URL(string: "https://kimgiii.github.io/health-care/docs/legal/privacy.html")!
+                )
             }
 
             MenuSection(title: "") {
@@ -353,6 +367,38 @@ private struct MenuRow: View {
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(Color.textSecondary.opacity(0.6))
                 }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+        }
+    }
+}
+
+private struct MenuLinkRow: View {
+    let icon: String
+    let iconColor: Color
+    let label: String
+    let url: URL
+
+    var body: some View {
+        Link(destination: url) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(iconColor)
+                    .frame(width: 30, height: 30)
+                    .background(iconColor.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Text(label)
+                    .font(.bodyMedium)
+                    .foregroundStyle(Color.textPrimary)
+
+                Spacer()
+
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
