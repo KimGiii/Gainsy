@@ -30,9 +30,9 @@ resource "aws_db_instance" "postgres" {
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
-  deletion_protection       = false
-  skip_final_snapshot       = true
-  final_snapshot_identifier = null
+  deletion_protection       = true
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "${var.project_name}-${var.environment}-final-snapshot"
 
   performance_insights_enabled = var.environment == "prod"
 

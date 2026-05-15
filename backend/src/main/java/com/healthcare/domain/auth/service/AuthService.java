@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
 @Service
@@ -38,6 +40,13 @@ public class AuthService {
     public TokenResponse register(RegisterRequest request) {
         if (userRepository.existsByEmailAndDeletedAtIsNull(request.getEmail())) {
             throw new DuplicateResourceException("이미 사용 중인 이메일입니다.");
+        }
+
+        if (request.getDateOfBirth() != null) {
+            long age = ChronoUnit.YEARS.between(request.getDateOfBirth(), LocalDate.now());
+            if (age < 14) {
+                throw new ValidationException("만 14세 이상만 가입할 수 있습니다.");
+            }
         }
 
         User.Sex sex = parseSex(request.getSex());

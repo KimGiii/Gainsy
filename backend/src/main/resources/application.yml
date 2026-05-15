@@ -46,7 +46,14 @@ management:
         include: health,info,metrics
   endpoint:
     health:
+      probes:
+        enabled: true
       show-details: when-authorized
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
 
 app:
   jwt:
