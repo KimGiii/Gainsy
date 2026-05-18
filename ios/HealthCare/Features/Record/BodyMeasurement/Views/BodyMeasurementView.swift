@@ -421,13 +421,12 @@ private struct MeasurementTrendSection: View {
                         .foregroundStyle(Color(hex: viewModel.selectedMetric.accentHex))
                     }
                     .frame(height: 220)
-                    .clipped()
                     .chartYScale(domain: viewModel.selectedMetric.yAxisDomain)
                     .chartYAxis {
                         AxisMarks(position: .leading)
                     }
                     .chartXAxis {
-                        AxisMarks(values: .automatic(desiredCount: 4)) { value in
+                        AxisMarks(values: .automatic(desiredCount: axisMarkCount)) { value in
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.4))
                                 .foregroundStyle(Color.black.opacity(0.08))
                             AxisTick()
@@ -435,10 +434,13 @@ private struct MeasurementTrendSection: View {
                             AxisValueLabel {
                                 if let date = value.as(Date.self) {
                                     Text(Self.axisDateFormatter.string(from: date))
+                                        .font(.caption2)
+                                        .fixedSize()
                                 }
                             }
                         }
                     }
+                    .padding(.trailing, 8)
 
                     HStack(spacing: 12) {
                         TrendSummaryPill(
@@ -481,6 +483,14 @@ private struct MeasurementTrendSection: View {
     private func formattedValue(_ value: Double?) -> String {
         guard let value else { return "-" }
         return String(format: "%.1f", value)
+    }
+
+    private var axisMarkCount: Int {
+        switch viewModel.selectedRange {
+        case .week7:  return 7
+        case .month1: return 5
+        case .month3: return 6
+        }
     }
 
     private static let axisDateFormatter: DateFormatter = {
