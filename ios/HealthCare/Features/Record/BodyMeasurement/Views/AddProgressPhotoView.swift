@@ -60,7 +60,7 @@ struct AddProgressPhotoView: View {
 
     // MARK: - Photo Picker
 
-    @MainActor private var photoPickerSection: some View {
+    private var photoPickerSection: some View {
         PhotosPicker(selection: $selectedItem, matching: .images) {
             ZStack {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
