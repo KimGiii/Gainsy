@@ -556,6 +556,18 @@ private struct MeasurementHistorySection: View {
     let measurements: [MeasurementResponse]
     let onDelete: (Int) -> Void
 
+    @State private var isExpanded = false
+    private let visibleLimit = 5
+
+    private var visibleMeasurements: [MeasurementResponse] {
+        if isExpanded || measurements.count <= visibleLimit {
+            return measurements
+        }
+        return Array(measurements.prefix(visibleLimit))
+    }
+
+    private var hasMore: Bool { measurements.count > visibleLimit }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("측정 기록")
@@ -564,9 +576,32 @@ private struct MeasurementHistorySection: View {
                 .padding(.horizontal, 20)
 
             VStack(spacing: 10) {
-                ForEach(measurements) { m in
+                ForEach(visibleMeasurements) { m in
                     MeasurementRow(measurement: m, onDelete: { onDelete(m.id) })
                         .padding(.horizontal, 20)
+                }
+
+                if hasMore {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(isExpanded
+                                 ? "접기"
+                                 : "더보기 (\(measurements.count - visibleLimit)개)")
+                                .font(.system(size: 14, weight: .semibold))
+                            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 12, weight: .semibold))
+                        }
+                        .foregroundStyle(Color.brandPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.brandPrimary.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.horizontal, 20)
                 }
             }
         }
