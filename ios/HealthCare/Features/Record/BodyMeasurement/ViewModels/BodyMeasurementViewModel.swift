@@ -7,6 +7,7 @@ final class BodyMeasurementViewModel: ObservableObject {
     @Published var trendPoints: [MeasurementTrendPoint] = []
     @Published var selectedRange: MeasurementTrendRange = .month1
     @Published var selectedMetric: MeasurementMetric = .weight
+    @Published var activeGoal: GoalSummary?
     @Published var isLoading = false
     @Published var isTrendLoading = false
     @Published var errorMessage: String?
@@ -22,16 +23,23 @@ final class BodyMeasurementViewModel: ObservableObject {
             let (list, latest) = try await (listResponse, latestResponse)
             measurements = list.content
             latestMeasurement = latest
+            await loadActiveGoal(apiClient: apiClient)
             await loadTrendData(apiClient: apiClient)
         } catch {
             if case APIError.serverError(let code, _) = error, code == 404 {
                 measurements = []
                 latestMeasurement = nil
                 trendPoints = []
+                await loadActiveGoal(apiClient: apiClient)
             } else {
                 errorMessage = error.localizedDescription
             }
         }
+    }
+
+    private func loadActiveGoal(apiClient: APIClient) async {
+        let response: GoalListResponse? = try? await apiClient.request(.getGoals)
+        activeGoal = response?.content.first { $0.status == .ACTIVE }
     }
 
     func loadTrendData(apiClient: APIClient) async {
@@ -118,6 +126,39 @@ final class BodyMeasurementViewModel: ObservableObject {
 
     var currentMetricUnit: String {
         selectedMetric.unit
+    }
+
+    var yAxisDomain: ClosedRange<Double> {
+        selectedMetric.yAxisDomain(
+            base: baseValue(for: selectedMetric),
+            goalTarget: goalTargetValue(for: selectedMetric)
+        )
+    }
+
+    private func baseValue(for metric: MeasurementMetric) -> Double? {
+        guard let latest = latestMeasurement else { return nil }
+        return metric.value(from: latest)
+    }
+
+    private func goalTargetValue(for metric: MeasurementMetric) -> Double? {
+        guard let goal = activeGoal,
+              let target = goal.targetValue else { return nil }
+        let unit = goal.targetUnit?.lowercased() ?? ""
+
+        switch metric {
+        case .weight:
+            guard unit == "kg", goal.goalType != .MUSCLE_GAIN else { return nil }
+            return target
+        case .bodyFat:
+            guard unit == "%" else { return nil }
+            return target
+        case .muscleMass:
+            guard unit == "kg", goal.goalType == .MUSCLE_GAIN else { return nil }
+            return target
+        case .waist:
+            guard unit == "cm" else { return nil }
+            return target
+        }
     }
 
     var latestTrendValueText: String? {

@@ -127,13 +127,59 @@ enum MeasurementMetric: String, CaseIterable, Identifiable {
         }
     }
 
-    var yAxisDomain: ClosedRange<Double> {
+    var fallbackYAxisDomain: ClosedRange<Double> {
         switch self {
         case .weight:     return 30...150
         case .bodyFat:    return 0...70
         case .muscleMass: return 0...70
         case .waist:      return 40...150
         }
+    }
+
+    var absoluteYAxisBounds: ClosedRange<Double> {
+        switch self {
+        case .weight:     return 10...250
+        case .bodyFat:    return 0...80
+        case .muscleMass: return 5...90
+        case .waist:      return 20...200
+        }
+    }
+
+    var scatterDelta: Double {
+        switch self {
+        case .weight:     return 25
+        case .bodyFat:    return 10
+        case .muscleMass: return 10
+        case .waist:      return 15
+        }
+    }
+
+    var goalMargin: Double {
+        switch self {
+        case .weight:     return 5
+        case .bodyFat:    return 3
+        case .muscleMass: return 3
+        case .waist:      return 5
+        }
+    }
+
+    func yAxisDomain(base: Double?, goalTarget: Double?) -> ClosedRange<Double> {
+        let raw: ClosedRange<Double>
+        switch (base, goalTarget) {
+        case let (b?, t?):
+            raw = (min(b, t) - goalMargin)...(max(b, t) + goalMargin)
+        case let (b?, nil):
+            raw = (b - scatterDelta)...(b + scatterDelta)
+        case let (nil, t?):
+            raw = (t - scatterDelta)...(t + scatterDelta)
+        case (nil, nil):
+            return fallbackYAxisDomain
+        }
+
+        let bounds = absoluteYAxisBounds
+        let lo = max(raw.lowerBound, bounds.lowerBound)
+        let hi = min(raw.upperBound, bounds.upperBound)
+        return lo < hi ? lo...hi : fallbackYAxisDomain
     }
 
     func value(from measurement: MeasurementResponse) -> Double? {
