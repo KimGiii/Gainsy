@@ -74,11 +74,10 @@ final class BodyMeasurementViewModel: ObservableObject {
                let baselineDate = baselineMeasurement.parsedDate,
                let baselineValue = selectedMetric.value(from: baselineMeasurement),
                !points.contains(where: { Calendar.current.isDate($0.date, inSameDayAs: baselineDate) }) {
-                let clampedDate = max(baselineDate, fromDate)
                 points.insert(
                     MeasurementTrendPoint(
                         measurementId: -baselineMeasurement.id,
-                        date: clampedDate,
+                        date: baselineDate,
                         label: baselineMeasurement.shortDate,
                         value: baselineValue
                     ),
@@ -119,12 +118,6 @@ final class BodyMeasurementViewModel: ObservableObject {
 
     var currentMetricUnit: String {
         selectedMetric.unit
-    }
-
-    var dateDomain: ClosedRange<Date> {
-        let today = Date()
-        let from = Calendar.current.date(byAdding: .day, value: -(selectedRange.days - 1), to: today) ?? today
-        return from...today
     }
 
     var latestTrendValueText: String? {
