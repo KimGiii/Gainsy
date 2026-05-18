@@ -30,7 +30,7 @@ app:
   jwt:
     secret: ${JWT_SECRET}
   s3:
-    bucket: ${S3_BUCKET:healthcare-photos-prod-621770702801}
+    bucket: ${S3_BUCKET}
     region: ap-northeast-2
     endpoint: ${S3_ENDPOINT:}
     public-endpoint: ${S3_PUBLIC_ENDPOINT:}
