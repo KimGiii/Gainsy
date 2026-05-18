@@ -21,5 +21,8 @@ EXPOSE 8080
 ENTRYPOINT ["java", \
   "-XX:+UseContainerSupport", \
   "-XX:MaxRAMPercentage=75.0", \
+  "-XX:+ExitOnOutOfMemoryError", \
+  "-XX:+HeapDumpOnOutOfMemoryError", \
+  "-XX:HeapDumpPath=/tmp/heapdump.hprof", \
   "-Djava.security.egd=file:/dev/./urandom", \
   "-jar", "app.jar"]

@@ -81,6 +81,9 @@ jobs:
 
             docker run -d \
               --name $GREEN_NAME \
+              --restart unless-stopped \
+              --memory 1400m \
+              --memory-swap 1400m \
               -p ${GREEN_PORT}:8080 \
               --add-host=host.docker.internal:host-gateway \
               -e SPRING_PROFILES_ACTIVE=prod \
@@ -127,18 +130,41 @@ jobs:
             docker rm   $GREEN_NAME || true
             exit 1
 
-      - name: Verify production health
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.PROD_SSH_HOST }}
-          username: ${{ secrets.PROD_SSH_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
-            ACTIVE_PORT=$(cat /etc/healthcare/active_port 2>/dev/null || echo "8080")
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              http://localhost:${ACTIVE_PORT}/actuator/health 2>/dev/null || true)
-            if [ "$STATUS" != "200" ]; then
-              echo "Production health check failed: $STATUS"
-              exit 1
+      - name: Verify external health endpoint
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            STATUS=$(curl -4 -sS -o /dev/null -w "%{http_code}" --max-time 10 \
+              https://api.gainsy.site/actuator/health || true)
+            if [ "$STATUS" = "200" ]; then
+              echo "External health OK"
+              exit 0
             fi
-            echo "Production is healthy on port $ACTIVE_PORT"
+            echo "External health attempt $i: $STATUS, retrying in 10s..."
+            sleep 10
+          done
+          echo "External health check failed after 12 attempts"
+          exit 1
+
+      - name: Smoke test register & login
+        run: |
+          set -euo pipefail
+          EMAIL="ci_smoke_$(date +%s)@example.com"
+          REG=$(curl -4 -sS -o /tmp/reg.json -w "%{http_code}" --max-time 15 \
+            -X POST https://api.gainsy.site/api/v1/auth/register \
+            -H "Content-Type: application/json" \
+            -d "{\"email\":\"$EMAIL\",\"password\":\"Smoke1234!\",\"displayName\":\"CISmoke\"}")
+          if [ "$REG" != "201" ]; then
+            echo "Register failed: HTTP $REG"
+            cat /tmp/reg.json || true
+            exit 1
+          fi
+          LOG=$(curl -4 -sS -o /dev/null -w "%{http_code}" --max-time 15 \
+            -X POST https://api.gainsy.site/api/v1/auth/login \
+            -H "Content-Type: application/json" \
+            -d "{\"email\":\"$EMAIL\",\"password\":\"Smoke1234!\"}")
+          if [ "$LOG" != "200" ]; then
+            echo "Login failed: HTTP $LOG"
+            exit 1
+          fi
+          echo "Smoke OK (register=$REG, login=$LOG)"
