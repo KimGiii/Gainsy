@@ -7,6 +7,7 @@ struct MyPageView: View {
 
     @State private var showEditSheet = false
     @State private var showDeleteConfirm = false
+    @State private var showMedicalSources = false
     @AppStorage("appTheme") private var appThemeRawValue = AppTheme.system.rawValue
 
     private var selectedTheme: AppTheme {
@@ -44,6 +45,9 @@ struct MyPageView: View {
             .sheet(isPresented: $showEditSheet) {
                 EditProfileSheet(viewModel: viewModel, isPresented: $showEditSheet)
                     .environmentObject(container)
+            }
+            .sheet(isPresented: $showMedicalSources) {
+                MedicalSourcesView()
             }
         }
         .refreshable { await viewModel.load(apiClient: container.apiClient) }
@@ -167,6 +171,14 @@ struct MyPageView: View {
                     trailingText: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
                     action: {}
                 )
+                Divider().padding(.leading, 60)
+                MenuRow(
+                    icon: "book.closed",
+                    iconColor: Color.brandMoss,
+                    label: "의학 정보 출처"
+                ) {
+                    showMedicalSources = true
+                }
                 Divider().padding(.leading, 60)
                 MenuLinkRow(
                     icon: "doc.text",

@@ -32,6 +32,7 @@ struct DietLogDetailView: View {
     @StateObject private var viewModel = DietLogDetailViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var showingEdit = false
+    @State private var showingSources = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -95,6 +96,9 @@ struct DietLogDetailView: View {
                 .environmentObject(container)
             }
         }
+        .sheet(isPresented: $showingSources) {
+            MedicalSourcesView()
+        }
         .task { await viewModel.load(id: logId, apiClient: container.apiClient) }
     }
 
@@ -105,6 +109,14 @@ struct DietLogDetailView: View {
                     .font(.subheadline.bold())
                     .foregroundColor(Color.brandAccent)
                 Spacer()
+                Button {
+                    showingSources = true
+                } label: {
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.textSecondary)
+                }
+                .accessibilityLabel("영양 정보 출처 보기")
             }
             HStack(spacing: 0) {
                 NutritionStatCell(
@@ -134,6 +146,19 @@ struct DietLogDetailView: View {
                     unit: "g",
                     color: .pink
                 )
+            }
+            Button {
+                showingSources = true
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "link")
+                        .font(.system(size: 10))
+                    Text("출처: 식약처 식품영양성분 DB · USDA FoodData Central")
+                        .font(.system(size: 11))
+                        .underline()
+                    Spacer(minLength: 0)
+                }
+                .foregroundStyle(Color.textSecondary)
             }
         }
         .padding(16)

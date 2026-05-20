@@ -4,6 +4,7 @@ struct AddMeasurementView: View {
     @StateObject private var viewModel: AddMeasurementViewModel
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
+    @State private var showSources = false
 
     init(initialDate: Date = Date(), onSuccess: @escaping () -> Void) {
         _viewModel = StateObject(
@@ -19,6 +20,7 @@ struct AddMeasurementView: View {
                     bodyCompositionSection
                     circumferenceSection
                     notesSection
+                    bmiSourceFooter
                     submitButton
                 }
                 .padding(20)
@@ -41,8 +43,29 @@ struct AddMeasurementView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
+            .sheet(isPresented: $showSources) {
+                MedicalSourcesView()
+            }
             .task { await viewModel.loadUserProfile(apiClient: container.apiClient) }
         }
+    }
+
+    private var bmiSourceFooter: some View {
+        Button {
+            showSources = true
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 12))
+                Text("BMI 계산식 및 분류 기준 출처 보기 (WHO·대한비만학회)")
+                    .font(.system(size: 12))
+                    .underline()
+                Spacer(minLength: 0)
+            }
+            .foregroundStyle(Color.textSecondary)
+            .padding(.horizontal, 4)
+        }
+        .accessibilityLabel("BMI 계산 기준 출처 보기")
     }
 
     // MARK: - Date

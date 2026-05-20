@@ -5,6 +5,7 @@ struct BodyMeasurementView: View {
     @StateObject private var viewModel = BodyMeasurementViewModel()
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
+    @State private var showMedicalSources = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -26,8 +27,10 @@ struct BodyMeasurementView: View {
                                 .padding(.horizontal, 20)
                         } else {
                             if let latest = viewModel.latestMeasurement {
-                                LatestStatsCard(measurement: latest)
-                                    .padding(.horizontal, 20)
+                                LatestStatsCard(measurement: latest) {
+                                    showMedicalSources = true
+                                }
+                                .padding(.horizontal, 20)
                             }
                             MeasurementTrendSection(viewModel: viewModel)
                                 .padding(.horizontal, 20)
@@ -46,6 +49,9 @@ struct BodyMeasurementView: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.surfaceGrouped)
             .refreshable { await viewModel.load(apiClient: container.apiClient) }
+            .sheet(isPresented: $showMedicalSources) {
+                MedicalSourcesView()
+            }
 
             // FAB
             Button { viewModel.showAddSheet = true } label: {
@@ -237,6 +243,7 @@ private struct BodyWaveCurve: Shape {
 
 private struct LatestStatsCard: View {
     let measurement: MeasurementResponse
+    let onSourceTap: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -289,6 +296,20 @@ private struct LatestStatsCard: View {
                 if let v = measurement.armCm {
                     StatCell(icon: "ruler", color: Color(hex: "#7C3AED"),
                              value: String(format: "%.1f", v), unit: "cm", label: "팔")
+                }
+            }
+
+            if measurement.bmi != nil {
+                Button(action: onSourceTap) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 11))
+                        Text("BMI 분류 기준: WHO·대한비만학회 출처 보기")
+                            .font(.system(size: 11))
+                            .underline()
+                        Spacer(minLength: 0)
+                    }
+                    .foregroundStyle(Color.textSecondary)
                 }
             }
         }
