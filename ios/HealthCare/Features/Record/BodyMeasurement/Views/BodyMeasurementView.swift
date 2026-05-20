@@ -27,9 +27,10 @@ struct BodyMeasurementView: View {
                                 .padding(.horizontal, 20)
                         } else {
                             if let latest = viewModel.latestMeasurement {
-                                LatestStatsCard(measurement: latest) {
-                                    showMedicalSources = true
-                                }
+                                LatestStatsCard(
+                                    measurement: latest,
+                                    onSourceTap: { showMedicalSources = true }
+                                )
                                 .padding(.horizontal, 20)
                             }
                             MeasurementTrendSection(viewModel: viewModel)
@@ -89,6 +90,7 @@ struct BodyMeasurementView: View {
         .onChange(of: viewModel.selectedMetric) { _ in
             Task { await viewModel.loadTrendData(apiClient: container.apiClient) }
         }
+        .sheet(isPresented: $showMedicalSources) { MedicalSourcesView() }
     }
 }
 
@@ -243,7 +245,7 @@ private struct BodyWaveCurve: Shape {
 
 private struct LatestStatsCard: View {
     let measurement: MeasurementResponse
-    let onSourceTap: () -> Void
+    var onSourceTap: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -299,18 +301,13 @@ private struct LatestStatsCard: View {
                 }
             }
 
-            if measurement.bmi != nil {
-                Button(action: onSourceTap) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "info.circle")
-                            .font(.system(size: 11))
-                        Text("BMI 분류 기준: WHO·대한비만학회 출처 보기")
-                            .font(.system(size: 11))
-                            .underline()
-                        Spacer(minLength: 0)
-                    }
-                    .foregroundStyle(Color.textSecondary)
+            if measurement.bmi != nil, let tap = onSourceTap {
+                Button(action: tap) {
+                    Label("BMI 분류 기준: WHO·대한비만학회 출처 보기", systemImage: "info.circle")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.brandPrimary)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(18)

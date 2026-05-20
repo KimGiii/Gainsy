@@ -1,4 +1,4 @@
-# iOS TODO — 2026년 5월 15일 기준
+# iOS TODO — 2026년 5월 20일 기준
 
 ## 목적
 
@@ -123,9 +123,14 @@
 - [x] `Info.plist` 권한 설명 업데이트 (카메라, 사진 라이브러리 등)
 - [x] 앱 이름 `Gainsy`, Bundle ID `com.kingloo.gainsy.ios`, `DEVELOPMENT_TEAM` 설정
 - [x] App Icon 전체 사이즈 추가 (20pt ~ 1024pt)
-- [x] 개인정보 처리방침/이용약관 URL 확정 (GitHub Pages)
+- [x] 개인정보 처리방침/이용약관 URL 확정 (GitHub Pages, `https://kimgiii.github.io/Gainsy/docs/legal/…`)
 - [x] 다크모드 전면 지원 (어댑티브 컬러 토큰 전체 적용, Forest 톤 일관성)
-- [ ] **Xcode Archive → TestFlight 업로드** ← 즉시 처리
+- [x] **재심사 거절 3건 코드 대응** (2026-05-20, [PR #22](https://github.com/KimGiii/Gainsy/pull/22))
+  - [x] Guideline 2.5.1 — 미사용 HealthKit 권한 키 제거(`NSHealth{Share,Update}UsageDescription`)
+  - [x] Guideline 2.1 — `TrackingPermissionView` 사전 설명 화면 도입, ATT 호출을 `applicationDidBecomeActive`에서 분리
+  - [x] Guideline 1.4.1 — `MedicalSourcesView`(WHO·대한비만학회·식약처·USDA·면책 고지) 추가, BMI/영양 카드/마이페이지 4곳에 진입점
+- [ ] **PR #22 머지 + Xcode Archive build 7 → TestFlight 업로드** ← 즉시 처리
+- [ ] **실기기에서 ATT 프롬프트 화면 녹화** (App Review Information > Notes 첨부)
 - [ ] 로딩/에러/빈 상태 화면 일관성 정리 (남은 화면)
 - [ ] 진행 사진 업로드 실패 fallback 문구 및 재시도 UX
 - [ ] 핵심 플로우 UI 테스트 (운동 기록, 식단 기록, 신체 측정)

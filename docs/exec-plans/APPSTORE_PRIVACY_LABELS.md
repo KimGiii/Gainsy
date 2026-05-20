@@ -175,3 +175,5 @@ Firebase Analytics, 광고 SDK, IDFA 사용 없음.
 - App Store Connect 입력은 앱 업데이트 심사와 별개로 즉시 반영 가능하다.
 - 한 번 제출한 후 데이터 수집 항목이 변경되면 반드시 업데이트해야 심사 거부를 피할 수 있다.
 - HealthKit 데이터를 실제로 읽거나 쓰는 경우 "Health & Fitness > Health" 항목의 사용 목적이 `NSHealthShareUsageDescription`/`NSHealthUpdateUsageDescription`과 일치해야 한다.
+  - **2026-05-20 현재 본 앱은 HealthKit을 사용하지 않으며 두 키도 plist에서 제거된 상태**(Guideline 2.5.1 거절 대응, [APPSTORE_REVIEW_REJECTION_2026_05_19.md](APPSTORE_REVIEW_REJECTION_2026_05_19.md) 참고). 따라서 App Store Connect의 Health 항목은 "HealthKit 외 사용자 입력 기반"임에 유의.
+  - 향후 HealthKit 통합 시 plist 키 + 실제 `import HealthKit` 코드 + UI 식별 라벨을 같은 PR에서 처리.
