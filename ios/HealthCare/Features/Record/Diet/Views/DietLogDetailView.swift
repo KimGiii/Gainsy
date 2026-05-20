@@ -96,10 +96,8 @@ struct DietLogDetailView: View {
                 .environmentObject(container)
             }
         }
-        .sheet(isPresented: $showingSources) {
-            MedicalSourcesView()
-        }
         .task { await viewModel.load(id: logId, apiClient: container.apiClient) }
+        .sheet(isPresented: $showingSources) { MedicalSourcesView() }
     }
 
     private func nutritionCard(detail: DietLogDetailResponse) -> some View {
@@ -146,19 +144,6 @@ struct DietLogDetailView: View {
                     unit: "g",
                     color: .pink
                 )
-            }
-            Button {
-                showingSources = true
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "link")
-                        .font(.system(size: 10))
-                    Text("출처: 식약처 식품영양성분 DB · USDA FoodData Central")
-                        .font(.system(size: 11))
-                        .underline()
-                    Spacer(minLength: 0)
-                }
-                .foregroundStyle(Color.textSecondary)
             }
         }
         .padding(16)

@@ -43,10 +43,8 @@ struct AddMeasurementView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
-            .sheet(isPresented: $showSources) {
-                MedicalSourcesView()
-            }
             .task { await viewModel.loadUserProfile(apiClient: container.apiClient) }
+            .sheet(isPresented: $showSources) { MedicalSourcesView() }
         }
     }
 
@@ -54,18 +52,12 @@ struct AddMeasurementView: View {
         Button {
             showSources = true
         } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "info.circle")
-                    .font(.system(size: 12))
-                Text("BMI 계산식 및 분류 기준 출처 보기 (WHO·대한비만학회)")
-                    .font(.system(size: 12))
-                    .underline()
-                Spacer(minLength: 0)
-            }
-            .foregroundStyle(Color.textSecondary)
-            .padding(.horizontal, 4)
+            Label("BMI 계산식 및 분류 기준 출처 보기 (WHO·대한비만학회)", systemImage: "info.circle")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.brandPrimary)
         }
-        .accessibilityLabel("BMI 계산 기준 출처 보기")
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
     }
 
     // MARK: - Date

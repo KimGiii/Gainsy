@@ -1,5 +1,5 @@
-import SwiftUI
 import AppTrackingTransparency
+import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var authState: AuthState
@@ -8,7 +8,6 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            // ── Main Content ──────────────────────────────────────────
             Group {
                 if ProcessInfo.processInfo.arguments.contains("UI_TEST_LOGIN_SCREEN") {
                     LoginView()
@@ -26,7 +25,6 @@ struct RootView: View {
                 }
             }
 
-            // ── Splash Overlay ────────────────────────────────────────
             if showSplash {
                 SplashView()
                     .transition(
