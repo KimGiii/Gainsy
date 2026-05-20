@@ -2,8 +2,8 @@
 
 > 운동·식단·신체변화를 하나로 기록하고 목표를 달성하는 iOS 헬스 트래킹 앱
 
-[![Backend CI](https://github.com/KimGiii/health-care/actions/workflows/ci-backend.yml/badge.svg)](https://github.com/KimGiii/health-care/actions/workflows/ci-backend.yml)
-[![iOS CI](https://github.com/KimGiii/health-care/actions/workflows/ci-ios.yml/badge.svg)](https://github.com/KimGiii/health-care/actions/workflows/ci-ios.yml)
+[![Backend CI](https://github.com/KimGiii/Gainsy/actions/workflows/ci-backend.yml/badge.svg)](https://github.com/KimGiii/Gainsy/actions/workflows/ci-backend.yml)
+[![iOS CI](https://github.com/KimGiii/Gainsy/actions/workflows/ci-ios.yml/badge.svg)](https://github.com/KimGiii/Gainsy/actions/workflows/ci-ios.yml)
 ![Swift](https://img.shields.io/badge/Swift-6.0-orange)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![iOS](https://img.shields.io/badge/iOS-16%2B-lightgrey)
@@ -100,7 +100,7 @@
 
 ```bash
 # 1. 저장소 클론
-git clone https://github.com/KimGiii/health-care.git
+git clone https://github.com/KimGiii/Gainsy.git
 cd health-care
 
 # 2. 인프라 서비스 시작 (PostgreSQL 5433 / Redis 6379 / LocalStack 4566)

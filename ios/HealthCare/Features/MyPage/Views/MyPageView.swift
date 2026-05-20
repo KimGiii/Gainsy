@@ -184,14 +184,14 @@ struct MyPageView: View {
                     icon: "doc.text",
                     iconColor: Color.brandSecondary,
                     label: "이용약관",
-                    url: URL(string: "https://kimgiii.github.io/health-care/docs/legal/terms.html")!
+                    url: URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/terms.html")!
                 )
                 Divider().padding(.leading, 60)
                 MenuLinkRow(
                     icon: "hand.raised",
                     iconColor: Color.brandSecondary,
                     label: "개인정보처리방침",
-                    url: URL(string: "https://kimgiii.github.io/health-care/docs/legal/privacy.html")!
+                    url: URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/privacy.html")!
                 )
             }
 
