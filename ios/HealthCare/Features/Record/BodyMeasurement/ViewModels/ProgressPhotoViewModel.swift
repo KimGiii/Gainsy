@@ -24,6 +24,54 @@ final class ProgressPhotoViewModel: ObservableObject {
     @Published var uploadProgress: Double = 0
     @Published var errorMessage: String?
 
+    // MARK: - Upload Failure / Retry
+
+    @Published var uploadFailed = false
+
+    var uploadFailureMessage: String {
+        failedStep?.message ?? "업로드 중 오류가 발생했습니다.\n다시 시도해주세요."
+    }
+
+    private var failedStep: UploadStep?
+    private var pendingUpload: PendingUpload?
+
+    private enum UploadStep {
+        case initiating, transferring, registering
+
+        var message: String {
+            switch self {
+            case .initiating:
+                return "서버 연결에 실패했습니다.\n잠시 후 다시 시도해주세요."
+            case .transferring:
+                return "사진 전송에 실패했습니다.\n네트워크 연결을 확인해주세요."
+            case .registering:
+                return "사진은 전송됐지만 등록에 실패했습니다.\n다시 시도해주세요."
+            }
+        }
+    }
+
+    private struct PendingUpload {
+        let image: UIImage
+        let photoType: PhotoType
+        let bodyWeightKg: Double?
+        let waistCm: Double?
+        let notes: String
+        let isBaseline: Bool
+    }
+
+    func retryUpload(apiClient: APIClient) async {
+        guard let pending = pendingUpload else { return }
+        await upload(
+            image: pending.image,
+            photoType: pending.photoType,
+            bodyWeightKg: pending.bodyWeightKg,
+            waistCm: pending.waistCm,
+            notes: pending.notes,
+            isBaseline: pending.isBaseline,
+            apiClient: apiClient
+        )
+    }
+
     // MARK: - 비교 모드
     @Published var isCompareMode = false
     @Published var compareSelection: [ProgressPhotoItem] = []
@@ -98,16 +146,29 @@ final class ProgressPhotoViewModel: ObservableObject {
         apiClient: APIClient
     ) async {
         guard let imageData = image.jpegData(compressionQuality: 0.85) else {
-            errorMessage = "이미지를 처리할 수 없습니다."
+            errorMessage = "이미지를 처리할 수 없습니다. 다른 사진을 선택해주세요."
             return
         }
+
+        uploadFailed = false
+        failedStep = nil
+        pendingUpload = PendingUpload(
+            image: image,
+            photoType: photoType,
+            bodyWeightKg: bodyWeightKg,
+            waistCm: waistCm,
+            notes: notes,
+            isBaseline: isBaseline
+        )
 
         isUploading = true
         uploadProgress = 0
         defer { isUploading = false }
 
+        var currentStep: UploadStep = .initiating
         do {
             // Step 1: pre-signed URL 발급
+            currentStep = .initiating
             let fileName = "progress_\(Int(Date().timeIntervalSince1970)).jpg"
             let initiateReq = InitiatePhotoUploadRequest(
                 fileName: fileName,
@@ -121,6 +182,7 @@ final class ProgressPhotoViewModel: ObservableObject {
             uploadProgress = 0.3
 
             // Step 2: S3 직접 PUT
+            currentStep = .transferring
             guard let uploadURL = URL(string: uploadInfo.uploadUrl) else {
                 throw URLError(.badURL)
             }
@@ -135,6 +197,7 @@ final class ProgressPhotoViewModel: ObservableObject {
             uploadProgress = 0.75
 
             // Step 3: 메타데이터 등록
+            currentStep = .registering
             let iso = ISO8601DateFormatter()
             iso.formatOptions = [.withInternetDateTime]
             let capturedAt = iso.string(from: Date())
@@ -160,11 +223,11 @@ final class ProgressPhotoViewModel: ObservableObject {
             // 갤러리에 즉시 반영
             photosByType[newPhoto.photoType, default: []].insert(newPhoto, at: 0)
             selectedType = newPhoto.photoType
+            pendingUpload = nil
 
-        } catch let error as APIError {
-            errorMessage = error.errorDescription
         } catch {
-            errorMessage = "업로드 중 오류가 발생했습니다."
+            failedStep = currentStep
+            uploadFailed = true
         }
     }
 }
