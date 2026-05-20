@@ -4,6 +4,27 @@
 
 ## [Unreleased]
 
+### Added (2026-05-20)
+
+#### iOS
+
+- **App Store 재심사 거절 3건 대응** ([PR #24](https://github.com/KimGiii/Gainsy/pull/24))
+  - Guideline 2.5.1 — 미사용 HealthKit 권한 키 2개 제거 (`NSHealthShareUsageDescription`, `NSHealthUpdateUsageDescription`)
+  - Guideline 2.1 — `TrackingPermissionView` 신규: ATT 요청 전 사전 설명 화면, 스플래시 2.6초 후 노출, 시뮬레이터/UI 테스트 자동 스킵
+  - Guideline 1.4.1 — `MedicalSourcesView` 신규: WHO·대한비만학회·식약처·USDA 출처 + 의료 면책 고지; `AddMeasurementView`, `BodyMeasurementView`, `DietLogDetailView`, `MyPageView` 4곳에 진입점 추가
+  - `SignUpView`, `MyPageView` 법적 문서 URL → `kimgiii.github.io/Gainsy`로 수정
+
+- **진행 사진 업로드 실패 fallback + 재시도 UX**
+  - `ProgressPhotoViewModel` — 업로드 3단계별 실패 메시지 분리 (서버 연결 실패 / 사진 전송 실패 / 메타데이터 등록 실패)
+  - `ProgressPhotoViewModel` — `uploadFailed`, `uploadFailureMessage`, `retryUpload()` 추가; 실패 시 알림 대신 인라인 배너로 전환
+  - `AddProgressPhotoView` — 실패 시 삼각 경고 아이콘 + 단계별 안내 문구 배너 표시
+  - `AddProgressPhotoView` — "저장하기" 버튼 → "↺ 다시 시도" 버튼으로 자동 전환; 새 사진 선택 시 실패 상태 초기화
+  - JPEG 변환 실패(재시도 불가)는 기존 알림 유지
+
+- **핵심 플로우 UI 테스트 추가** ([PR #25](https://github.com/KimGiii/Gainsy/pull/25))
+  - `CoreFlowUITests.swift` — XCUITest 9개: 기록 허브 카드 표시, 운동·식단·신체 측정 진입 + Add 폼 시트 열기 + 저장 버튼 초기 비활성화 확인
+  - 모든 테스트 `UI_TEST_AUTHENTICATED` 인수 사용 (실 API 미사용)
+
 ### Added (2026-05-04)
 
 #### 백엔드
