@@ -59,8 +59,6 @@ targets:
         UIRequiresFullScreen: true
         NSCameraUsageDescription: "진행 사진을 찍기 위해 카메라 접근 권한이 필요합니다."
         NSPhotoLibraryUsageDescription: "진행 사진을 저장하기 위해 사진 라이브러리 접근 권한이 필요합니다."
-        NSHealthShareUsageDescription: "건강 데이터를 읽어 운동 및 식단 목표 달성을 지원합니다."
-        NSHealthUpdateUsageDescription: "운동 및 식단 기록을 건강 앱에 저장합니다."
         NSUserNotificationUsageDescription: "주간 건강 요약 및 목표 달성 알림을 받습니다."
         UIBackgroundModes:
           - remote-notification

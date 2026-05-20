@@ -1,8 +1,10 @@
 import SwiftUI
+import AppTrackingTransparency
 
 struct RootView: View {
     @EnvironmentObject private var authState: AuthState
     @State private var showSplash = true
+    @State private var showTrackingPermission = false
 
     var body: some View {
         ZStack {
@@ -41,6 +43,17 @@ struct RootView: View {
             Task {
                 try? await Task.sleep(for: .seconds(2.0))
                 showSplash = false
+                try? await Task.sleep(for: .milliseconds(600))
+                if ATTrackingManager.trackingAuthorizationStatus == .notDetermined,
+                   !ProcessInfo.processInfo.arguments.contains("UI_TEST_RESET_STATE"),
+                   !ProcessInfo.processInfo.arguments.contains("UI_TEST_AUTHENTICATED") {
+                    showTrackingPermission = true
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showTrackingPermission) {
+            TrackingPermissionView {
+                showTrackingPermission = false
             }
         }
     }

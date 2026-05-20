@@ -1,4 +1,3 @@
-import AppTrackingTransparency
 import GoogleMobileAds
 import UIKit
 import Firebase
@@ -33,17 +32,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
         print("[APNs] Failed to register: \(error.localizedDescription)")
-    }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        requestTrackingAuthorizationIfNeeded()
-    }
-
-    private func requestTrackingAuthorizationIfNeeded() {
-        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
-        Task {
-            await ATTrackingManager.requestTrackingAuthorization()
-        }
     }
 
     private func configurePushNotifications(_ application: UIApplication) {
