@@ -1,12 +1,12 @@
 package com.healthcare.domain.diet.controller;
 
 import com.healthcare.common.response.ApiResponse;
+import com.healthcare.common.web.PageRequests;
 import com.healthcare.domain.diet.dto.*;
 import com.healthcare.domain.diet.service.DietLogService;
 import com.healthcare.security.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ public class DietLogController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequests.of(page, size);
         DietLogListResponse response = dietLogService.listDietLogs(userId, from, to, pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

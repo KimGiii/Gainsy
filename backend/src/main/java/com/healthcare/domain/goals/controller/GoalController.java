@@ -1,13 +1,13 @@
 package com.healthcare.domain.goals.controller;
 
 import com.healthcare.common.response.ApiResponse;
+import com.healthcare.common.web.PageRequests;
 import com.healthcare.domain.goals.dto.*;
 import com.healthcare.domain.goals.entity.Goal.GoalStatus;
 import com.healthcare.domain.goals.service.GoalService;
 import com.healthcare.security.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +34,7 @@ public class GoalController {
             @RequestParam(required = false) GoalStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequests.of(page, size);
         GoalListResponse response = goalService.listGoals(userId, status, pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

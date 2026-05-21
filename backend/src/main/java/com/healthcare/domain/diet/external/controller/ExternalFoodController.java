@@ -1,6 +1,7 @@
 package com.healthcare.domain.diet.external.controller;
 
 import com.healthcare.common.response.ApiResponse;
+import com.healthcare.common.web.PageRequests;
 import com.healthcare.domain.diet.dto.FoodCatalogResponse;
 import com.healthcare.domain.diet.external.dto.ExternalFoodResult;
 import com.healthcare.domain.diet.external.dto.ExternalFoodResult.FoodDataSource;
@@ -29,7 +30,8 @@ public class ExternalFoodController {
             @RequestParam(defaultValue = "ALL") FoodDataSource source,
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "20") int size) {
-        List<ExternalFoodResult> results = searchService.search(q, source, page, size);
+        List<ExternalFoodResult> results = searchService.search(
+                q, source, PageRequests.safePage(page), PageRequests.safeSize(size));
         return ResponseEntity.ok(ApiResponse.ok(results));
     }
 
