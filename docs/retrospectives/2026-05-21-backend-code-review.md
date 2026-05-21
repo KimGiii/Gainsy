@@ -145,16 +145,50 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 
 ---
 
-## 우선순위 권고
+## 진행 현황 (2026-05-21 기준)
 
-1. **C-1 즉시**: `@AuthenticationPrincipal`로 모든 컨트롤러 통일 (가장 광범위·반복 패턴)
-2. **C-2, H-1, H-6**: 외부 공격 표면 — 짧은 PR로 한 번에 처리 가능
-3. **H-3, H-4**: 리팩토링 필요 — 별도 이슈로 분리
-4. 나머지는 점진적으로
+| 등급 | 항목 | 상태 |
+|---|---|---|
+| CRITICAL | C-1 컨트롤러 JWT 직접 파싱 | ✅ 해결 |
+| CRITICAL | C-2 CORS 기본값 와일드카드 | ✅ 해결 |
+| HIGH | H-1 RateLimitingFilter X-Forwarded-For 신뢰 | ✅ 해결 (인메모리 → Redis 교체는 후속) |
+| HIGH | H-2 `@Modifying` 쿼리에 `@Transactional` 누락 | ⏳ 미해결 |
+| HIGH | H-3 GET 조회가 DB 쓰기 수행 | ✅ 해결 |
+| HIGH | H-4 NotificationService 대형 트랜잭션 | ✅ 해결 |
+| HIGH | H-5 JWT Access Token 24h 만료 | ⏳ 미해결 |
+| HIGH | H-6 페이징 size 상한 미설정 | ✅ 해결 |
+| MEDIUM/LOW | M-1 ~ M-9 (9건) | ⏳ 미해결 |
+
+**해결**: CRITICAL 2/2, HIGH 4/6, MEDIUM/LOW 0/9
+**남음**: HIGH 2건 + MEDIUM/LOW 9건 + H-1 후속(Redis 전환)
 
 ---
 
-## 요약 테이블
+## 우선순위 권고 (남은 작업)
+
+### 1순위 — 보안 정책 (1개 PR로 묶기)
+- **H-5** JWT Access Token 만료 24h → 1h. `SecurityConstants.java:7`, `application.yml:60` 동시 수정. iOS 클라이언트의 refresh 흐름 동작 확인 필요.
+- **M(SecurityConfig)** Security headers 명시 — HSTS / X-Content-Type-Options / X-Frame-Options / Referrer-Policy. Spring Security 기본값에 의존하지 않고 `HttpSecurity.headers(...)` 체인으로 명시.
+- **M(`application.yml:60`)** JWT 기본 시크릿 제거 — `${JWT_SECRET}`만 두고 미설정 시 시작 실패. (로컬은 `application-local.yml`에서 명시.)
+
+### 2순위 — 영속성·트랜잭션 정합성
+- **H-2** `FoodCatalogRepository:66, 71` — `@Modifying` 메서드에 `@Transactional` 명시. 호출 컨텍스트 의존 제거.
+- **M(N+1)** `ExerciseSessionService:140` (`getSessionById`), `DietLogService:134` (`getDietLogById`) — 세트/식품 항목별 `catalogRepository.findById` 루프를 `findAllById(idSet)` + 인메모리 매핑으로 교체.
+
+### 3순위 — 운영 신뢰성
+- **M(`WeeklyNotificationScheduler:19`)** cron 표현식 명시 — `zone = "Asia/Seoul"` + `"0 0 9 * * MON"`. 동작 동등하나 의도 가시화.
+- **M(`GlobalExceptionHandler:92`)** `log.error("Unhandled", e)` → `log.error("Unhandled: {}", e.getMessage())`로 전체 스택 노출 축소(필요시 ERROR 레벨에서 trace는 유지하고 메시지만 필터링).
+- **H-1 후속** 인메모리 `ConcurrentHashMap` 기반 rate limit → Redis 기반(Bucket4j-Redis 또는 직접 구현)으로 교체. 멀티 인스턴스 환경에서만 실제 영향.
+
+### 4순위 — 작은 위생
+- **M(`AuthService:149`)** `parseSex` 에러 메시지에서 사용자 입력값 반사 제거.
+- **M(`ExerciseCatalogRepository:28`)** LIKE 쿼리에서 `%` / `_` 이스케이프(`ESCAPE '\'` 절 + 입력 sanitization).
+- **M(`ProgressPhotoService:161`)** `"progress-photos/" + userId + "/"` 하드코딩 → `app.s3.upload-prefix` 설정값 참조.
+- **M(`application-local.yml`)** 로컬 OpenAI/공공API 키를 `.env` 또는 시크릿 매니저로 분리. (git 미추적이지만 평문 파일 자체를 정리.)
+
+---
+
+## 요약 테이블 (원본 지적)
 
 | 등급 | 건수 | 핵심 |
 |------|------|------|
