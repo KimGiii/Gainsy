@@ -78,13 +78,31 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 
 호출 컨텍스트에 의존. 리포지토리에 `@Transactional` 명시 권장.
 
-### H-3. GET 조회 API가 DB 쓰기 수행 (동시성 중복 INSERT 위험)
+### H-3. GET 조회 API가 DB 쓰기 수행 (동시성 중복 INSERT 위험) ✅ 해결 (2026-05-21)
+
+- `GoalService.getGoalProgress` — 메서드 단위 `@Transactional` 제거 → 클래스 단위 `readOnly = true` 적용. `upsertMissingWeeklyCheckpoints` 호출 삭제.
+- `GoalService.maintainCheckpointsForGoal(Long goalId)` 신규 — 목표별 별도 `@Transactional` 진입점.
+- `GoalRepository.findActiveGoalIds()` 추가.
+- `GoalCheckpointScheduler` 신규 — 매일 KST 03:00 활성 목표를 순회하며 누락 체크포인트를 채워 넣는다. 목표별 try/catch로 단일 실패가 다른 목표에 전파되지 않음.
+- 기존 `uq_goal_checkpoints_weekly` 유니크 인덱스가 DB 단에서 중복 INSERT를 차단.
+
+---
+
+### (원본 지적) H-3. GET 조회 API가 DB 쓰기 수행 (동시성 중복 INSERT 위험)
 
 **파일**: `domain/goals/service/GoalService.java:124`
 
 `getGoalProgress()`가 `upsertMissingWeeklyCheckpoints` 사이드이펙트 포함. 스케줄러나 생성 시점으로 분리.
 
-### H-4. `NotificationService.sendWeeklySummaryToAll()` 대형 트랜잭션
+### H-4. `NotificationService.sendWeeklySummaryToAll()` 대형 트랜잭션 ✅ 해결 (2026-05-21)
+
+- 메서드 단위 `@Transactional` 제거 — 전체 사용자 루프가 단일 트랜잭션으로 묶이지 않음.
+- 사용자별 try/catch — 한 사용자의 FCM 실패가 다른 사용자에게 전파되지 않음. `failed` 카운터 추가.
+- FCM 외부 HTTP 호출이 DB 트랜잭션 밖에서 실행됨. `notificationLogRepository.save()`는 Spring Data JPA의 기본 메서드 트랜잭션으로 짧게 처리.
+
+---
+
+### (원본 지적) H-4. `NotificationService.sendWeeklySummaryToAll()` 대형 트랜잭션
 
 **파일**: `common/notification/NotificationService.java:26`
 

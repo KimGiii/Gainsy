@@ -119,9 +119,8 @@ public class GoalService {
         return GoalResponse.from(saved);
     }
 
-    // ─────────────────────────── 목표 진행률 조회 ───────────────────────────
+    // ─────────────────────────── 목표 진행률 조회 (순수 읽기) ───────────────────────────
 
-    @Transactional
     public GoalProgressResponse getGoalProgress(Long userId, Long goalId) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Goal", goalId));
@@ -143,7 +142,8 @@ public class GoalService {
             throw new BusinessRuleViolationException(msg);
         }
 
-        upsertMissingWeeklyCheckpoints(goal, measurementPoints, today);
+        // checkpoint upsert는 GoalCheckpointScheduler가 주기적으로 수행 (H-3).
+        // 동시 GET 요청에서 중복 INSERT 위험을 피하기 위해 조회 경로에서는 쓰기 금지.
 
         BigDecimal currentValue = measurementPoints.get(measurementPoints.size() - 1).value();
         long daysElapsed = resolveDaysElapsed(startDate, today);
@@ -437,6 +437,34 @@ public class GoalService {
         return direction < 0
                 ? actualValue.compareTo(projectedValue) <= 0
                 : actualValue.compareTo(projectedValue) >= 0;
+    }
+
+    // ─────────────────────────── 체크포인트 유지 (스케줄러 진입점) ───────────────────────────
+
+    /**
+     * 활성 목표 ID 목록. 스케줄러가 호출.
+     */
+    public List<Long> findActiveGoalIds() {
+        return goalRepository.findActiveGoalIds();
+    }
+
+    /**
+     * 단일 목표의 누락 주간 체크포인트를 채워 넣는다.
+     * 스케줄러가 활성 목표마다 별도 트랜잭션으로 호출 — 한 건이 실패해도 다른 목표는 진행된다.
+     * 유니크 제약(uq_goal_checkpoints_weekly)으로 동시 호출 시 DB 단에서 중복이 차단된다.
+     */
+    @Transactional
+    public void maintainCheckpointsForGoal(Long goalId) {
+        Goal goal = goalRepository.findById(goalId).orElse(null);
+        if (goal == null || !goal.isActive()) {
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        List<MeasurementPoint> measurementPoints = loadMeasurementPoints(goal.getUserId(), goal, today);
+        if (measurementPoints.isEmpty()) {
+            return;
+        }
+        upsertMissingWeeklyCheckpoints(goal, measurementPoints, today);
     }
 
     // ─────────────────────────── 목표 포기 ───────────────────────────
