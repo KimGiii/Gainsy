@@ -41,6 +41,10 @@ app:
     public-api-key: ${PUBLIC_FOOD_API_KEY}
   cors:
     allowed-origins: "https://api.gainsy.site"
+  rate-limit:
+    # Nginx 등 신뢰된 프록시 뒤에서 동작 — server.forward-headers-strategy=native가
+    # X-Forwarded-For를 처리해 request.getRemoteAddr()이 실제 클라이언트 IP를 반환.
+    trust-forwarded-headers: true
 
 logging:
   level:

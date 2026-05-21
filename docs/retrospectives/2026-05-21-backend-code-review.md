@@ -34,7 +34,15 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 }
 ```
 
-### C-2. CORS 기본값 와일드카드
+### C-2. CORS 기본값 와일드카드 ✅ 해결 (2026-05-21)
+
+- `WebMvcConfig` — `@Value("${app.cors.allowed-origins}")` 기본값 제거. 누락 또는 `*` 사용 시 `IllegalStateException`으로 시작 실패.
+- `application.yml` — 로컬 기본 `http://localhost:3000,http://localhost:5173` 명시(환경변수 `CORS_ALLOWED_ORIGINS`로 override).
+- `application-prod.yml` — 기존 명시값 유지.
+
+---
+
+### (원본 지적) C-2. CORS 기본값 와일드카드
 
 **파일**: `common/config/WebMvcConfig.java:11`
 
@@ -48,7 +56,17 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 
 ## 🟠 HIGH
 
-### H-1. `RateLimitingFilter` X-Forwarded-For 무조건 신뢰
+### H-1. `RateLimitingFilter` X-Forwarded-For 무조건 신뢰 ✅ 해결 (2026-05-21)
+
+- `RateLimitingFilter`에서 X-Forwarded-For 직접 파싱 코드 제거. `request.getRemoteAddr()`만 사용.
+- 프로덕션은 `application-prod.yml`의 `server.forward-headers-strategy: native` + 신뢰된 프록시(Nginx)가 `getRemoteAddr()`에 실 클라이언트 IP를 반영하므로 별도 헤더 신뢰 코드가 불필요.
+- `app.rate-limit.trust-forwarded-headers` 설정 추가(기본 false, prod true) — 정책 가시화.
+- `RateLimitingFilter`를 `@Component`로 변환해 SecurityConfig가 빈으로 주입받도록 정리.
+- (남은 TODO) 인메모리 `ConcurrentHashMap` → 멀티 인스턴스 환경 대비 Redis 기반으로 교체.
+
+---
+
+### (원본 지적) H-1. `RateLimitingFilter` X-Forwarded-For 무조건 신뢰
 
 **파일**: `common/filter/RateLimitingFilter.java:68`
 
@@ -78,7 +96,14 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 
 탈취 시 24h 유효. 15분~1h + refresh 토큰 회전 권장.
 
-### H-6. 페이징 size 상한 미설정
+### H-6. 페이징 size 상한 미설정 ✅ 해결 (2026-05-21)
+
+- `common/web/PageRequests` 유틸 신규 — `MAX_PAGE_SIZE=100`, `DEFAULT_PAGE_SIZE=20`, 음수/0 보정.
+- 6개 컨트롤러(`GoalController`, `DietLogController`, `ExerciseSessionController`, `BodyMeasurementController`, `ProgressPhotoController`, `ExternalFoodController`)에서 `PageRequest.of(page, size)` → `PageRequests.of(page, size)`로 통일.
+
+---
+
+### (원본 지적) H-6. 페이징 size 상한 미설정
 
 **파일**: `BodyMeasurementController:47`, `ExerciseSessionController:56`, `GoalController:47`
 

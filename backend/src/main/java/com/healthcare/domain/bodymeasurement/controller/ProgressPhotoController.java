@@ -1,13 +1,13 @@
 package com.healthcare.domain.bodymeasurement.controller;
 
 import com.healthcare.common.response.ApiResponse;
+import com.healthcare.common.web.PageRequests;
 import com.healthcare.domain.bodymeasurement.dto.*;
 import com.healthcare.domain.bodymeasurement.entity.ProgressPhoto.PhotoType;
 import com.healthcare.domain.bodymeasurement.service.ProgressPhotoService;
 import com.healthcare.security.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -58,7 +58,7 @@ public class ProgressPhotoController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("capturedAt").descending());
+        Pageable pageable = PageRequests.of(page, size, Sort.by("capturedAt").descending());
         ProgressPhotoListResponse response = progressPhotoService.listPhotos(userId, photoType, from, to, pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

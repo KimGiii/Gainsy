@@ -1,12 +1,12 @@
 package com.healthcare.domain.bodymeasurement.controller;
 
 import com.healthcare.common.response.ApiResponse;
+import com.healthcare.common.web.PageRequests;
 import com.healthcare.domain.bodymeasurement.dto.*;
 import com.healthcare.domain.bodymeasurement.service.BodyMeasurementService;
 import com.healthcare.security.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,7 +36,7 @@ public class BodyMeasurementController {
             @CurrentUserId Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("measuredAt").descending());
+        Pageable pageable = PageRequests.of(page, size, Sort.by("measuredAt").descending());
         MeasurementListResponse response = measurementService.listMeasurements(userId, pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
