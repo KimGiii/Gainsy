@@ -29,8 +29,8 @@ docker compose up -d
 
 ## 주요 컨벤션
 
-- 컨트롤러 테스트: `MockMvc standaloneSetup` (Spring Security 필터 제외)
-- Authorization 헤더: `@RequestHeader(required = false)` + `resolveUserId()` null 체크
+- 컨트롤러 테스트: `MockMvc standaloneSetup` + `.setCustomArgumentResolvers(new CurrentUserIdArgumentResolver())` + `SecurityTestSupport.authenticate(USER_ID)` / `clear()` (Spring Security 필터 제외)
+- 인증 사용자 ID 주입: `@CurrentUserId Long userId` 파라미터 사용 (컨트롤러에서 JWT 직접 파싱 금지 — `JwtAuthenticationFilter`가 SecurityContext에 세팅, 리졸버가 추출)
 - Jackson 날짜: `write-dates-as-timestamps: false` 설정으로 ISO-8601 직렬화
 - 테스트 커버리지 목표: 80% 이상
 
