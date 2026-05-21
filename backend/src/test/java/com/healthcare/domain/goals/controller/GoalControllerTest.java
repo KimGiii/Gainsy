@@ -11,7 +11,9 @@ import com.healthcare.domain.goals.dto.*;
 import com.healthcare.domain.goals.entity.Goal.GoalStatus;
 import com.healthcare.domain.goals.entity.Goal.GoalType;
 import com.healthcare.domain.goals.service.GoalService;
-import com.healthcare.security.JwtTokenProvider;
+import com.healthcare.security.CurrentUserIdArgumentResolver;
+import com.healthcare.support.SecurityTestSupport;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,7 +51,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class GoalControllerTest {
 
     @Mock private GoalService goalService;
-    @Mock private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private GoalController goalController;
@@ -59,16 +59,12 @@ class GoalControllerTest {
     private ObjectMapper objectMapper;
 
     private static final Long USER_ID = 1L;
-    private static final String BEARER = "Bearer valid.test.token";
-    private static final String TOKEN  = "valid.test.token";
 
-    /** 고정 날짜 — 테스트 결정성 확보 */
     private static final LocalDate START_DATE  = LocalDate.of(2026, 4, 22);
     private static final LocalDate TARGET_DATE = LocalDate.of(2026, 10, 22);
 
     @BeforeEach
     void setUp() {
-        // ISO-8601 날짜 직렬화 검증을 위해 application.yml 설정과 동일하게 구성
         objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -76,10 +72,15 @@ class GoalControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(goalController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .setCustomArgumentResolvers(new CurrentUserIdArgumentResolver())
                 .build();
 
-        // 일부 테스트(인증 실패 케이스)에서는 getUserId가 호출되지 않으므로 lenient 사용
-        lenient().when(jwtTokenProvider.getUserId(TOKEN)).thenReturn(USER_ID);
+        SecurityTestSupport.authenticate(USER_ID);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityTestSupport.clear();
     }
 
     // ─────────────────────────── GET /{id}/progress ───────────────────────────
@@ -92,7 +93,7 @@ class GoalControllerTest {
                 .willReturn(buildProgressResponse(goalId));
 
         mockMvc.perform(get("/api/v1/goals/{id}/progress", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.goalId").value(goalId))
@@ -134,7 +135,7 @@ class GoalControllerTest {
         given(goalService.getGoalProgress(USER_ID, goalId)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/goals/{id}/progress", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.checkpoints[0].checkpointDate").value("2026-05-01"))
                 .andExpect(jsonPath("$.data.checkpoints[0].actualValue").value(78.5))
@@ -142,18 +143,11 @@ class GoalControllerTest {
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 요청 시 401 반환")
-    void getGoalProgress_missingAuthHeader_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/goals/{id}/progress", 10L))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
-    }
+    @DisplayName("인증되지 않은 진행률 조회 — 401 반환")
+    void getGoalProgress_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
 
-    @Test
-    @DisplayName("Bearer 접두사 없는 토큰으로 요청 시 401 반환")
-    void getGoalProgress_invalidBearerFormat_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/goals/{id}/progress", 10L)
-                        .header("Authorization", "invalid-token-without-prefix"))
+        mockMvc.perform(get("/api/v1/goals/{id}/progress", 10L))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
@@ -166,7 +160,7 @@ class GoalControllerTest {
                 .willThrow(new ResourceNotFoundException("Goal", goalId));
 
         mockMvc.perform(get("/api/v1/goals/{id}/progress", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("NOT_FOUND"));
     }
@@ -179,7 +173,7 @@ class GoalControllerTest {
                 .willThrow(new UnauthorizedException("다른 사용자의 목표에 접근할 수 없습니다."));
 
         mockMvc.perform(get("/api/v1/goals/{id}/progress", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
@@ -192,7 +186,7 @@ class GoalControllerTest {
                 .willThrow(new BusinessRuleViolationException("신체 측정 기록이 없어 목표 진행률을 계산할 수 없습니다."));
 
         mockMvc.perform(get("/api/v1/goals/{id}/progress", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.code").value("BUSINESS_RULE_VIOLATION"));
     }
@@ -222,7 +216,7 @@ class GoalControllerTest {
                 .willReturn(goalResponse);
 
         mockMvc.perform(post("/api/v1/goals")
-                        .header("Authorization", BEARER)
+
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -249,7 +243,7 @@ class GoalControllerTest {
                 .willThrow(new BusinessRuleViolationException("목표 날짜는 오늘 이후여야 합니다."));
 
         mockMvc.perform(post("/api/v1/goals")
-                        .header("Authorization", BEARER)
+
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity())
@@ -271,7 +265,7 @@ class GoalControllerTest {
                 .willReturn(listResponse);
 
         mockMvc.perform(get("/api/v1/goals")
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.content").isArray())
                 .andExpect(jsonPath("$.data.totalElements").value(0));
@@ -285,7 +279,7 @@ class GoalControllerTest {
         Long goalId = 10L;
 
         mockMvc.perform(delete("/api/v1/goals/{id}", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
 
@@ -300,7 +294,7 @@ class GoalControllerTest {
                 .when(goalService).abandonGoal(USER_ID, goalId);
 
         mockMvc.perform(delete("/api/v1/goals/{id}", goalId)
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.code").value("BUSINESS_RULE_VIOLATION"));
     }

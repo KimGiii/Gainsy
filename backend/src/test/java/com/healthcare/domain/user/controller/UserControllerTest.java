@@ -7,7 +7,9 @@ import com.healthcare.common.exception.GlobalExceptionHandler;
 import com.healthcare.domain.user.dto.UpdateProfileRequest;
 import com.healthcare.domain.user.dto.UserProfileResponse;
 import com.healthcare.domain.user.service.UserService;
-import com.healthcare.security.JwtTokenProvider;
+import com.healthcare.security.CurrentUserIdArgumentResolver;
+import com.healthcare.support.SecurityTestSupport;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,23 +28,15 @@ import java.time.OffsetDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * UserController 컨트롤러 단위 테스트.
- *
- * standaloneSetup 방식으로 Spring Security 필터 없이 컨트롤러 로직과
- * 예외 처리(GlobalExceptionHandler)에 집중한다.
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserController 단위 테스트")
 class UserControllerTest {
 
     @Mock private UserService userService;
-    @Mock private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private UserController userController;
@@ -51,8 +45,6 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
 
     private static final Long USER_ID = 1L;
-    private static final String BEARER = "Bearer valid.test.token";
-    private static final String TOKEN  = "valid.test.token";
 
     @BeforeEach
     void setUp() {
@@ -63,20 +55,23 @@ class UserControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .setCustomArgumentResolvers(new CurrentUserIdArgumentResolver())
                 .build();
 
-        lenient().when(jwtTokenProvider.getUserId(TOKEN)).thenReturn(USER_ID);
+        SecurityTestSupport.authenticate(USER_ID);
     }
 
-    // ─────────────────────────── GET /me ───────────────────────────
+    @AfterEach
+    void tearDown() {
+        SecurityTestSupport.clear();
+    }
 
     @Test
     @DisplayName("프로필 조회 성공 — 200, 사용자 정보 포함")
     void getMyProfile_success_returns200() throws Exception {
         given(userService.getProfile(USER_ID)).willReturn(buildProfileResponse());
 
-        mockMvc.perform(get("/api/v1/users/me")
-                        .header("Authorization", BEARER))
+        mockMvc.perform(get("/api/v1/users/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(USER_ID))
@@ -89,23 +84,14 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 프로필 조회 — 401 반환")
-    void getMyProfile_missingAuthHeader_returns401() throws Exception {
+    @DisplayName("인증되지 않은 프로필 조회 — 401 반환")
+    void getMyProfile_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
+
         mockMvc.perform(get("/api/v1/users/me"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
-
-    @Test
-    @DisplayName("Bearer 접두사 없는 토큰으로 프로필 조회 — 401 반환")
-    void getMyProfile_invalidBearerFormat_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/users/me")
-                        .header("Authorization", "token-without-bearer"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
-    }
-
-    // ─────────────────────────── PATCH /me ───────────────────────────
 
     @Test
     @DisplayName("프로필 수정 성공 — 200, 변경된 displayName 반환")
@@ -127,7 +113,6 @@ class UserControllerTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/users/me")
-                        .header("Authorization", BEARER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
@@ -145,7 +130,6 @@ class UserControllerTest {
         String body = "{\"displayName\":\"" + tooLong + "\"}";
 
         mockMvc.perform(patch("/api/v1/users/me")
-                        .header("Authorization", BEARER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest())
@@ -157,7 +141,6 @@ class UserControllerTest {
     @DisplayName("체중 20kg 미만 — 400 + fieldErrors.weightKg 포함")
     void updateMyProfile_weightTooLow_returns400() throws Exception {
         mockMvc.perform(patch("/api/v1/users/me")
-                        .header("Authorization", BEARER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"weightKg\":10.0}"))
                 .andExpect(status().isBadRequest())
@@ -165,8 +148,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 프로필 수정 — 401 반환")
-    void updateMyProfile_missingAuthHeader_returns401() throws Exception {
+    @DisplayName("인증되지 않은 프로필 수정 — 401 반환")
+    void updateMyProfile_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
+
         mockMvc.perform(patch("/api/v1/users/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"displayName\":\"새닉네임\"}"))
@@ -174,13 +159,10 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
 
-    // ─────────────────────────── DELETE /me ───────────────────────────
-
     @Test
     @DisplayName("계정 삭제 성공 — 200 반환")
     void deleteMyAccount_success_returns200() throws Exception {
-        mockMvc.perform(delete("/api/v1/users/me")
-                        .header("Authorization", BEARER))
+        mockMvc.perform(delete("/api/v1/users/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
 
@@ -188,14 +170,14 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 계정 삭제 — 401 반환")
-    void deleteMyAccount_missingAuthHeader_returns401() throws Exception {
+    @DisplayName("인증되지 않은 계정 삭제 — 401 반환")
+    void deleteMyAccount_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
+
         mockMvc.perform(delete("/api/v1/users/me"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
-
-    // ─────────────────────────── 헬퍼 ───────────────────────────
 
     private UserProfileResponse buildProfileResponse() {
         return UserProfileResponse.builder()
