@@ -61,7 +61,7 @@ actor APIClient {
             if http.statusCode == 403 && apiError?.code == "PREMIUM_REQUIRED" {
                 throw APIError.premiumRequired
             }
-            throw APIError.serverError(statusCode: http.statusCode, code: apiError?.code)
+            throw APIError.serverError(statusCode: http.statusCode, code: apiError?.code, message: apiError?.message)
         }
 
         do {
@@ -97,7 +97,7 @@ actor APIClient {
             if http.statusCode == 403 && apiError?.code == "PREMIUM_REQUIRED" {
                 throw APIError.premiumRequired
             }
-            throw APIError.serverError(statusCode: http.statusCode, code: apiError?.code)
+            throw APIError.serverError(statusCode: http.statusCode, code: apiError?.code, message: apiError?.message)
         }
     }
 
@@ -207,7 +207,9 @@ private struct SuccessEnvelope<T: Decodable>: Decodable {
 }
 
 struct APIErrorResponse: Decodable {
-    let success: Bool
+    // 백엔드 ErrorResponse는 success 필드를 보내지 않으므로 옵셔널.
+    // 과거 required로 잡혀 있어 모든 에러 디코드가 실패 → code=nil → 일반 메시지로 노출되던 회귀 차단.
+    let success: Bool?
     let code: String?
     let message: String
 }
