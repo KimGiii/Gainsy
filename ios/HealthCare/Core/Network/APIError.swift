@@ -3,7 +3,7 @@ import Foundation
 enum APIError: LocalizedError {
     case invalidURL
     case unknown
-    case serverError(statusCode: Int, code: String?)
+    case serverError(statusCode: Int, code: String?, message: String?)
     case decodingError(Error)
     case noNetwork
     case tokenExpired
@@ -20,7 +20,11 @@ enum APIError: LocalizedError {
         case .unauthorized:                return "인증에 실패했습니다."
         case .premiumRequired:             return "프리미엄 구독이 필요한 기능입니다."
         case .decodingError:               return "서버 응답을 처리할 수 없습니다."
-        case .serverError(_, let code):    return code.map { "서버 오류: \($0)" } ?? "서버 오류가 발생했습니다."
+        case .serverError(let status, _, let message):
+            // 백엔드가 사용자용 한국어 메시지를 내려주면 우선 사용.
+            // 그 외엔 상태코드만 노출해 디버깅 단서 제공.
+            if let message, !message.isEmpty { return message }
+            return "서버 오류가 발생했습니다. (\(status))"
         }
     }
 }

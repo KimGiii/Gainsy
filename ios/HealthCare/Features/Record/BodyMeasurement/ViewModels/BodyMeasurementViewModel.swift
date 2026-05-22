@@ -26,7 +26,7 @@ final class BodyMeasurementViewModel: ObservableObject {
             await loadActiveGoal(apiClient: apiClient)
             await loadTrendData(apiClient: apiClient)
         } catch {
-            if case APIError.serverError(let code, _) = error, code == 404 {
+            if case APIError.serverError(let code, _, _) = error, code == 404 {
                 measurements = []
                 latestMeasurement = nil
                 trendPoints = []

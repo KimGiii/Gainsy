@@ -35,7 +35,7 @@ final class SignUpViewModel: ObservableObject {
             authState.saveAndAuthenticate(tokenResponse: tokenResponse)
         } catch let error as APIError {
             switch error {
-            case .serverError(let code, _) where code == 409:
+            case .serverError(let code, _, _) where code == 409:
                 errorMessage = "이미 사용 중인 이메일입니다."
             default:
                 errorMessage = error.errorDescription
