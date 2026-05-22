@@ -15,17 +15,28 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final SecretKey key;
+    private final long accessTokenExpiryMs;
+    private final long refreshTokenExpiryMs;
 
-    public JwtTokenProvider(@Value("${app.jwt.secret}") String secret) {
+    public JwtTokenProvider(
+            @Value("${app.jwt.secret}") String secret,
+            @Value("${app.jwt.access-token-expiry-hours}") long accessTokenExpiryHours,
+            @Value("${app.jwt.refresh-token-expiry-days}") long refreshTokenExpiryDays) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.accessTokenExpiryMs = accessTokenExpiryHours * 60L * 60L * 1000L;
+        this.refreshTokenExpiryMs = refreshTokenExpiryDays * 24L * 60L * 60L * 1000L;
     }
 
     public String generateAccessToken(Long userId, String email) {
-        return buildToken(userId, email, SecurityConstants.ACCESS_TOKEN_EXPIRY_MS);
+        return buildToken(userId, email, accessTokenExpiryMs);
     }
 
     public String generateRefreshToken(Long userId, String email) {
-        return buildToken(userId, email, SecurityConstants.REFRESH_TOKEN_EXPIRY_MS);
+        return buildToken(userId, email, refreshTokenExpiryMs);
+    }
+
+    public long getAccessTokenExpirySeconds() {
+        return accessTokenExpiryMs / 1000L;
     }
 
     private String buildToken(Long userId, String email, long expiryMs) {

@@ -12,7 +12,6 @@ import com.healthcare.domain.auth.repository.RefreshTokenRepository;
 import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
 import com.healthcare.security.JwtTokenProvider;
-import com.healthcare.security.SecurityConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -124,7 +123,7 @@ public class AuthService {
             .displayName(user.getDisplayName())
             .accessToken(accessToken)
             .refreshToken(refreshTokenRaw)
-            .expiresIn(SecurityConstants.ACCESS_TOKEN_EXPIRY_MS / 1000)
+            .expiresIn(jwtTokenProvider.getAccessTokenExpirySeconds())
             .onboardingCompleted(user.isOnboardingCompleted())
             .build();
     }

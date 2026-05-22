@@ -308,8 +308,7 @@ class GoalServiceTest {
     // ─────────────────────────── 목표 진행률 조회 ───────────────────────────
 
     @Test
-    @DisplayName("신체 측정 기록이 있으면 진행률을 계산하고 누락된 일요일 체크포인트를 생성한다")
-    @SuppressWarnings("unchecked")
+    @DisplayName("신체 측정 기록이 있으면 진행률을 계산한다 — 조회는 순수 읽기, 체크포인트 쓰기 없음(H-3)")
     void getGoalProgress_withBodyMeasurement_calculatesPercent() {
         Long userId = 1L;
         Long goalId = 10L;
@@ -327,8 +326,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -338,10 +335,8 @@ class GoalServiceTest {
         assertThat(response.getCurrentValue()).isEqualByComparingTo(new BigDecimal("75.0"));
         assertThat(response.getDaysRemaining()).isEqualTo(30L);
 
-        ArgumentCaptor<List<GoalCheckpoint>> captor = ArgumentCaptor.forClass(List.class);
-        verify(goalCheckpointRepository).saveAll(captor.capture());
-        assertThat(captor.getValue())
-                .allMatch(checkpoint -> checkpoint.getCheckpointDate().getDayOfWeek() == DayOfWeek.SUNDAY);
+        // 조회 경로에서 체크포인트 쓰기가 발생하지 않아야 한다 — 동시 INSERT 위험 제거.
+        verify(goalCheckpointRepository, times(0)).saveAll(any());
     }
 
     @Test
@@ -382,8 +377,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -412,8 +405,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -425,8 +416,8 @@ class GoalServiceTest {
     }
 
     @Test
-    @DisplayName("이미 해당 일요일 체크포인트가 있으면 새로 저장하지 않는다")
-    void getGoalProgress_checkpointAlreadyExists_noNewSave() {
+    @DisplayName("maintainCheckpointsForGoal — 이미 해당 일요일 체크포인트가 있으면 새로 저장하지 않는다")
+    void maintainCheckpointsForGoal_existingCheckpoint_noNewSave() {
         Long userId = 1L;
         Long goalId = 10L;
         LocalDate today = LocalDate.now();
@@ -447,10 +438,8 @@ class GoalServiceTest {
                 .willReturn(measurements);
         given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(goalId, lastSunday))
                 .willReturn(Optional.of(existing));
-        given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
-                .willReturn(List.of(existing));
 
-        goalService.getGoalProgress(userId, goalId);
+        goalService.maintainCheckpointsForGoal(goalId);
 
         verify(goalCheckpointRepository, times(0)).saveAll(any());
     }
@@ -473,8 +462,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -516,9 +503,9 @@ class GoalServiceTest {
     }
 
     @Test
-    @DisplayName("체크포인트 on-track 여부는 실제값과 예상값 비교로 계산된다")
+    @DisplayName("maintainCheckpointsForGoal — 체크포인트 on-track 여부는 실제값과 예상값 비교로 계산된다")
     @SuppressWarnings("unchecked")
-    void getGoalProgress_checkpointOnTrack_comparesActualAndProjected() {
+    void maintainCheckpointsForGoal_checkpointOnTrack_comparesActualAndProjected() {
         Long userId = 1L;
         Long goalId = 10L;
         LocalDate today = LocalDate.now();
@@ -537,10 +524,8 @@ class GoalServiceTest {
                 .willReturn(measurements);
         given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
                 .willReturn(Optional.empty());
-        given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
-                .willReturn(List.of());
 
-        goalService.getGoalProgress(userId, goalId);
+        goalService.maintainCheckpointsForGoal(goalId);
 
         ArgumentCaptor<List<GoalCheckpoint>> captor = ArgumentCaptor.forClass(List.class);
         verify(goalCheckpointRepository).saveAll(captor.capture());
