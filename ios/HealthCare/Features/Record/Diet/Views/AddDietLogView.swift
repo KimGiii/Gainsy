@@ -5,6 +5,7 @@ import SwiftUI
 
 struct AddDietLogView: View {
     @EnvironmentObject private var container: AppContainer
+    @EnvironmentObject private var authState: AuthState
     @StateObject private var viewModel: AddDietLogViewModel
     @State private var selectedPhotoItem: PhotosPickerItem?
     var onSaved: () -> Void
@@ -57,6 +58,9 @@ struct AddDietLogView: View {
             }
             .sheet(isPresented: $viewModel.showCustomFoodForm) {
                 AddCustomFoodView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $viewModel.showPremiumPaywall) {
+                PremiumPaywallSheet(isPresented: $viewModel.showPremiumPaywall)
             }
             .alert("오류", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
@@ -184,18 +188,7 @@ struct AddDietLogView: View {
 
     private var actionButtons: some View {
         HStack(spacing: 12) {
-            PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                HStack {
-                    Image(systemName: "camera.viewfinder")
-                    Text("사진으로 시작")
-                }
-                .font(.subheadline.bold())
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(Color.brandPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
+            photoButton
 
             Button {
                 viewModel.searchQuery = ""
@@ -212,6 +205,46 @@ struct AddDietLogView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(Color.surfaceCard)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+
+    // 프리미엄 사용자만 PhotosPicker 노출. 비프리미엄은 잠금 표시 + paywall 시트 트리거.
+    @ViewBuilder
+    private var photoButton: some View {
+        if authState.isPremium {
+            PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                HStack {
+                    Image(systemName: "camera.viewfinder")
+                    Text("사진으로 시작")
+                }
+                .font(.subheadline.bold())
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.brandPrimary)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        } else {
+            Button {
+                viewModel.showPremiumPaywall = true
+            } label: {
+                HStack {
+                    Image(systemName: "lock.fill")
+                    Text("사진으로 시작")
+                    Text("PRO")
+                        .font(.caption2.bold())
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.white.opacity(0.25))
+                        .clipShape(Capsule())
+                }
+                .font(.subheadline.bold())
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.brandPrimary.opacity(0.55))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
@@ -507,33 +540,64 @@ struct FoodSearchSheet: View {
                 .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
 
-            // Codex 작업: 검색 결과가 없을 때 AI 영양 추정 플로우를 화면에 연결합니다.
-            if let estimate = viewModel.aiEstimateResult {
+            // 검색 결과가 없을 때 AI 영양 추정 플로우를 화면에 연결.
+            if let estimate = viewModel.aiEstimateResult,
+               estimate.isFood,
+               let item = estimate.firstItem {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Label("AI 영양 추정", systemImage: "sparkles")
                             .font(.subheadline.bold())
                             .foregroundColor(Color.brandAccent)
                         Spacer()
-                        Text("신뢰도 \(Int(estimate.confidence * 100))%")
+                        Text(item.confidenceLabel)
                             .font(.caption)
                             .foregroundColor(Color.textSecondary)
                     }
 
-                    Text(estimate.foodName)
+                    Text(item.displayName)
                         .font(.headline)
 
-                    if let category = estimate.category {
-                        Text(category.displayName)
+                    HStack(spacing: 6) {
+                        if let category = item.category {
+                            Text(category.displayName)
+                                .font(.caption)
+                                .foregroundColor(Color.textSecondary)
+                            Text("·").foregroundColor(Color.textSecondary).font(.caption)
+                        }
+                        Text(item.servingBasis.displayName)
                             .font(.caption)
                             .foregroundColor(Color.textSecondary)
+                        if item.estimatedWeightG > 0 {
+                            Text("· \(Int(item.estimatedWeightG))g")
+                                .font(.caption)
+                                .foregroundColor(Color.textSecondary)
+                        }
                     }
 
                     HStack(spacing: 10) {
-                        aiMacro("열량", value: estimate.caloriesPer100g, unit: "kcal")
-                        aiMacro("단백질", value: estimate.proteinPer100g, unit: "g")
-                        aiMacro("탄수", value: estimate.carbsPer100g, unit: "g")
-                        aiMacro("지방", value: estimate.fatPer100g, unit: "g")
+                        aiMacro("열량", value: item.nutrition.caloriesKcal, unit: "kcal")
+                        aiMacro("단백질", value: item.nutrition.proteinG, unit: "g")
+                        aiMacro("탄수", value: item.nutrition.carbohydrateG, unit: "g")
+                        aiMacro("지방", value: item.nutrition.fatG, unit: "g")
+                    }
+                    HStack(spacing: 10) {
+                        aiMacro("당류", value: item.nutrition.sugarsG, unit: "g")
+                        aiMacro("식이섬유", value: item.nutrition.dietaryFiberG, unit: "g")
+                        aiMacro("나트륨", value: item.nutrition.sodiumMg, unit: "mg")
+                        aiMacro("콜레스테롤", value: item.nutrition.cholesterolMg, unit: "mg")
+                    }
+
+                    if estimate.isMultiItem {
+                        Text("여러 음식이 인식되었습니다 (\(estimate.items.count)개). 현재는 첫 번째 항목만 추가됩니다.")
+                            .font(.caption)
+                            .foregroundColor(Color.textSecondary)
+                    }
+
+                    if !item.estimationNote.isEmpty {
+                        Text(item.estimationNote)
+                            .font(.caption)
+                            .foregroundColor(Color.textSecondary)
                     }
 
                     Text(estimate.disclaimer)

@@ -8,9 +8,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Slf4j
 @Configuration
@@ -34,7 +35,17 @@ public class FcmConfig {
             return null;
         }
 
-        try (InputStream is = new FileInputStream(path)) {
+        Path credentialsPath = Path.of(path);
+        if (!Files.isRegularFile(credentialsPath)) {
+            log.error("[FCM] credentials-path must point to a JSON file, but {} is not a regular file", path);
+            return null;
+        }
+        if (!Files.isReadable(credentialsPath)) {
+            log.error("[FCM] credentials-path is not readable: {}", path);
+            return null;
+        }
+
+        try (InputStream is = Files.newInputStream(credentialsPath)) {
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(is))
                     .build();

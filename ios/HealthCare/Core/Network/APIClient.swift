@@ -58,6 +58,9 @@ actor APIClient {
         guard (200..<300).contains(http.statusCode) else {
             let apiError = try? decoder.decode(APIErrorResponse.self, from: data)
             if http.statusCode == 401 { throw APIError.unauthorized }
+            if http.statusCode == 403 && apiError?.code == "PREMIUM_REQUIRED" {
+                throw APIError.premiumRequired
+            }
             throw APIError.serverError(statusCode: http.statusCode, code: apiError?.code)
         }
 
@@ -91,6 +94,9 @@ actor APIClient {
         guard (200..<300).contains(http.statusCode) else {
             let apiError = try? decoder.decode(APIErrorResponse.self, from: data)
             if http.statusCode == 401 { throw APIError.unauthorized }
+            if http.statusCode == 403 && apiError?.code == "PREMIUM_REQUIRED" {
+                throw APIError.premiumRequired
+            }
             throw APIError.serverError(statusCode: http.statusCode, code: apiError?.code)
         }
     }
