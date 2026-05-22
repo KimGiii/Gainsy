@@ -4,6 +4,61 @@
 
 ## [Unreleased]
 
+### Added (2026-05-23)
+
+#### 백엔드 — 영양소 표준 10종 통일 ([PR #30](https://github.com/KimGiii/Gainsy/pull/30))
+
+- **V16 마이그레이션** — `food_catalog` / `food_entries` / `diet_logs` / `meal_photo_analysis_items` 4개 테이블에 신규 6컬럼 추가 (당류·식이섬유·포화지방·트랜스지방·콜레스테롤·나트륨). 식약처 영양표시기준 10종을 외부 공공 API → FoodCatalog → FoodEntry → DietLog → AI 추정 응답까지 일관 적용.
+- **공공 API 매핑 확장** — `PublicFoodApiClientImpl.PublicFoodItem` + `toExternalResult()`에 `sugar`·`fibtg`·`fasat`·`fatrn`·`chole`·`nat` 매핑. 그동안 식약처 API가 반환하던 6필드가 추출 단계에서 버려지던 문제 해결.
+- **DietLogService 합산 로직 재작성** — `buildEntries()` 헬퍼 + `Aggregation` record. 신규 record `DietLogNutritionTotals`로 `DietLog.update()` 시그니처 단순화. `createDietLog` / `updateDietLog` 모두 10영양소 환산·합산.
+- **AI 텍스트 추정 응답 envelope** — `AiNutritionEstimateResponse`를 record(`isFood` / `items[]` / `totalNutrition` / `error` / `disclaimer` / `aiEstimated`)로 재구성. 신규 `NutritionFacts` / `ServingBasis`(PER_ITEM·PER_100G·CUSTOM_WEIGHT) / `EstimatedItem` / `EstimationError`.
+- **AI 추정 프롬프트·파싱 재작성** — `AiNutritionEstimationService`에 servingBasis 판단 규칙(브랜드/포장식품→PER_ITEM, 일반 식재료→PER_100G, 무게 명시→CUSTOM_WEIGHT), 다중 음식 items 분리, isFood=false 분기, confidence high/medium/low → 0.9/0.6/0.3 정규화. 마크다운 펜스 제거 + `totalNutrition` 누락 시 items 합산 폴백.
+- **테스트 14 케이스** — `AiNutritionEstimationServiceTest`에 PER_100G·PER_ITEM·CUSTOM_WEIGHT·multi-item·isFood=false·AI_UNAVAILABLE·unknown enum 폴백·마크다운 펜스 케이스.
+
+#### 백엔드 — 사진 분석 프리미엄 게이팅 ([PR #30](https://github.com/KimGiii/Gainsy/pull/30))
+
+- **V17 마이그레이션** — `users.is_premium BOOLEAN NOT NULL DEFAULT FALSE` + `WHERE is_premium = TRUE` 부분 인덱스.
+- **`PremiumRequiredException` + 403 PREMIUM_REQUIRED 핸들러** — `GlobalExceptionHandler`에 매핑.
+- **`PremiumAccessGuard` 컴포넌트** — `assertPremium(userId)` 재사용.
+- **`MealPhotoAnalysisController` 4개 엔드포인트 게이팅** — initiate / analyze / get / confirm.
+- 테스트 계정 활성화: `UPDATE users SET is_premium = TRUE WHERE email = '...'`.
+
+#### iOS — 백엔드 정합 + 영양소 envelope + 프리미엄 UI ([PR #31](https://github.com/KimGiii/Gainsy/pull/31))
+
+- **`AuthState.isPremium` 캐싱** + `updatePremiumStatus(_:)`. `MyPageViewModel.load(apiClient:authState:)`가 `/me` 응답으로 동기화.
+- **`APIError.premiumRequired`** — `APIClient`가 `403 + code="PREMIUM_REQUIRED"` 응답을 `.unauthorized`와 분리해 별도 매핑(자동 로그아웃 트리거 방지).
+- **`UserProfile.isPremium`** Optional 추가.
+- **`AddDietLogViewModel`** — `estimateWithAI` envelope 대응(isFood=false / AI_UNAVAILABLE 분기), `addAiEstimatedFood`가 첫 item을 10영양소 카탈로그로 저장 + draft 추가 + **검색 시트 자동 닫힘**, `startPhotoAnalysis`에서 `APIError.premiumRequired` 잡아 `showPremiumPaywall` 트리거.
+- **`AddDietLogView`** — 사진 버튼을 `photoButton` 조건부 뷰로 추출(프리미엄 → `PhotosPicker`, 비프리미엄 → 자물쇠 + PRO 배지 → paywall). AI 추정 카드를 envelope 구조로 재작성(servingBasis·estimatedWeight·8개 영양소 표시·multi-item 안내·estimationNote·신뢰도 라벨).
+- **`PremiumPaywallSheet` 신규** — PRO 안내 + 기능 리스트 + "구독 결제 준비 중" 메시지.
+- **DietModels.swift 6필드 확장** — `FoodEntryResponse` / `FoodCatalogItem`(amount 헬퍼 6종) / `DietLogDetailResponse` / `DietLogSummary` / `CreateDietLogResponse` / `ExternalFoodResult` / `ImportFoodRequest`. `DraftFoodEntry`에 10영양소 계산 helper + `EstimatedItem` init(servingBasis에 따라 per_100g 환산).
+- **테스트 71개 그린** — `xcodebuild test -only-testing HealthCareTests`.
+
+#### 부수 정리
+
+- **`PRODUCT_MODULE_NAME = Gainsy`** — 메인 앱 타겟 Debug/Release/Staging 3개 빌드 컨피그에 추가. 앱 리브랜드 이후 깨져있던 `@testable import Gainsy` 테스트 빌드 복구. `PRODUCT_NAME`은 그대로 유지.
+
+### Added (2026-05-20)
+
+#### iOS
+
+- **App Store 재심사 거절 3건 대응** ([PR #24](https://github.com/KimGiii/Gainsy/pull/24))
+  - Guideline 2.5.1 — 미사용 HealthKit 권한 키 2개 제거 (`NSHealthShareUsageDescription`, `NSHealthUpdateUsageDescription`)
+  - Guideline 2.1 — `TrackingPermissionView` 신규: ATT 요청 전 사전 설명 화면, 스플래시 2.6초 후 노출, 시뮬레이터/UI 테스트 자동 스킵
+  - Guideline 1.4.1 — `MedicalSourcesView` 신규: WHO·대한비만학회·식약처·USDA 출처 + 의료 면책 고지; `AddMeasurementView`, `BodyMeasurementView`, `DietLogDetailView`, `MyPageView` 4곳에 진입점 추가
+  - `SignUpView`, `MyPageView` 법적 문서 URL → `kimgiii.github.io/Gainsy`로 수정
+
+- **진행 사진 업로드 실패 fallback + 재시도 UX**
+  - `ProgressPhotoViewModel` — 업로드 3단계별 실패 메시지 분리 (서버 연결 실패 / 사진 전송 실패 / 메타데이터 등록 실패)
+  - `ProgressPhotoViewModel` — `uploadFailed`, `uploadFailureMessage`, `retryUpload()` 추가; 실패 시 알림 대신 인라인 배너로 전환
+  - `AddProgressPhotoView` — 실패 시 삼각 경고 아이콘 + 단계별 안내 문구 배너 표시
+  - `AddProgressPhotoView` — "저장하기" 버튼 → "↺ 다시 시도" 버튼으로 자동 전환; 새 사진 선택 시 실패 상태 초기화
+  - JPEG 변환 실패(재시도 불가)는 기존 알림 유지
+
+- **핵심 플로우 UI 테스트 추가** ([PR #25](https://github.com/KimGiii/Gainsy/pull/25))
+  - `CoreFlowUITests.swift` — XCUITest 9개: 기록 허브 카드 표시, 운동·식단·신체 측정 진입 + Add 폼 시트 열기 + 저장 버튼 초기 비활성화 확인
+  - 모든 테스트 `UI_TEST_AUTHENTICATED` 인수 사용 (실 API 미사용)
+
 ### Added (2026-05-04)
 
 #### 백엔드

@@ -240,6 +240,7 @@ struct ProgressPhotoView: View {
                 }
                 .padding(.bottom, 20)
             }
+            .refreshable { await viewModel.loadAll(apiClient: container.apiClient) }
         }
     }
 
@@ -473,9 +474,10 @@ struct PhotoCompareView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
+                let panelWidth = max(0, geo.size.width / 2 - 1)
                 HStack(spacing: 2) {
-                    comparePanel(photo: photoA, width: geo.size.width / 2 - 1)
-                    comparePanel(photo: photoB, width: geo.size.width / 2 - 1)
+                    comparePanel(photo: photoA, width: panelWidth)
+                    comparePanel(photo: photoB, width: panelWidth)
                 }
             }
             .background(Color.black)

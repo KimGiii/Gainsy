@@ -67,6 +67,20 @@ enum FoodDataSource: String, Codable {
     }
 }
 
+/// 영양표시기준 10종(앱 전체 표준 — 백엔드와 일치).
+enum NutrientLabel {
+    static let calories      = "칼로리"
+    static let carbs         = "탄수화물"
+    static let sugars        = "당류"
+    static let dietaryFiber  = "식이섬유"
+    static let protein       = "단백질"
+    static let fat           = "지방"
+    static let saturatedFat  = "포화지방"
+    static let transFat      = "트랜스지방"
+    static let cholesterol   = "콜레스테롤"
+    static let sodium        = "나트륨"
+}
+
 // MARK: - DietLog
 
 struct DietLogSummary: Codable, Identifiable {
@@ -77,6 +91,12 @@ struct DietLogSummary: Codable, Identifiable {
     let totalProteinG: Double?
     let totalCarbsG: Double?
     let totalFatG: Double?
+    let totalSugarsG: Double?
+    let totalDietaryFiberG: Double?
+    let totalSaturatedFatG: Double?
+    let totalTransFatG: Double?
+    let totalCholesterolMg: Double?
+    let totalSodiumMg: Double?
 
     var id: Int { dietLogId }
 
@@ -110,6 +130,12 @@ struct DietLogDetailResponse: Codable, Identifiable {
     let totalProteinG: Double?
     let totalCarbsG: Double?
     let totalFatG: Double?
+    let totalSugarsG: Double?
+    let totalDietaryFiberG: Double?
+    let totalSaturatedFatG: Double?
+    let totalTransFatG: Double?
+    let totalCholesterolMg: Double?
+    let totalSodiumMg: Double?
     let notes: String?
     let entries: [FoodEntryResponse]
 
@@ -127,6 +153,12 @@ struct FoodEntryResponse: Codable, Identifiable {
     let proteinG: Double?
     let carbsG: Double?
     let fatG: Double?
+    let sugarsG: Double?
+    let dietaryFiberG: Double?
+    let saturatedFatG: Double?
+    let transFatG: Double?
+    let cholesterolMg: Double?
+    let sodiumMg: Double?
     let notes: String?
 
     var displayName: String { foodNameKo ?? foodName }
@@ -143,24 +175,32 @@ struct FoodCatalogItem: Codable, Identifiable {
     let proteinPer100g: Double?
     let carbsPer100g: Double?
     let fatPer100g: Double?
+    let sugarsPer100g: Double?
+    let dietaryFiberPer100g: Double?
+    let saturatedFatPer100g: Double?
+    let transFatPer100g: Double?
+    let cholesterolPer100gMg: Double?
+    let sodiumPer100gMg: Double?
     let custom: Bool
     let usageCount: Int?
     let createdByUserId: Int?
 
     var displayName: String { nameKo ?? name }
 
-    func calories(forServing g: Double) -> Double {
-        ((caloriesPer100g ?? 0) * g) / 100
+    private func amount(_ per100g: Double?, forServing g: Double) -> Double {
+        ((per100g ?? 0) * g) / 100
     }
-    func protein(forServing g: Double) -> Double {
-        ((proteinPer100g ?? 0) * g) / 100
-    }
-    func carbs(forServing g: Double) -> Double {
-        ((carbsPer100g ?? 0) * g) / 100
-    }
-    func fat(forServing g: Double) -> Double {
-        ((fatPer100g ?? 0) * g) / 100
-    }
+
+    func calories(forServing g: Double)       -> Double { amount(caloriesPer100g, forServing: g) }
+    func protein(forServing g: Double)        -> Double { amount(proteinPer100g, forServing: g) }
+    func carbs(forServing g: Double)          -> Double { amount(carbsPer100g, forServing: g) }
+    func fat(forServing g: Double)            -> Double { amount(fatPer100g, forServing: g) }
+    func sugars(forServing g: Double)         -> Double { amount(sugarsPer100g, forServing: g) }
+    func dietaryFiber(forServing g: Double)   -> Double { amount(dietaryFiberPer100g, forServing: g) }
+    func saturatedFat(forServing g: Double)   -> Double { amount(saturatedFatPer100g, forServing: g) }
+    func transFat(forServing g: Double)       -> Double { amount(transFatPer100g, forServing: g) }
+    func cholesterol(forServing g: Double)    -> Double { amount(cholesterolPer100gMg, forServing: g) }
+    func sodium(forServing g: Double)         -> Double { amount(sodiumPer100gMg, forServing: g) }
 }
 
 // MARK: - External Food
@@ -176,6 +216,12 @@ struct ExternalFoodResult: Codable, Identifiable {
     let proteinPer100g: Double?
     let carbsPer100g: Double?
     let fatPer100g: Double?
+    let sugarsPer100g: Double?
+    let dietaryFiberPer100g: Double?
+    let saturatedFatPer100g: Double?
+    let transFatPer100g: Double?
+    let cholesterolPer100gMg: Double?
+    let sodiumPer100gMg: Double?
 
     var id: String { "\(source.rawValue)-\(externalId)" }
     var displayName: String { nameKo ?? name }
@@ -222,6 +268,12 @@ struct ImportFoodRequest: Codable {
     let proteinPer100g: Double?
     let carbsPer100g: Double?
     let fatPer100g: Double?
+    let sugarsPer100g: Double?
+    let dietaryFiberPer100g: Double?
+    let saturatedFatPer100g: Double?
+    let transFatPer100g: Double?
+    let cholesterolPer100gMg: Double?
+    let sodiumPer100gMg: Double?
 }
 
 struct CreateDietLogResponse: Codable {
@@ -232,6 +284,12 @@ struct CreateDietLogResponse: Codable {
     let totalProteinG: Double?
     let totalCarbsG: Double?
     let totalFatG: Double?
+    let totalSugarsG: Double?
+    let totalDietaryFiberG: Double?
+    let totalSaturatedFatG: Double?
+    let totalTransFatG: Double?
+    let totalCholesterolMg: Double?
+    let totalSodiumMg: Double?
 }
 
 struct InitiateMealPhotoAnalysisRequest: Codable {
@@ -274,6 +332,7 @@ struct MealPhotoAnalysisItem: Codable, Identifiable {
     let proteinG: Double?
     let carbsG: Double?
     let fatG: Double?
+    // 사진 분석 프롬프트 통일(Phase 3) 시 6필드 추가 예정 — 백엔드 사진 분석은 후속 PR.
     let confidence: Double?
     let needsReview: Bool
     let unknownOrUncertain: String?
@@ -320,10 +379,16 @@ struct DraftFoodEntry: Identifiable {
     var unknownOrUncertain: String?
 
     var servingG: Double { Double(servingGText) ?? 100 }
-    var calories: Double { food.calories(forServing: servingG) }
-    var protein:  Double { food.protein(forServing: servingG) }
-    var carbs:    Double { food.carbs(forServing: servingG) }
-    var fat:      Double { food.fat(forServing: servingG) }
+    var calories:     Double { food.calories(forServing: servingG) }
+    var protein:      Double { food.protein(forServing: servingG) }
+    var carbs:        Double { food.carbs(forServing: servingG) }
+    var fat:          Double { food.fat(forServing: servingG) }
+    var sugars:       Double { food.sugars(forServing: servingG) }
+    var dietaryFiber: Double { food.dietaryFiber(forServing: servingG) }
+    var saturatedFat: Double { food.saturatedFat(forServing: servingG) }
+    var transFat:     Double { food.transFat(forServing: servingG) }
+    var cholesterol:  Double { food.cholesterol(forServing: servingG) }
+    var sodium:       Double { food.sodium(forServing: servingG) }
     var matchedFoodCatalogId: Int? { food.id >= 0 ? food.id : nil }
     var displayName: String { sourceLabel ?? food.displayName }
 
@@ -338,10 +403,16 @@ extension DraftFoodEntry {
             name: existingEntry.foodName,
             nameKo: existingEntry.foodNameKo,
             category: existingEntry.category,
-            caloriesPer100g: (existingEntry.calories ?? 0) / factor,
-            proteinPer100g: (existingEntry.proteinG ?? 0) / factor,
-            carbsPer100g: (existingEntry.carbsG ?? 0) / factor,
-            fatPer100g: (existingEntry.fatG ?? 0) / factor,
+            caloriesPer100g:      (existingEntry.calories ?? 0) / factor,
+            proteinPer100g:       (existingEntry.proteinG ?? 0) / factor,
+            carbsPer100g:         (existingEntry.carbsG ?? 0) / factor,
+            fatPer100g:           (existingEntry.fatG ?? 0) / factor,
+            sugarsPer100g:        (existingEntry.sugarsG ?? 0) / factor,
+            dietaryFiberPer100g:  (existingEntry.dietaryFiberG ?? 0) / factor,
+            saturatedFatPer100g:  (existingEntry.saturatedFatG ?? 0) / factor,
+            transFatPer100g:      (existingEntry.transFatG ?? 0) / factor,
+            cholesterolPer100gMg: (existingEntry.cholesterolMg ?? 0) / factor,
+            sodiumPer100gMg:      (existingEntry.sodiumMg ?? 0) / factor,
             custom: false,
             usageCount: nil,
             createdByUserId: nil
@@ -359,9 +430,9 @@ extension DraftFoodEntry {
     init(analysisItem: MealPhotoAnalysisItem) {
         let serving = max(analysisItem.estimatedServingG, 1)
         let per100Calories = ((analysisItem.calories ?? 0) / serving) * 100
-        let per100Protein = ((analysisItem.proteinG ?? 0) / serving) * 100
-        let per100Carbs = ((analysisItem.carbsG ?? 0) / serving) * 100
-        let per100Fat = ((analysisItem.fatG ?? 0) / serving) * 100
+        let per100Protein  = ((analysisItem.proteinG ?? 0)  / serving) * 100
+        let per100Carbs    = ((analysisItem.carbsG ?? 0)    / serving) * 100
+        let per100Fat      = ((analysisItem.fatG ?? 0)      / serving) * 100
         let syntheticId = analysisItem.matchedFoodCatalogId ?? -analysisItem.analysisItemId
 
         self.food = FoodCatalogItem(
@@ -369,10 +440,17 @@ extension DraftFoodEntry {
             name: analysisItem.label,
             nameKo: analysisItem.label,
             category: nil,
-            caloriesPer100g: per100Calories,
-            proteinPer100g: per100Protein,
-            carbsPer100g: per100Carbs,
-            fatPer100g: per100Fat,
+            caloriesPer100g:      per100Calories,
+            proteinPer100g:       per100Protein,
+            carbsPer100g:         per100Carbs,
+            fatPer100g:           per100Fat,
+            // 사진 분석 프롬프트가 아직 6필드를 안 줌 — Phase 3에서 보강.
+            sugarsPer100g:        nil,
+            dietaryFiberPer100g:  nil,
+            saturatedFatPer100g:  nil,
+            transFatPer100g:      nil,
+            cholesterolPer100gMg: nil,
+            sodiumPer100gMg:      nil,
             custom: analysisItem.matchedFoodCatalogId == nil,
             usageCount: nil,
             createdByUserId: nil
@@ -385,20 +463,123 @@ extension DraftFoodEntry {
         self.needsReview = analysisItem.needsReview
         self.unknownOrUncertain = analysisItem.unknownOrUncertain
     }
+
+    /// AI 텍스트 추정 결과(EstimatedItem 단일 항목)를 카탈로그 후보로 변환.
+    init(aiEstimatedItem item: EstimatedItem) {
+        let basisWeight = item.estimatedWeightG > 0 ? item.estimatedWeightG : 100.0
+        // PER_ITEM·CUSTOM_WEIGHT는 1개 전체/지정 무게 기준 — per100g로 환산.
+        // PER_100G는 이미 100g 기준이므로 환산 불필요.
+        let factor: Double = {
+            switch item.servingBasis {
+            case .PER_100G:      return 1.0
+            case .PER_ITEM,
+                 .CUSTOM_WEIGHT: return 100.0 / basisWeight
+            }
+        }()
+        let n = item.nutrition
+        let displayName = item.normalizedName.isEmpty ? item.name : item.normalizedName
+
+        self.food = FoodCatalogItem(
+            id: -abs(displayName.hashValue),  // 음수 합성 ID — 저장 전까지 임시
+            name: displayName,
+            nameKo: displayName,
+            category: item.category,
+            caloriesPer100g:      n.caloriesKcal * factor,
+            proteinPer100g:       n.proteinG * factor,
+            carbsPer100g:         n.carbohydrateG * factor,
+            fatPer100g:           n.fatG * factor,
+            sugarsPer100g:        n.sugarsG * factor,
+            dietaryFiberPer100g:  n.dietaryFiberG * factor,
+            saturatedFatPer100g:  n.saturatedFatG * factor,
+            transFatPer100g:      n.transFatG * factor,
+            cholesterolPer100gMg: n.cholesterolMg * factor,
+            sodiumPer100gMg:      n.sodiumMg * factor,
+            custom: true,
+            usageCount: nil,
+            createdByUserId: nil
+        )
+        // 사용자가 무게를 명시했거나 단위 음식이면 그 무게를 기본값으로.
+        self.servingGText = String(format: "%.0f", basisWeight)
+        self.notes = ""
+        self.sourceLabel = item.name
+        self.aiConfidence = item.confidence
+        self.unknownOrUncertain = item.estimationNote
+    }
 }
 
-// MARK: - AI 영양 추정 응답
+// MARK: - AI 영양 추정 응답 (백엔드 envelope과 일치)
 
-struct AiNutritionEstimateResponse: Decodable {
-    let foodName: String
+/// 영양표시기준 10종 — items[].nutrition과 totalNutrition에서 공통 사용.
+struct NutritionFacts: Codable, Hashable {
+    let caloriesKcal: Double
+    let carbohydrateG: Double
+    let sugarsG: Double
+    let dietaryFiberG: Double
+    let proteinG: Double
+    let fatG: Double
+    let saturatedFatG: Double
+    let transFatG: Double
+    let cholesterolMg: Double
+    let sodiumMg: Double
+
+    static let zero = NutritionFacts(
+        caloriesKcal: 0, carbohydrateG: 0, sugarsG: 0, dietaryFiberG: 0,
+        proteinG: 0, fatG: 0, saturatedFatG: 0, transFatG: 0,
+        cholesterolMg: 0, sodiumMg: 0
+    )
+}
+
+enum ServingBasis: String, Codable {
+    case PER_ITEM, PER_100G, CUSTOM_WEIGHT
+
+    var displayName: String {
+        switch self {
+        case .PER_ITEM:       return "1개 기준"
+        case .PER_100G:       return "100g 기준"
+        case .CUSTOM_WEIGHT:  return "지정 무게 기준"
+        }
+    }
+}
+
+struct EstimatedItem: Codable, Identifiable {
+    let name: String
+    let normalizedName: String
     let category: FoodCategory?
-    let caloriesPer100g: Double
-    let proteinPer100g: Double
-    let carbsPer100g: Double
-    let fatPer100g: Double
-    let confidence: Double
+    let servingBasis: ServingBasis
+    let servingDescription: String
+    let estimatedWeightG: Double
+    let nutrition: NutritionFacts
+    let confidence: Double           // 0.0~1.0 (백엔드가 high/medium/low를 0.9/0.6/0.3으로 정규화)
+    let estimationNote: String
+
+    var id: String { name + "-" + normalizedName }
+    var displayName: String { normalizedName.isEmpty ? name : normalizedName }
+
+    var confidenceLabel: String {
+        switch confidence {
+        case 0.8...:    return "신뢰도 높음"
+        case 0.5..<0.8: return "신뢰도 보통"
+        default:        return "신뢰도 낮음"
+        }
+    }
+}
+
+struct EstimationError: Codable {
+    let code: String
+    let message: String
+}
+
+struct AiNutritionEstimateResponse: Codable {
+    let isFood: Bool
+    let inputText: String
+    let items: [EstimatedItem]
+    let totalNutrition: NutritionFacts?
+    let error: EstimationError?
     let disclaimer: String
     let aiEstimated: Bool
+
+    var firstItem: EstimatedItem? { items.first }
+    var isMultiItem: Bool { items.count > 1 }
 }
 
 struct AiNutritionEstimateRequest: Encodable {

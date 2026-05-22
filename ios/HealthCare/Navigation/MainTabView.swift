@@ -6,10 +6,9 @@ struct MainTabView: View {
     @State private var diaryPath   = NavigationPath()
     @State private var recordPath  = NavigationPath()
     @State private var explorePath = NavigationPath()
-    @State private var myPagePath  = NavigationPath()
 
     enum Tab: Int, CaseIterable {
-        case home, diary, record, explore, myPage
+        case home, diary, record, explore
 
         var title: String {
             switch self {
@@ -17,7 +16,6 @@ struct MainTabView: View {
             case .diary:   return "다이어리"
             case .record:  return "기록"
             case .explore: return "탐색"
-            case .myPage:  return "프로필"
             }
         }
 
@@ -27,7 +25,6 @@ struct MainTabView: View {
             case .diary:   return "calendar"
             case .record:  return "plus.circle.fill"
             case .explore: return "safari"
-            case .myPage:  return "person.fill"
             }
         }
     }
@@ -57,12 +54,6 @@ struct MainTabView: View {
             }
             .tabItem { Label(Tab.explore.title, systemImage: Tab.explore.systemImage) }
             .tag(Tab.explore)
-
-            NavigationStack(path: $myPagePath) {
-                MyPageView()
-            }
-            .tabItem { Label(Tab.myPage.title,  systemImage: Tab.myPage.systemImage) }
-            .tag(Tab.myPage)
         }
         .tint(Color.brandPrimary)
         .onChange(of: selectedTab) { newTab in
@@ -71,7 +62,6 @@ struct MainTabView: View {
             case .diary:   diaryPath   = NavigationPath()
             case .record:  recordPath  = NavigationPath()
             case .explore: explorePath = NavigationPath()
-            case .myPage:  myPagePath  = NavigationPath()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .pushNotificationTapped)) { note in

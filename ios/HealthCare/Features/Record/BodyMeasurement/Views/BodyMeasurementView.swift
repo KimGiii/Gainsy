@@ -5,6 +5,7 @@ struct BodyMeasurementView: View {
     @StateObject private var viewModel = BodyMeasurementViewModel()
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
+    @State private var showMedicalSources = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -26,8 +27,11 @@ struct BodyMeasurementView: View {
                                 .padding(.horizontal, 20)
                         } else {
                             if let latest = viewModel.latestMeasurement {
-                                LatestStatsCard(measurement: latest)
-                                    .padding(.horizontal, 20)
+                                LatestStatsCard(
+                                    measurement: latest,
+                                    onSourceTap: { showMedicalSources = true }
+                                )
+                                .padding(.horizontal, 20)
                             }
                             MeasurementTrendSection(viewModel: viewModel)
                                 .padding(.horizontal, 20)
@@ -46,6 +50,9 @@ struct BodyMeasurementView: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.surfaceGrouped)
             .refreshable { await viewModel.load(apiClient: container.apiClient) }
+            .sheet(isPresented: $showMedicalSources) {
+                MedicalSourcesView()
+            }
 
             // FAB
             Button { viewModel.showAddSheet = true } label: {
@@ -83,6 +90,7 @@ struct BodyMeasurementView: View {
         .onChange(of: viewModel.selectedMetric) { _ in
             Task { await viewModel.loadTrendData(apiClient: container.apiClient) }
         }
+        .sheet(isPresented: $showMedicalSources) { MedicalSourcesView() }
     }
 }
 
@@ -95,7 +103,7 @@ private struct BodyHeroSection: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            BodyWaveBackground().frame(height: 280)
+            BodyWaveBackground().frame(height: 220)
 
             VStack(spacing: 0) {
                 Color.clear.frame(height: 54)
@@ -119,11 +127,11 @@ private struct BodyHeroSection: View {
                 .padding(.horizontal, 20)
 
                 if isLoading {
-                    ProgressView().tint(.white).padding(.top, 30)
+                    ProgressView().tint(.white).padding(.top, 18)
                 } else if let m = latest {
-                    HeroStatsRow(measurement: m).padding(.top, 20)
+                    HeroStatsRow(measurement: m).padding(.top, 14)
                 } else {
-                    HeroEmptyState().padding(.top, 20)
+                    HeroEmptyState().padding(.top, 14)
                 }
             }
         }
@@ -134,21 +142,24 @@ private struct HeroStatsRow: View {
     let measurement: MeasurementResponse
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 28) {
             if let w = measurement.weightKg {
                 HeroStatItem(value: String(format: "%.1f", w), unit: "kg", label: "체중")
-                Spacer()
+            }
+            if measurement.weightKg != nil && measurement.bodyFatPct != nil {
+                Divider().frame(width: 1, height: 36).background(Color.white.opacity(0.2))
             }
             if let bf = measurement.bodyFatPct {
                 HeroStatItem(value: String(format: "%.1f", bf), unit: "%", label: "체지방")
-                Spacer()
+            }
+            if measurement.bodyFatPct != nil && measurement.muscleMassKg != nil {
+                Divider().frame(width: 1, height: 36).background(Color.white.opacity(0.2))
             }
             if let mm = measurement.muscleMassKg {
                 HeroStatItem(value: String(format: "%.1f", mm), unit: "kg", label: "근육량")
             }
         }
-        .padding(.horizontal, 36)
-        .padding(.bottom, 36)
+        .padding(.bottom, 16)
     }
 }
 
@@ -184,7 +195,7 @@ private struct HeroEmptyState: View {
                 .font(.system(size: 13))
                 .foregroundStyle(.white.opacity(0.65))
         }
-        .padding(.bottom, 36)
+        .padding(.bottom, 16)
     }
 }
 
@@ -234,6 +245,7 @@ private struct BodyWaveCurve: Shape {
 
 private struct LatestStatsCard: View {
     let measurement: MeasurementResponse
+    var onSourceTap: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -288,6 +300,15 @@ private struct LatestStatsCard: View {
                              value: String(format: "%.1f", v), unit: "cm", label: "팔")
                 }
             }
+
+            if measurement.bmi != nil, let tap = onSourceTap {
+                Button(action: tap) {
+                    Label("BMI 분류 기준: WHO·대한비만학회 출처 보기", systemImage: "info.circle")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.brandPrimary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
         .padding(18)
         .background(Color.surfacePrimary)
@@ -341,7 +362,7 @@ private struct MeasurementTrendSection: View {
                     Text("변화 추세")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(Color.textPrimary)
-                    Text("백엔드 range / at-or-before 기준으로 계산된 추세입니다")
+                    Text("선택한 기간 동안의 변화 흐름")
                         .font(.system(size: 12))
                         .foregroundStyle(Color.textSecondary)
                 }
@@ -397,7 +418,8 @@ private struct MeasurementTrendSection: View {
 
                         AreaMark(
                             x: .value("날짜", point.date),
-                            y: .value(viewModel.selectedMetric.title, point.value)
+                            yStart: .value("하한", viewModel.yAxisDomain.lowerBound),
+                            yEnd: .value(viewModel.selectedMetric.title, point.value)
                         )
                         .foregroundStyle(
                             LinearGradient(
@@ -417,11 +439,12 @@ private struct MeasurementTrendSection: View {
                         .foregroundStyle(Color(hex: viewModel.selectedMetric.accentHex))
                     }
                     .frame(height: 220)
+                    .chartYScale(domain: viewModel.yAxisDomain)
                     .chartYAxis {
                         AxisMarks(position: .leading)
                     }
                     .chartXAxis {
-                        AxisMarks(values: .automatic(desiredCount: 4)) { value in
+                        AxisMarks(values: .automatic(desiredCount: axisMarkCount)) { value in
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.4))
                                 .foregroundStyle(Color.black.opacity(0.08))
                             AxisTick()
@@ -429,20 +452,23 @@ private struct MeasurementTrendSection: View {
                             AxisValueLabel {
                                 if let date = value.as(Date.self) {
                                     Text(Self.axisDateFormatter.string(from: date))
+                                        .font(.caption2)
+                                        .fixedSize()
                                 }
                             }
                         }
                     }
+                    .padding(.trailing, 8)
 
                     HStack(spacing: 12) {
                         TrendSummaryPill(
-                            title: "시작",
-                            value: formattedValue(viewModel.displayTrendPoints.first?.value),
+                            title: "현재",
+                            value: formattedValue(viewModel.displayTrendPoints.last?.value),
                             unit: viewModel.currentMetricUnit
                         )
                         TrendSummaryPill(
-                            title: "현재",
-                            value: formattedValue(viewModel.displayTrendPoints.last?.value),
+                            title: "시작",
+                            value: formattedValue(viewModel.displayTrendPoints.first?.value),
                             unit: viewModel.currentMetricUnit
                         )
                     }
@@ -475,6 +501,14 @@ private struct MeasurementTrendSection: View {
     private func formattedValue(_ value: Double?) -> String {
         guard let value else { return "-" }
         return String(format: "%.1f", value)
+    }
+
+    private var axisMarkCount: Int {
+        switch viewModel.selectedRange {
+        case .week7:  return 7
+        case .month1: return 5
+        case .month3: return 6
+        }
     }
 
     private static let axisDateFormatter: DateFormatter = {
@@ -540,6 +574,18 @@ private struct MeasurementHistorySection: View {
     let measurements: [MeasurementResponse]
     let onDelete: (Int) -> Void
 
+    @State private var isExpanded = false
+    private let visibleLimit = 5
+
+    private var visibleMeasurements: [MeasurementResponse] {
+        if isExpanded || measurements.count <= visibleLimit {
+            return measurements
+        }
+        return Array(measurements.prefix(visibleLimit))
+    }
+
+    private var hasMore: Bool { measurements.count > visibleLimit }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("측정 기록")
@@ -548,9 +594,32 @@ private struct MeasurementHistorySection: View {
                 .padding(.horizontal, 20)
 
             VStack(spacing: 10) {
-                ForEach(measurements) { m in
+                ForEach(visibleMeasurements) { m in
                     MeasurementRow(measurement: m, onDelete: { onDelete(m.id) })
                         .padding(.horizontal, 20)
+                }
+
+                if hasMore {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(isExpanded
+                                 ? "접기"
+                                 : "더보기 (\(measurements.count - visibleLimit)개)")
+                                .font(.system(size: 14, weight: .semibold))
+                            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 12, weight: .semibold))
+                        }
+                        .foregroundStyle(Color.brandPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.brandPrimary.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.horizontal, 20)
                 }
             }
         }

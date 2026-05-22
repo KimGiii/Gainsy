@@ -48,6 +48,12 @@ public class FoodCatalogService {
                     .proteinPer100g(request.getProteinPer100g())
                     .carbsPer100g(request.getCarbsPer100g())
                     .fatPer100g(request.getFatPer100g())
+                    .sugarsPer100g(request.getSugarsPer100g())
+                    .dietaryFiberPer100g(request.getDietaryFiberPer100g())
+                    .saturatedFatPer100g(request.getSaturatedFatPer100g())
+                    .transFatPer100g(request.getTransFatPer100g())
+                    .cholesterolPer100gMg(request.getCholesterolPer100gMg())
+                    .sodiumPer100gMg(request.getSodiumPer100gMg())
                     .isCustom(true)
                     .createdByUserId(userId)
                     .build();

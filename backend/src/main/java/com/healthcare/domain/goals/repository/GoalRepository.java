@@ -8,12 +8,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
 
     @Query("SELECT g FROM Goal g WHERE g.userId = :userId AND g.status = 'ACTIVE'")
     Optional<Goal> findActiveGoalByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT g.id FROM Goal g WHERE g.status = 'ACTIVE'")
+    List<Long> findActiveGoalIds();
 
     @Query("SELECT g FROM Goal g WHERE g.userId = :userId " +
            "AND (:status IS NULL OR g.status = :status) " +

@@ -1,3 +1,4 @@
+import GoogleMobileAds
 import SwiftUI
 
 struct ExploreView: View {
@@ -13,7 +14,11 @@ struct ExploreView: View {
             .padding(.top, 8)
             .padding(.bottom, 40)
         }
-        .background(Color.surfaceGrouped)
+        .safeAreaInset(edge: .bottom) {
+            BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
+                .frame(height: 50)
+        }
+        .background(Color.backgroundPage)
         .navigationTitle("탐색")
         .navigationBarTitleDisplayMode(.large)
     }
@@ -106,7 +111,7 @@ private struct InsightMenuCard: View {
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(16)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }

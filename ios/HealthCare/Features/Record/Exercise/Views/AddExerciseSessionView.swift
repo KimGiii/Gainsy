@@ -39,7 +39,7 @@ struct AddExerciseSessionView: View {
                 }
                 .padding(.top, 8)
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("운동 기록 추가")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -70,7 +70,7 @@ struct AddExerciseSessionView: View {
 
             HStack {
                 Image(systemName: "calendar")
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                 DatePicker("", selection: $viewModel.sessionDate, displayedComponents: .date)
                     .labelsHidden()
                     .environment(\.locale, Locale(identifier: "ko_KR"))
@@ -78,7 +78,7 @@ struct AddExerciseSessionView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .padding(.horizontal, 16)
@@ -111,10 +111,10 @@ struct AddExerciseSessionView: View {
                         Label {
                             Text(viewModel.sessionDurationMinutes.map { "총 \($0)분" } ?? "시간을 확인해주세요")
                                 .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(viewModel.hasValidSessionTime ? Color.brandPrimary : Color.brandDanger)
+                                .foregroundStyle(viewModel.hasValidSessionTime ? Color.brandAccent : Color.brandDanger)
                         } icon: {
                             Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
-                                .foregroundStyle(viewModel.hasValidSessionTime ? Color.brandPrimary : Color.brandDanger)
+                                .foregroundStyle(viewModel.hasValidSessionTime ? Color.brandAccent : Color.brandDanger)
                         }
                         Spacer()
                     }
@@ -131,7 +131,7 @@ struct AddExerciseSessionView: View {
                 }
             }
             .padding(16)
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .padding(.horizontal, 16)
@@ -162,11 +162,11 @@ struct AddExerciseSessionView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 24))
-                            .foregroundStyle(Color.brandPrimary)
+                            .foregroundStyle(Color.brandAccent)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("운동 추가하기")
                                 .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(Color.brandPrimary)
+                                .foregroundStyle(Color.brandAccent)
                             Text("카탈로그에서 운동을 검색해 세트를 구성하세요")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.textSecondary)
@@ -207,7 +207,7 @@ struct AddExerciseSessionView: View {
                         Text("운동 추가")
                             .font(.system(size: 14, weight: .semibold))
                     }
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
                     .background(Color.surfaceCard)
@@ -233,7 +233,7 @@ struct AddExerciseSessionView: View {
                     .lineLimit(2...4)
             }
             .padding(14)
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .padding(.horizontal, 16)
@@ -247,6 +247,10 @@ struct AddExerciseSessionView: View {
                 await viewModel.save(apiClient: container.apiClient) { response in
                     onSaved(response)
                     dismiss()
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .seconds(0.4))
+                        AdsManager.shared.showInterstitialIfReady()
+                    }
                 }
             }
         } label: {
@@ -307,7 +311,7 @@ struct AddExerciseSessionView: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.surfaceSecondary)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -339,7 +343,7 @@ private struct ExerciseGroupCard: View {
                         Image(systemName: "plus.circle.fill").font(.system(size: 15))
                         Text("세트 추가").font(.system(size: 11, weight: .semibold))
                     }
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                     .padding(.horizontal, 8).padding(.vertical, 4)
                     .background(Color.surfaceCard).clipShape(Capsule())
                 }
@@ -364,7 +368,7 @@ private struct ExerciseGroupCard: View {
                     if setIdx < group.sets.count - 1 { Divider().padding(.leading, 14) }
                 }
             }
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
         }
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
@@ -383,7 +387,7 @@ private struct DraftSetRow: View {
             HStack {
                 Text("세트 \(setNumber)")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                     .padding(.horizontal, 8).padding(.vertical, 3)
                     .background(Color.surfaceCard).clipShape(Capsule())
 
@@ -393,9 +397,9 @@ private struct DraftSetRow: View {
                         Button { draft.setType = opt } label: {
                             Text(opt.label)
                                 .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(draft.setType == opt ? .white : Color.brandPrimary)
+                                .foregroundStyle(draft.setType == opt ? .white : Color.brandAccent)
                                 .padding(.horizontal, 9).padding(.vertical, 4)
-                                .background(draft.setType == opt ? Color.brandPrimary : Color.surfaceCard)
+                                .background(draft.setType == opt ? Color.brandAccent : Color.brandAccent.opacity(0.12))
                                 .clipShape(Capsule())
                         }
                     }
@@ -403,7 +407,7 @@ private struct DraftSetRow: View {
                 Spacer()
                 Button(action: onDelete) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(Color.textSecondary.opacity(0.35))
+                        .foregroundStyle(Color.brandDanger.opacity(0.7))
                 }
             }
 
@@ -436,7 +440,7 @@ private struct DraftSetRow: View {
             Text(unit).font(.system(size: 12)).foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 12).padding(.vertical, 10)
-        .background(Color.surfaceSecondary)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
@@ -455,7 +459,7 @@ struct ExerciseCatalogPickerView: View {
                 // 검색 바
                 searchBar
                     .padding(16)
-                    .background(Color.surfacePrimary)
+                    .background(Color.surfaceCard)
 
                 Divider()
 
@@ -475,7 +479,7 @@ struct ExerciseCatalogPickerView: View {
                     }
                 }
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("운동 선택")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -488,7 +492,7 @@ struct ExerciseCatalogPickerView: View {
                         Task { await viewModel.searchCatalog(apiClient: container.apiClient) }
                     }
                     .fontWeight(.semibold)
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.brandAccent)
                 }
             }
             .onAppear { searchFocused = true }
@@ -517,7 +521,7 @@ struct ExerciseCatalogPickerView: View {
             }
         }
         .padding(12)
-        .background(Color.surfaceSecondary)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -526,11 +530,11 @@ struct ExerciseCatalogPickerView: View {
             if let selected = viewModel.selectedMuscleGroup {
                 HStack(spacing: 8) {
                     Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                        .foregroundStyle(Color.brandPrimary)
+                        .foregroundStyle(Color.brandAccent)
                         .font(.system(size: 14))
                     Text(MuscleGroupMeta.label(for: selected))
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color.brandPrimary)
+                        .foregroundStyle(Color.brandAccent)
                     Text("·")
                         .foregroundStyle(Color.textSecondary.opacity(0.5))
                     Text("\(viewModel.catalogResults.count)개")
@@ -556,7 +560,7 @@ struct ExerciseCatalogPickerView: View {
                 } label: {
                     CatalogRow(item: item)
                 }
-                .listRowBackground(Color.surfacePrimary)
+                .listRowBackground(Color.surfaceCard)
                 .listRowSeparatorTint(Color(uiColor: .separator).opacity(0.5))
             }
             .listStyle(.plain)
@@ -592,7 +596,7 @@ struct ExerciseCatalogPickerView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(Color.surfacePrimary)
+                            .background(Color.surfaceCard)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                             .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
                         }
@@ -608,7 +612,7 @@ struct ExerciseCatalogPickerView: View {
         VStack(spacing: 14) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 44))
-                .foregroundStyle(Color.textSecondary.opacity(0.3))
+                .foregroundStyle(Color.textSecondary.opacity(0.6))
             Text("'\(viewModel.catalogQuery)'에 대한 결과 없음")
                 .font(.system(size: 15))
                 .foregroundStyle(Color.textSecondary)
@@ -619,7 +623,7 @@ struct ExerciseCatalogPickerView: View {
                     HStack {
                         Label("AI 운동 추정", systemImage: "sparkles")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.brandPrimary)
+                            .foregroundStyle(Color.brandAccent)
                         Spacer()
                         Text("신뢰도 \(Int(estimate.confidence * 100))%")
                             .font(.caption)
@@ -655,7 +659,7 @@ struct ExerciseCatalogPickerView: View {
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.surfacePrimary)
+                .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal, 24)
             } else {
@@ -685,7 +689,7 @@ struct ExerciseCatalogPickerView: View {
     private func aiExerciseTag(_ text: String) -> some View {
         Text(text)
             .font(.caption.bold())
-            .foregroundStyle(Color.brandPrimary)
+            .foregroundStyle(Color.brandAccent)
             .padding(.horizontal, 8)
             .padding(.vertical, 5)
             .background(Color.surfaceCard)
@@ -729,7 +733,7 @@ private struct CatalogRow: View {
         HStack(spacing: 14) {
             Image(systemName: exerciseIcon(for: item.exerciseType))
                 .font(.system(size: 18))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
                 .frame(width: 40, height: 40)
                 .background(Color.surfaceCard)
                 .clipShape(RoundedRectangle(cornerRadius: 10))

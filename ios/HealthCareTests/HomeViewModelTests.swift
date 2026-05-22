@@ -318,7 +318,13 @@ final class HomeViewModelTests: XCTestCase {
             totalCalories: calories,
             totalProteinG: protein,
             totalCarbsG: carbs,
-            totalFatG: fat
+            totalFatG: fat,
+            totalSugarsG: nil,
+            totalDietaryFiberG: nil,
+            totalSaturatedFatG: nil,
+            totalTransFatG: nil,
+            totalCholesterolMg: nil,
+            totalSodiumMg: nil
         )
     }
 

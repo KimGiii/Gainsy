@@ -15,7 +15,7 @@ settings:
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     PRODUCT_NAME: HealthCare
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: HVVJG5AF82
     CODE_SIGN_STYLE: Automatic
     SWIFT_STRICT_CONCURRENCY: complete
 
@@ -33,6 +33,9 @@ packages:
   FirebaseSDK:
     url: https://github.com/firebase/firebase-ios-sdk
     from: "11.0.0"
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads
+    from: "11.0.0"
 
 targets:
   HealthCare:
@@ -45,7 +48,7 @@ targets:
     info:
       path: HealthCare/Resources/Info.plist
       properties:
-        CFBundleDisplayName: Vitae
+        CFBundleDisplayName: gainsy
         CFBundleIdentifier: com.kingloo.gainsy.ios
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
@@ -56,18 +59,14 @@ targets:
         UIRequiresFullScreen: true
         NSCameraUsageDescription: "진행 사진을 찍기 위해 카메라 접근 권한이 필요합니다."
         NSPhotoLibraryUsageDescription: "진행 사진을 저장하기 위해 사진 라이브러리 접근 권한이 필요합니다."
-        NSHealthShareUsageDescription: "건강 데이터를 읽어 운동 및 식단 목표 달성을 지원합니다."
-        NSHealthUpdateUsageDescription: "운동 및 식단 기록을 건강 앱에 저장합니다."
         NSUserNotificationUsageDescription: "주간 건강 요약 및 목표 달성 알림을 받습니다."
         UIBackgroundModes:
           - remote-notification
         FirebaseAppDelegateProxyEnabled: false
         ITSAppUsesNonExemptEncryption: false
         API_BASE_URL: "$(BASE_URL)"
-        NSAppTransportSecurity:
-          NSExceptionDomains:
-            13.209.216.146:
-              NSExceptionAllowsInsecureHTTPLoads: true
+        GADApplicationIdentifier: "ca-app-pub-6600084915621974~8422643430"
+        NSUserTrackingUsageDescription: "맞춤 광고를 보여드리기 위해 광고 추적 권한을 요청합니다. 거부하셔도 광고는 표시되지만 관련성이 낮을 수 있습니다."
     settings:
       base:
         INFOPLIST_FILE: HealthCare/Resources/Info.plist
@@ -78,6 +77,8 @@ targets:
         product: FirebaseAnalytics
       - package: FirebaseSDK
         product: FirebaseMessaging
+      - package: GoogleMobileAds
+        product: GoogleMobileAds
     scheme:
       testTargets:
         - HealthCareTests
@@ -122,7 +123,7 @@ schemes:
       config: Debug
       environmentVariables:
         - variable: BASE_URL
-          value: http://13.209.216.146
+          value: https://api.gainsy.site
           isEnabled: true
     test:
       config: Debug
@@ -146,7 +147,7 @@ schemes:
       config: Staging
       environmentVariables:
         - variable: BASE_URL
-          value: http://13.209.216.146
+          value: https://api.gainsy.site
           isEnabled: true
     profile:
       config: Staging

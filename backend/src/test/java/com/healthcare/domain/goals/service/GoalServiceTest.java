@@ -123,6 +123,126 @@ class GoalServiceTest {
     }
 
     @Test
+    @DisplayName("startValue 미입력 시 최신 신체 측정값으로 자동 채워지고 시작 체크포인트가 생성된다")
+    void createGoal_missingStartValue_autofillsFromLatestMeasurementAndCreatesStartCheckpoint() {
+        Long userId = 1L;
+        LocalDate today = LocalDate.now();
+        // startValue 없이 요청 (WEIGHT_LOSS, 목표 70kg)
+        CreateGoalRequest request = buildCreateRequest(
+                GoalType.WEIGHT_LOSS,
+                new BigDecimal("70.0"), "kg",
+                today.plusMonths(3),
+                null, new BigDecimal("-0.5"));
+
+        BodyMeasurement latest = buildMeasurement(userId, today.minusDays(1), 80.5);
+
+        given(userRepository.findByIdAndDeletedAtIsNull(userId)).willReturn(Optional.of(buildUser(userId)));
+        given(bodyMeasurementRepository.findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(userId, today))
+                .willReturn(Optional.of(latest));
+        given(goalRepository.findActiveGoalByUserId(userId)).willReturn(Optional.empty());
+        Goal savedGoal = buildWeightGoal(40L, userId,
+                new BigDecimal("80.5"), new BigDecimal("70.0"),
+                today, today.plusMonths(3));
+        given(goalRepository.save(any(Goal.class))).willReturn(savedGoal);
+
+        goalService.createGoal(userId, request);
+
+        // 저장된 Goal의 startValue가 최신 측정값으로 채워졌는지 확인.
+        ArgumentCaptor<Goal> goalCaptor = ArgumentCaptor.forClass(Goal.class);
+        verify(goalRepository).save(goalCaptor.capture());
+        assertThat(goalCaptor.getValue().getStartValue()).isEqualByComparingTo("80.5");
+
+        // 시작 체크포인트가 저장됐는지 확인.
+        ArgumentCaptor<GoalCheckpoint> checkpointCaptor = ArgumentCaptor.forClass(GoalCheckpoint.class);
+        verify(goalCheckpointRepository).save(checkpointCaptor.capture());
+        GoalCheckpoint startCheckpoint = checkpointCaptor.getValue();
+        assertThat(startCheckpoint.getCheckpointDate()).isEqualTo(today);
+        assertThat(startCheckpoint.getActualValue()).isEqualByComparingTo("80.5");
+        assertThat(startCheckpoint.getNotes()).isEqualTo("시작");
+        assertThat(startCheckpoint.getIsOnTrack()).isTrue();
+    }
+
+    @Test
+    @DisplayName("startValue 미입력 + 측정 기록 없으면 startValue는 null로 저장되고 시작 체크포인트는 생성되지 않는다")
+    void createGoal_missingStartValueAndNoMeasurement_savesNullStartValueAndSkipsCheckpoint() {
+        Long userId = 1L;
+        LocalDate today = LocalDate.now();
+        CreateGoalRequest request = buildCreateRequest(
+                GoalType.WEIGHT_LOSS,
+                new BigDecimal("70.0"), "kg",
+                today.plusMonths(3),
+                null, new BigDecimal("-0.5"));
+
+        given(userRepository.findByIdAndDeletedAtIsNull(userId)).willReturn(Optional.of(buildUser(userId)));
+        given(bodyMeasurementRepository.findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(userId, today))
+                .willReturn(Optional.empty());
+        given(goalRepository.findActiveGoalByUserId(userId)).willReturn(Optional.empty());
+        Goal savedGoal = buildGoal(41L, userId, GoalType.WEIGHT_LOSS, GoalStatus.ACTIVE);
+        given(goalRepository.save(any(Goal.class))).willReturn(savedGoal);
+
+        goalService.createGoal(userId, request);
+
+        ArgumentCaptor<Goal> goalCaptor = ArgumentCaptor.forClass(Goal.class);
+        verify(goalRepository).save(goalCaptor.capture());
+        assertThat(goalCaptor.getValue().getStartValue()).isNull();
+        verify(goalCheckpointRepository, times(0)).save(any(GoalCheckpoint.class));
+    }
+
+    @Test
+    @DisplayName("startValue 입력 시 자동 채우기는 동작하지 않고 입력값으로 시작 체크포인트가 생성된다")
+    void createGoal_explicitStartValue_skipsAutofillAndCreatesCheckpointFromRequest() {
+        Long userId = 1L;
+        LocalDate today = LocalDate.now();
+        CreateGoalRequest request = buildCreateRequest(
+                GoalType.WEIGHT_LOSS,
+                new BigDecimal("70.0"), "kg",
+                today.plusMonths(3),
+                new BigDecimal("82.0"), new BigDecimal("-0.5"));
+
+        given(userRepository.findByIdAndDeletedAtIsNull(userId)).willReturn(Optional.of(buildUser(userId)));
+        given(goalRepository.findActiveGoalByUserId(userId)).willReturn(Optional.empty());
+        Goal savedGoal = buildWeightGoal(42L, userId,
+                new BigDecimal("82.0"), new BigDecimal("70.0"),
+                today, today.plusMonths(3));
+        given(goalRepository.save(any(Goal.class))).willReturn(savedGoal);
+
+        goalService.createGoal(userId, request);
+
+        // 사용자 입력값이 우선 — 측정 기록 조회를 호출하지 않아야 한다.
+        verify(bodyMeasurementRepository, times(0))
+                .findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(any(), any());
+
+        ArgumentCaptor<GoalCheckpoint> captor = ArgumentCaptor.forClass(GoalCheckpoint.class);
+        verify(goalCheckpointRepository).save(captor.capture());
+        assertThat(captor.getValue().getActualValue()).isEqualByComparingTo("82.0");
+        assertThat(captor.getValue().getNotes()).isEqualTo("시작");
+    }
+
+    @Test
+    @DisplayName("ENDURANCE 목표는 startValue 자동 채우기를 시도하지 않는다")
+    void createGoal_endurance_skipsStartValueAutofill() {
+        Long userId = 1L;
+        LocalDate today = LocalDate.now();
+        CreateGoalRequest request = buildCreateRequest(
+                GoalType.ENDURANCE,
+                new BigDecimal("60"), "minutes",
+                today.plusMonths(3),
+                null, null);
+
+        given(userRepository.findByIdAndDeletedAtIsNull(userId)).willReturn(Optional.of(buildUser(userId)));
+        given(goalRepository.findActiveGoalByUserId(userId)).willReturn(Optional.empty());
+        Goal savedGoal = buildGoal(43L, userId, GoalType.ENDURANCE, GoalStatus.ACTIVE);
+        given(goalRepository.save(any(Goal.class))).willReturn(savedGoal);
+
+        goalService.createGoal(userId, request);
+
+        verify(bodyMeasurementRepository, times(0))
+                .findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(any(), any());
+        // ENDURANCE는 시작 측정값 개념이 다르므로 시작 체크포인트도 생성하지 않는다(startValue null).
+        verify(goalCheckpointRepository, times(0)).save(any(GoalCheckpoint.class));
+    }
+
+    @Test
     @DisplayName("과거 날짜를 목표 날짜로 지정 시 BusinessRuleViolationException 발생")
     void createGoal_targetDateInPast_throwsBusinessRuleViolationException() {
         Long userId = 1L;
@@ -308,8 +428,7 @@ class GoalServiceTest {
     // ─────────────────────────── 목표 진행률 조회 ───────────────────────────
 
     @Test
-    @DisplayName("신체 측정 기록이 있으면 진행률을 계산하고 누락된 일요일 체크포인트를 생성한다")
-    @SuppressWarnings("unchecked")
+    @DisplayName("신체 측정 기록이 있으면 진행률을 계산한다 — 조회는 순수 읽기, 체크포인트 쓰기 없음(H-3)")
     void getGoalProgress_withBodyMeasurement_calculatesPercent() {
         Long userId = 1L;
         Long goalId = 10L;
@@ -327,8 +446,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -338,10 +455,8 @@ class GoalServiceTest {
         assertThat(response.getCurrentValue()).isEqualByComparingTo(new BigDecimal("75.0"));
         assertThat(response.getDaysRemaining()).isEqualTo(30L);
 
-        ArgumentCaptor<List<GoalCheckpoint>> captor = ArgumentCaptor.forClass(List.class);
-        verify(goalCheckpointRepository).saveAll(captor.capture());
-        assertThat(captor.getValue())
-                .allMatch(checkpoint -> checkpoint.getCheckpointDate().getDayOfWeek() == DayOfWeek.SUNDAY);
+        // 조회 경로에서 체크포인트 쓰기가 발생하지 않아야 한다 — 동시 INSERT 위험 제거.
+        verify(goalCheckpointRepository, times(0)).saveAll(any());
     }
 
     @Test
@@ -382,8 +497,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -412,8 +525,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -425,8 +536,8 @@ class GoalServiceTest {
     }
 
     @Test
-    @DisplayName("이미 해당 일요일 체크포인트가 있으면 새로 저장하지 않는다")
-    void getGoalProgress_checkpointAlreadyExists_noNewSave() {
+    @DisplayName("maintainCheckpointsForGoal — 이미 해당 일요일 체크포인트가 있으면 새로 저장하지 않는다")
+    void maintainCheckpointsForGoal_existingCheckpoint_noNewSave() {
         Long userId = 1L;
         Long goalId = 10L;
         LocalDate today = LocalDate.now();
@@ -447,10 +558,8 @@ class GoalServiceTest {
                 .willReturn(measurements);
         given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(goalId, lastSunday))
                 .willReturn(Optional.of(existing));
-        given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
-                .willReturn(List.of(existing));
 
-        goalService.getGoalProgress(userId, goalId);
+        goalService.maintainCheckpointsForGoal(goalId);
 
         verify(goalCheckpointRepository, times(0)).saveAll(any());
     }
@@ -473,8 +582,6 @@ class GoalServiceTest {
         given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
                 userId, goal.getStartDate(), today))
                 .willReturn(measurements);
-        given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
-                .willReturn(Optional.empty());
         given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
                 .willReturn(List.of());
 
@@ -516,9 +623,9 @@ class GoalServiceTest {
     }
 
     @Test
-    @DisplayName("체크포인트 on-track 여부는 실제값과 예상값 비교로 계산된다")
+    @DisplayName("maintainCheckpointsForGoal — 체크포인트 on-track 여부는 실제값과 예상값 비교로 계산된다")
     @SuppressWarnings("unchecked")
-    void getGoalProgress_checkpointOnTrack_comparesActualAndProjected() {
+    void maintainCheckpointsForGoal_checkpointOnTrack_comparesActualAndProjected() {
         Long userId = 1L;
         Long goalId = 10L;
         LocalDate today = LocalDate.now();
@@ -527,7 +634,7 @@ class GoalServiceTest {
                 today.minusDays(20), today.plusDays(40));
         LocalDate firstSunday = goal.getStartDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         List<BodyMeasurement> measurements = List.of(
-                buildMeasurement(userId, firstSunday, 79.8),
+                buildMeasurement(userId, firstSunday, 80.5),
                 buildMeasurement(userId, today, 75.0)
         );
 
@@ -537,10 +644,8 @@ class GoalServiceTest {
                 .willReturn(measurements);
         given(goalCheckpointRepository.findByGoalIdAndCheckpointDate(any(), any()))
                 .willReturn(Optional.empty());
-        given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
-                .willReturn(List.of());
 
-        goalService.getGoalProgress(userId, goalId);
+        goalService.maintainCheckpointsForGoal(goalId);
 
         ArgumentCaptor<List<GoalCheckpoint>> captor = ArgumentCaptor.forClass(List.class);
         verify(goalCheckpointRepository).saveAll(captor.capture());
@@ -549,7 +654,7 @@ class GoalServiceTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(firstCheckpoint.getActualValue()).isEqualByComparingTo("79.8");
+        assertThat(firstCheckpoint.getActualValue()).isEqualByComparingTo("80.5");
         assertThat(firstCheckpoint.getProjectedValue()).isNotNull();
         assertThat(firstCheckpoint.getIsOnTrack()).isFalse();
     }

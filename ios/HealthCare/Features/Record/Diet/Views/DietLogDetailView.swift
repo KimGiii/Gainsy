@@ -32,6 +32,7 @@ struct DietLogDetailView: View {
     @StateObject private var viewModel = DietLogDetailViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var showingEdit = false
+    @State private var showingSources = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -96,6 +97,7 @@ struct DietLogDetailView: View {
             }
         }
         .task { await viewModel.load(id: logId, apiClient: container.apiClient) }
+        .sheet(isPresented: $showingSources) { MedicalSourcesView() }
     }
 
     private func nutritionCard(detail: DietLogDetailResponse) -> some View {
@@ -103,8 +105,16 @@ struct DietLogDetailView: View {
             HStack {
                 Text("영양 정보")
                     .font(.subheadline.bold())
-                    .foregroundColor(.brandPrimary)
+                    .foregroundColor(Color.brandAccent)
                 Spacer()
+                Button {
+                    showingSources = true
+                } label: {
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.textSecondary)
+                }
+                .accessibilityLabel("영양 정보 출처 보기")
             }
             HStack(spacing: 0) {
                 NutritionStatCell(
@@ -137,7 +147,7 @@ struct DietLogDetailView: View {
             }
         }
         .padding(16)
-        .background(Color(.systemBackground))
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
@@ -146,7 +156,7 @@ struct DietLogDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("식품 목록")
                 .font(.subheadline.bold())
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             VStack(spacing: 1) {
                 ForEach(Array(detail.entries.enumerated()), id: \.element.id) { idx, entry in
                     FoodEntryRow(entry: entry)
@@ -155,7 +165,7 @@ struct DietLogDetailView: View {
                     }
                 }
             }
-            .background(Color(.systemBackground))
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
         }
@@ -165,14 +175,14 @@ struct DietLogDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Label("메모", systemImage: "note.text")
                 .font(.subheadline.bold())
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(notes)
                 .font(.body)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textHeadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(16)
-        .background(Color(.systemBackground))
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
@@ -244,10 +254,10 @@ private struct NutritionStatCell: View {
                 .foregroundColor(color)
             Text(unit)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(label)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -271,7 +281,7 @@ private struct FoodEntryRow: View {
                     .font(.subheadline.bold())
                 Text(String(format: "%.0fg", entry.servingG))
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
             Spacer()
             Text(entry.calories.map { String(format: "%.0f kcal", $0) } ?? "-")

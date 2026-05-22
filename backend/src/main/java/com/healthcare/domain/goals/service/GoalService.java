@@ -51,11 +51,19 @@ public class GoalService {
         }
 
         Goal.GoalType goalType = request.getGoalType();
+        LocalDate startDate = LocalDate.now();
         String normalizedTargetUnit = normalizeTargetUnit(goalType);
         BigDecimal normalizedTargetValue = normalizeTargetValue(
                 goalType, request.getTargetUnit(), request.getTargetValue());
         BigDecimal normalizedStartValue = normalizeTargetValue(
                 goalType, request.getTargetUnit(), request.getStartValue());
+
+        // 사용자가 startValue를 입력하지 않은 경우 최신 신체 측정에서 자동 보강.
+        // (ENDURANCE는 측정값과 무관하므로 사용자 입력만 사용.)
+        if (normalizedStartValue == null && goalType != Goal.GoalType.ENDURANCE) {
+            normalizedStartValue = resolveStartValueFromLatestMeasurement(userId, goalType, startDate);
+        }
+
         BigDecimal normalizedWeeklyRateTarget = normalizeWeeklyRateTarget(goalType, request.getWeeklyRateTarget());
 
         // 기존 ACTIVE 목표 → ABANDONED
@@ -71,13 +79,39 @@ public class GoalService {
                 .targetUnit(normalizedTargetUnit)
                 .targetDate(request.getTargetDate())
                 .startValue(normalizedStartValue)
-                .startDate(LocalDate.now())
+                .startDate(startDate)
                 .status(GoalStatus.ACTIVE)
                 .weeklyRateTarget(normalizedWeeklyRateTarget)
                 .build();
 
         Goal saved = goalRepository.save(goal);
+
+        // 시작 체크포인트 — 히스토리에서 시작점을 항상 보이도록.
+        // startValue가 있을 때만 의미가 있다. notes="시작"으로 주간 체크포인트와 구분.
+        if (normalizedStartValue != null) {
+            goalCheckpointRepository.save(GoalCheckpoint.builder()
+                    .goalId(saved.getId())
+                    .checkpointDate(startDate)
+                    .actualValue(normalizedStartValue)
+                    .projectedValue(normalizedStartValue)
+                    .isOnTrack(true)
+                    .notes("시작")
+                    .build());
+        }
+
         return GoalResponse.from(saved);
+    }
+
+    /**
+     * 사용자의 최신 신체 측정에서 goalType에 맞는 값을 추출한다.
+     * 측정 기록이 없거나 해당 필드가 비어 있으면 null 반환.
+     */
+    private BigDecimal resolveStartValueFromLatestMeasurement(
+            Long userId, Goal.GoalType goalType, LocalDate referenceDate) {
+        return bodyMeasurementRepository
+                .findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(userId, referenceDate)
+                .map(m -> extractValueByGoalType(goalType, m))
+                .orElse(null);
     }
 
     // ─────────────────────────── 목표 단건 조회 ───────────────────────────
@@ -119,9 +153,8 @@ public class GoalService {
         return GoalResponse.from(saved);
     }
 
-    // ─────────────────────────── 목표 진행률 조회 ───────────────────────────
+    // ─────────────────────────── 목표 진행률 조회 (순수 읽기) ───────────────────────────
 
-    @Transactional
     public GoalProgressResponse getGoalProgress(Long userId, Long goalId) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Goal", goalId));
@@ -143,7 +176,8 @@ public class GoalService {
             throw new BusinessRuleViolationException(msg);
         }
 
-        upsertMissingWeeklyCheckpoints(goal, measurementPoints, today);
+        // checkpoint upsert는 GoalCheckpointScheduler가 주기적으로 수행 (H-3).
+        // 동시 GET 요청에서 중복 INSERT 위험을 피하기 위해 조회 경로에서는 쓰기 금지.
 
         BigDecimal currentValue = measurementPoints.get(measurementPoints.size() - 1).value();
         long daysElapsed = resolveDaysElapsed(startDate, today);
@@ -437,6 +471,34 @@ public class GoalService {
         return direction < 0
                 ? actualValue.compareTo(projectedValue) <= 0
                 : actualValue.compareTo(projectedValue) >= 0;
+    }
+
+    // ─────────────────────────── 체크포인트 유지 (스케줄러 진입점) ───────────────────────────
+
+    /**
+     * 활성 목표 ID 목록. 스케줄러가 호출.
+     */
+    public List<Long> findActiveGoalIds() {
+        return goalRepository.findActiveGoalIds();
+    }
+
+    /**
+     * 단일 목표의 누락 주간 체크포인트를 채워 넣는다.
+     * 스케줄러가 활성 목표마다 별도 트랜잭션으로 호출 — 한 건이 실패해도 다른 목표는 진행된다.
+     * 유니크 제약(uq_goal_checkpoints_weekly)으로 동시 호출 시 DB 단에서 중복이 차단된다.
+     */
+    @Transactional
+    public void maintainCheckpointsForGoal(Long goalId) {
+        Goal goal = goalRepository.findById(goalId).orElse(null);
+        if (goal == null || !goal.isActive()) {
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        List<MeasurementPoint> measurementPoints = loadMeasurementPoints(goal.getUserId(), goal, today);
+        if (measurementPoints.isEmpty()) {
+            return;
+        }
+        upsertMissingWeeklyCheckpoints(goal, measurementPoints, today);
     }
 
     // ─────────────────────────── 목표 포기 ───────────────────────────

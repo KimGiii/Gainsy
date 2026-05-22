@@ -38,4 +38,16 @@ public class ImportFoodRequest {
     private Double carbsPer100g;
 
     private Double fatPer100g;
+
+    private Double sugarsPer100g;
+
+    private Double dietaryFiberPer100g;
+
+    private Double saturatedFatPer100g;
+
+    private Double transFatPer100g;
+
+    private Double cholesterolPer100gMg;
+
+    private Double sodiumPer100gMg;
 }

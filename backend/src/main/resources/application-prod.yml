@@ -1,3 +1,13 @@
+server:
+  # Nginx 뒤에 위치하므로 X-Forwarded-* 헤더를 신뢰해
+  # Spring이 원본 scheme(https), host, client-ip를 정확히 인식하도록 한다.
+  forward-headers-strategy: native
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 20
+    accept-count: 100
+
 spring:
   datasource:
     url: ${DB_URL}
@@ -7,6 +17,7 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 5
       connection-timeout: 30000
+      leak-detection-threshold: 60000
   data:
     redis:
       host: ${REDIS_HOST}
@@ -19,15 +30,25 @@ app:
   jwt:
     secret: ${JWT_SECRET}
   s3:
-    bucket: healthcare-photos-prod
+    bucket: ${S3_BUCKET}
     region: ap-northeast-2
-    path-style-access: false
+    endpoint: ${S3_ENDPOINT:}
+    public-endpoint: ${S3_PUBLIC_ENDPOINT:}
+    path-style-access: ${S3_PATH_STYLE_ACCESS:false}
   fcm:
     credentials-path: ${FCM_CREDENTIALS_PATH}
   food-api:
     public-api-key: ${PUBLIC_FOOD_API_KEY}
+  cors:
+    allowed-origins: "https://api.gainsy.site"
+  rate-limit:
+    # Nginx 등 신뢰된 프록시 뒤에서 동작 — server.forward-headers-strategy=native가
+    # X-Forwarded-For를 처리해 request.getRemoteAddr()이 실제 클라이언트 IP를 반환.
+    trust-forwarded-headers: true
 
 logging:
   level:
     com.healthcare: INFO
     root: WARN
+  pattern:
+    console: '{"timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%p","logger":"%logger{36}","message":"%msg"}%n'

@@ -38,6 +38,24 @@ public class FoodEntry {
     @Column(name = "fat_g")
     private Double fatG;
 
+    @Column(name = "sugars_g")
+    private Double sugarsG;
+
+    @Column(name = "dietary_fiber_g")
+    private Double dietaryFiberG;
+
+    @Column(name = "saturated_fat_g")
+    private Double saturatedFatG;
+
+    @Column(name = "trans_fat_g")
+    private Double transFatG;
+
+    @Column(name = "cholesterol_mg")
+    private Double cholesterolMg;
+
+    @Column(name = "sodium_mg")
+    private Double sodiumMg;
+
     @Column(length = 255)
     private String notes;
 

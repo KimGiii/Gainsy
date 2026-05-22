@@ -82,12 +82,13 @@ final class MyPageViewModel: ObservableObject {
         }
     }
 
-    func load(apiClient: any MyPageProfileManaging) async {
+    func load(apiClient: any MyPageProfileManaging, authState: AuthState? = nil) async {
         isLoading = true
         defer { isLoading = false }
         do {
             let fetched = try await apiClient.loadProfile()
             profile = fetched
+            authState?.updatePremiumStatus(fetched.premium)
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {

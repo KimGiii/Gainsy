@@ -11,7 +11,9 @@ import com.healthcare.domain.auth.dto.RefreshTokenRequest;
 import com.healthcare.domain.auth.dto.RegisterRequest;
 import com.healthcare.domain.auth.dto.TokenResponse;
 import com.healthcare.domain.auth.service.AuthService;
-import com.healthcare.security.JwtTokenProvider;
+import com.healthcare.security.CurrentUserIdArgumentResolver;
+import com.healthcare.support.SecurityTestSupport;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,23 +28,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * AuthController 컨트롤러 단위 테스트.
- *
- * standaloneSetup 방식으로 Spring Security 필터 없이 컨트롤러 로직과
- * 예외 처리(GlobalExceptionHandler)에 집중한다.
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthController 단위 테스트")
 class AuthControllerTest {
 
     @Mock private AuthService authService;
-    @Mock private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private AuthController authController;
@@ -51,8 +45,6 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     private static final Long USER_ID = 1L;
-    private static final String BEARER = "Bearer valid.test.token";
-    private static final String TOKEN  = "valid.test.token";
 
     @BeforeEach
     void setUp() {
@@ -63,12 +55,16 @@ class AuthControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .setCustomArgumentResolvers(new CurrentUserIdArgumentResolver())
                 .build();
 
-        lenient().when(jwtTokenProvider.getUserId(TOKEN)).thenReturn(USER_ID);
+        SecurityTestSupport.authenticate(USER_ID);
     }
 
-    // ─────────────────────────── POST /register ───────────────────────────
+    @AfterEach
+    void tearDown() {
+        SecurityTestSupport.clear();
+    }
 
     @Test
     @DisplayName("회원가입 성공 — 201, accessToken/refreshToken 포함")
@@ -143,8 +139,6 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.code").value("CONFLICT"));
     }
 
-    // ─────────────────────────── POST /login ───────────────────────────
-
     @Test
     @DisplayName("로그인 성공 — 200, accessToken 포함")
     void login_success_returns200() throws Exception {
@@ -191,8 +185,6 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"));
     }
 
-    // ─────────────────────────── POST /token/refresh ───────────────────────────
-
     @Test
     @DisplayName("토큰 갱신 성공 — 200, 새 accessToken 포함")
     void refreshToken_success_returns200() throws Exception {
@@ -230,13 +222,10 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
 
-    // ─────────────────────────── POST /logout ───────────────────────────
-
     @Test
     @DisplayName("로그아웃 성공 — 200 반환")
     void logout_success_returns200() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/logout")
-                        .header("Authorization", BEARER))
+        mockMvc.perform(post("/api/v1/auth/logout"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
 
@@ -244,23 +233,14 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 로그아웃 — 401 반환")
-    void logout_missingAuthHeader_returns401() throws Exception {
+    @DisplayName("인증되지 않은 로그아웃 요청 — 401 반환")
+    void logout_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
+
         mockMvc.perform(post("/api/v1/auth/logout"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
-
-    @Test
-    @DisplayName("Bearer 접두사 없는 토큰으로 로그아웃 — 401 반환")
-    void logout_invalidBearerFormat_returns401() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/logout")
-                        .header("Authorization", "invalid-token"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
-    }
-
-    // ─────────────────────────── 헬퍼 ───────────────────────────
 
     private TokenResponse buildTokenResponse() {
         return TokenResponse.builder()

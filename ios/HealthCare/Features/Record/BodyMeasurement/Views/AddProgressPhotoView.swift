@@ -16,6 +16,7 @@ struct AddProgressPhotoView: View {
     @State private var isBaseline = false
 
     var canUpload: Bool { selectedImage != nil && !viewModel.isUploading }
+    var isRetryState: Bool { viewModel.uploadFailed && !viewModel.isUploading }
 
     var body: some View {
         NavigationStack {
@@ -53,6 +54,7 @@ struct AddProgressPhotoView: View {
                 if let data = try? await item?.loadTransferable(type: Data.self),
                    let img = UIImage(data: data) {
                     selectedImage = img
+                    viewModel.uploadFailed = false
                 }
             }
         }
@@ -218,45 +220,88 @@ struct AddProgressPhotoView: View {
     // MARK: - Upload Button
 
     private var uploadButton: some View {
-        Button {
-            guard let img = selectedImage else { return }
-            Task {
-                await viewModel.upload(
-                    image: img,
-                    photoType: selectedType,
-                    bodyWeightKg: Double(weightText),
-                    waistCm: Double(waistText),
-                    notes: notes,
-                    isBaseline: isBaseline,
-                    apiClient: container.apiClient
-                )
-                if viewModel.errorMessage == nil {
-                    dismiss()
-                }
+        VStack(spacing: 10) {
+            if isRetryState {
+                uploadFailureBanner
             }
-        } label: {
-            ZStack {
-                if viewModel.isUploading {
-                    VStack(spacing: 8) {
-                        ProgressView(value: viewModel.uploadProgress)
-                            .tint(.white)
-                            .frame(width: 160)
-                        Text("업로드 중 \(Int(viewModel.uploadProgress * 100))%")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.85))
+
+            Button {
+                guard let img = selectedImage else { return }
+                Task {
+                    if isRetryState {
+                        await viewModel.retryUpload(apiClient: container.apiClient)
+                    } else {
+                        await viewModel.upload(
+                            image: img,
+                            photoType: selectedType,
+                            bodyWeightKg: Double(weightText),
+                            waistCm: Double(waistText),
+                            notes: notes,
+                            isBaseline: isBaseline,
+                            apiClient: container.apiClient
+                        )
                     }
-                } else {
-                    Text("저장하기")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
+                    if !viewModel.uploadFailed {
+                        dismiss()
+                    }
                 }
+            } label: {
+                ZStack {
+                    if viewModel.isUploading {
+                        VStack(spacing: 8) {
+                            ProgressView(value: viewModel.uploadProgress)
+                                .tint(.white)
+                                .frame(width: 160)
+                            Text("업로드 중 \(Int(viewModel.uploadProgress * 100))%")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.85))
+                        }
+                    } else if isRetryState {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 15, weight: .semibold))
+                            Text("다시 시도")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                    } else {
+                        Text("저장하기")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
+                .background(uploadButtonBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 54)
-            .background(canUpload ? Color.brandPrimary : Color.surfaceSecondary)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .disabled(!canUpload)
+            .animation(.easeInOut(duration: 0.2), value: canUpload)
+            .animation(.easeInOut(duration: 0.2), value: isRetryState)
         }
-        .disabled(!canUpload)
-        .animation(.easeInOut(duration: 0.2), value: canUpload)
+    }
+
+    private var uploadButtonBackground: Color {
+        guard canUpload else { return Color.surfaceSecondary }
+        return isRetryState ? Color.brandPrimary : Color.brandPrimary
+    }
+
+    private var uploadFailureBanner: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color.brandDanger)
+                .padding(.top, 1)
+            Text(viewModel.uploadFailureMessage)
+                .font(.system(size: 13))
+                .foregroundStyle(Color.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(Color.brandDanger.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
     }
 }

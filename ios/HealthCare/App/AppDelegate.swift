@@ -1,3 +1,4 @@
+import GoogleMobileAds
 import UIKit
 import Firebase
 import FirebaseMessaging
@@ -15,6 +16,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             print("[Firebase] GoogleService-Info.plist not found — skipping configure in dev")
         }
         configurePushNotifications(application)
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
 

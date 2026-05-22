@@ -460,22 +460,39 @@ private struct CheckpointHistoryCard: View {
 private struct CheckpointRow: View {
     let checkpoint: GoalCheckpointItem
 
-    private var onTrackColor: Color {
-        (checkpoint.isOnTrack == true) ? .brandSuccess : .brandWarning
+    private var iconName: String {
+        if checkpoint.isStartingPoint { return "flag.fill" }
+        return (checkpoint.isOnTrack == true) ? "checkmark.circle.fill" : "exclamationmark.circle.fill"
+    }
+
+    private var iconColor: Color {
+        if checkpoint.isStartingPoint { return .brandPrimary }
+        return (checkpoint.isOnTrack == true) ? .brandSuccess : .brandWarning
     }
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: (checkpoint.isOnTrack == true) ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+            Image(systemName: iconName)
                 .font(.system(size: 18))
-                .foregroundStyle(onTrackColor)
+                .foregroundStyle(iconColor)
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(checkpoint.formattedDate)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.textPrimary)
-                if let projected = checkpoint.projectedValue {
+                HStack(spacing: 6) {
+                    Text(checkpoint.formattedDate)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.textPrimary)
+                    if checkpoint.isStartingPoint {
+                        Text("시작")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(Color.brandPrimary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.brandPrimary.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
+                }
+                if !checkpoint.isStartingPoint, let projected = checkpoint.projectedValue {
                     Text("예상: \(String(format: "%.1f", projected))")
                         .font(.system(size: 11))
                         .foregroundStyle(Color.textSecondary)

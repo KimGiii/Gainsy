@@ -93,3 +93,10 @@ variable "cors_allowed_origins" {
   type        = list(string)
   default     = ["*"]
 }
+
+# ── DNS ───────────────────────────────────────────────────────────────────────
+
+variable "root_domain" {
+  description = "서비스 루트 도메인 (예: gainsy.site)"
+  type        = string
+}

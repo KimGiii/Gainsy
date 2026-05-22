@@ -5,6 +5,16 @@ struct SignUpView: View {
     @EnvironmentObject private var authState: AuthState
     @EnvironmentObject private var container: AppContainer
 
+    @State private var isTermsAgreed = false
+    @State private var isPrivacyAgreed = false
+
+    private let termsURL = URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/terms.html")!
+    private let privacyURL = URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/privacy.html")!
+
+    private var canSubmit: Bool {
+        !viewModel.isLoading && isTermsAgreed && isPrivacyAgreed
+    }
+
     var body: some View {
         ZStack {
             Color.backgroundPage.ignoresSafeArea()
@@ -69,7 +79,22 @@ struct SignUpView: View {
                 Spacer()
 
                 // CTA
-                VStack(spacing: 0) {
+                VStack(spacing: 16) {
+                    // 동의 체크박스
+                    VStack(spacing: 10) {
+                        consentRow(
+                            isChecked: $isTermsAgreed,
+                            label: "이용약관",
+                            url: termsURL
+                        )
+                        consentRow(
+                            isChecked: $isPrivacyAgreed,
+                            label: "개인정보처리방침",
+                            url: privacyURL
+                        )
+                    }
+                    .padding(.horizontal, 4)
+
                     Button {
                         Task { await viewModel.register(apiClient: container.apiClient, authState: authState) }
                     } label: {
@@ -83,20 +108,13 @@ struct SignUpView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color.brandPrimary)
+                        .background(canSubmit ? Color.brandPrimary : Color.brandPrimary.opacity(0.4))
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .shadow(color: Color.brandPrimary.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .shadow(color: Color.brandPrimary.opacity(canSubmit ? 0.3 : 0), radius: 10, x: 0, y: 5)
                     }
-                    .disabled(viewModel.isLoading)
-                    .opacity(viewModel.isLoading ? 0.7 : 1)
-
-                    // Terms note
-                    Text("가입 시 이용약관 및 개인정보처리방침에 동의하는 것으로 간주됩니다.")
-                        .font(.system(size: 11))
-                        .foregroundStyle(Color.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 12)
+                    .disabled(!canSubmit)
+                    .animation(.easeInOut(duration: 0.2), value: canSubmit)
                 }
                 .padding(.horizontal, 28)
                 .padding(.bottom, 48)
@@ -104,5 +122,37 @@ struct SignUpView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - Consent Row
+
+    private func consentRow(isChecked: Binding<Bool>, label: String, url: URL) -> some View {
+        HStack(spacing: 10) {
+            Button {
+                isChecked.wrappedValue.toggle()
+            } label: {
+                Image(systemName: isChecked.wrappedValue ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 22))
+                    .foregroundStyle(isChecked.wrappedValue ? Color.brandPrimary : Color.textSecondary.opacity(0.5))
+                    .animation(.easeInOut(duration: 0.15), value: isChecked.wrappedValue)
+            }
+
+            HStack(spacing: 4) {
+                Text("(필수)")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.brandDanger)
+
+                Link(label, destination: url)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.brandPrimary)
+                    .underline()
+
+                Text("에 동의합니다")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.textPrimary)
+            }
+
+            Spacer()
+        }
     }
 }

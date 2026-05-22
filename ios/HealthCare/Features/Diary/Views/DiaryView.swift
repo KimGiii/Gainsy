@@ -19,6 +19,7 @@ struct DiaryView: View {
                         selectedDate: viewModel.selectedDate,
                         hasExercise: viewModel.hasExerciseRecord(on: viewModel.selectedDate),
                         hasDiet: viewModel.hasDietRecord(on: viewModel.selectedDate),
+                        hasMeasurement: viewModel.hasMeasurementRecord(on: viewModel.selectedDate),
                         onSelect: { activeAddSheet = $0 }
                     )
 
@@ -35,6 +36,14 @@ struct DiaryView: View {
                         DietRecordsSection(
                             date: viewModel.selectedDate,
                             logs: viewModel.dietLogs(on: viewModel.selectedDate)
+                        )
+                    }
+
+                    // 선택된 날짜의 신체 측정 기록
+                    if !viewModel.measurements(on: viewModel.selectedDate).isEmpty {
+                        MeasurementRecordsSection(
+                            date: viewModel.selectedDate,
+                            measurements: viewModel.measurements(on: viewModel.selectedDate)
                         )
                     }
                 }
@@ -147,6 +156,7 @@ private struct QuickAddSection: View {
     let selectedDate: Date
     let hasExercise: Bool
     let hasDiet: Bool
+    let hasMeasurement: Bool
     let onSelect: (DiaryAddSheet) -> Void
 
     private var dateText: String {
@@ -156,54 +166,62 @@ private struct QuickAddSection: View {
         return formatter.string(from: selectedDate)
     }
 
+    private var hasAnyQuickAction: Bool {
+        !hasExercise || !hasDiet || !hasMeasurement
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("빠른 기록")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Color.textPrimary)
-                    Text(dateText)
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.textSecondary)
+        if hasAnyQuickAction {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("빠른 기록")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(Color.textPrimary)
+                        Text(dateText)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.textSecondary)
+                    }
+                    Spacer()
                 }
-                Spacer()
-            }
 
-            HStack(spacing: 10) {
-                if !hasExercise {
-                    QuickAddButton(
-                        icon: "figure.strengthtraining.traditional",
-                        title: "운동 추가",
-                        tint: .green
-                    ) {
-                        onSelect(.exercise)
+                HStack(spacing: 10) {
+                    if !hasExercise {
+                        QuickAddButton(
+                            icon: "figure.strengthtraining.traditional",
+                            title: "운동 추가",
+                            tint: .green
+                        ) {
+                            onSelect(.exercise)
+                        }
+                    }
+
+                    if !hasDiet {
+                        QuickAddButton(
+                            icon: "fork.knife",
+                            title: "식단 추가",
+                            tint: .orange
+                        ) {
+                            onSelect(.diet)
+                        }
+                    }
+
+                    if !hasMeasurement {
+                        QuickAddButton(
+                            icon: "scalemass.fill",
+                            title: "측정 추가",
+                            tint: Color.brandAccent
+                        ) {
+                            onSelect(.measurement)
+                        }
                     }
                 }
-
-                if !hasDiet {
-                    QuickAddButton(
-                        icon: "fork.knife",
-                        title: "식단 추가",
-                        tint: .orange
-                    ) {
-                        onSelect(.diet)
-                    }
-                }
-
-                QuickAddButton(
-                    icon: "scalemass.fill",
-                    title: "측정 추가",
-                    tint: Color.brandAccent
-                ) {
-                    onSelect(.measurement)
-                }
             }
+            .padding(16)
+            .background(Color.surfaceCard)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
         }
-        .padding(16)
-        .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -231,7 +249,7 @@ private struct QuickAddButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color.surfaceSecondary.opacity(0.7))
+            .background(Color.backgroundPage)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
@@ -271,6 +289,7 @@ private struct CalendarGrid: View {
                             date: date,
                             hasExercise: viewModel.hasExerciseRecord(on: date),
                             hasDiet: viewModel.hasDietRecord(on: date),
+                            hasMeasurement: viewModel.hasMeasurementRecord(on: date),
                             isSelected: Calendar.current.isDate(date, inSameDayAs: viewModel.selectedDate),
                             isToday: Calendar.current.isDateInToday(date)
                         ) {
@@ -296,6 +315,7 @@ private struct CalendarDayCell: View {
     let date: Date
     let hasExercise: Bool
     let hasDiet: Bool
+    let hasMeasurement: Bool
     let isSelected: Bool
     let isToday: Bool
     let onTap: () -> Void
@@ -328,8 +348,8 @@ private struct CalendarDayCell: View {
                         )
                 }
 
-                // 운동 및 식단 기록 표시
-                if hasExercise || hasDiet {
+                // 운동·식단·신체 측정 기록 표시
+                if hasExercise || hasDiet || hasMeasurement {
                     HStack(spacing: 2) {
                         if hasExercise {
                             Circle()
@@ -339,6 +359,11 @@ private struct CalendarDayCell: View {
                         if hasDiet {
                             Circle()
                                 .fill(Color.orange)
+                                .frame(width: 4, height: 4)
+                        }
+                        if hasMeasurement {
+                            Circle()
+                                .fill(Color.brandAccent)
                                 .frame(width: 4, height: 4)
                         }
                     }
@@ -460,7 +485,7 @@ private struct ExerciseSessionSummaryCard: View {
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(12)
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -534,6 +559,108 @@ private struct DietRecordsSection: View {
     }
 }
 
+// MARK: - Measurement Records Section
+
+private struct MeasurementRecordsSection: View {
+    let date: Date
+    let measurements: [MeasurementResponse]
+
+    private var dateText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일 (E)"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: date)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "scalemass.fill")
+                    .font(.system(size: 16))
+                    .foregroundStyle(Color.brandAccent)
+
+                Text("신체 측정")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Color.textPrimary)
+
+                Spacer()
+
+                Text(dateText)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.textSecondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+
+            VStack(spacing: 8) {
+                ForEach(measurements) { measurement in
+                    MeasurementSummaryCard(measurement: measurement)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
+        }
+        .background(Color.surfaceCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+    }
+}
+
+private struct MeasurementSummaryCard: View {
+    let measurement: MeasurementResponse
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "scalemass.fill")
+                .font(.system(size: 18))
+                .foregroundStyle(Color.brandAccent)
+                .frame(width: 40, height: 40)
+                .background(Color.brandAccent.opacity(0.15))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 8) {
+                    if let w = measurement.weightKg {
+                        statChip(icon: "scalemass", value: String(format: "%.1fkg", w), color: Color.brandAccent)
+                    }
+                    if let bf = measurement.bodyFatPct {
+                        statChip(icon: "percent", value: String(format: "%.1f%%", bf), color: Color(hex: "#7C3AED"))
+                    }
+                    if let mm = measurement.muscleMassKg {
+                        statChip(icon: "figure.arms.open", value: String(format: "%.1fkg", mm), color: Color(hex: "#10B981"))
+                    }
+                }
+                if let notes = measurement.notes, !notes.isEmpty {
+                    Text(notes)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.textSecondary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+        }
+        .padding(12)
+        .background(Color.backgroundPage)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func statChip(icon: String, value: String, color: Color) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: icon)
+                .font(.system(size: 10))
+                .foregroundStyle(color)
+            Text(value)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Color.textSecondary)
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
+        .background(color.opacity(0.12))
+        .clipShape(Capsule())
+    }
+}
+
 // MARK: - Diet Log Summary Card
 
 private struct DietLogSummaryCard: View {
@@ -584,7 +711,7 @@ private struct DietLogSummaryCard: View {
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(12)
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 

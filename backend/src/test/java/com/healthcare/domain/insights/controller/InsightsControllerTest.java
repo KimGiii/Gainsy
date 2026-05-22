@@ -7,7 +7,9 @@ import com.healthcare.common.exception.GlobalExceptionHandler;
 import com.healthcare.domain.insights.dto.ChangeAnalysisResponse;
 import com.healthcare.domain.insights.dto.WeeklySummaryResponse;
 import com.healthcare.domain.insights.service.InsightsService;
-import com.healthcare.security.JwtTokenProvider;
+import com.healthcare.security.CurrentUserIdArgumentResolver;
+import com.healthcare.support.SecurityTestSupport;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,11 +23,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,16 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class InsightsControllerTest {
 
     @Mock private InsightsService insightsService;
-    @Mock private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private InsightsController insightsController;
 
     private MockMvc mockMvc;
 
-    private static final Long   USER_ID = 1L;
-    private static final String BEARER  = "Bearer valid.test.token";
-    private static final String TOKEN   = "valid.test.token";
+    private static final Long USER_ID = 1L;
 
     @BeforeEach
     void setUp() {
@@ -55,9 +51,15 @@ class InsightsControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(insightsController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .setCustomArgumentResolvers(new CurrentUserIdArgumentResolver())
                 .build();
 
-        lenient().when(jwtTokenProvider.getUserId(TOKEN)).thenReturn(USER_ID);
+        SecurityTestSupport.authenticate(USER_ID);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityTestSupport.clear();
     }
 
     // ─────────────────────────── GET /weekly-summary ───────────────────────────
@@ -85,7 +87,7 @@ class InsightsControllerTest {
         given(insightsService.getWeeklySummary(USER_ID, 0)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/insights/weekly-summary")
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.weekStart").value("2026-04-20"))
@@ -118,7 +120,7 @@ class InsightsControllerTest {
         given(insightsService.getWeeklySummary(USER_ID, 1)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/insights/weekly-summary")
-                        .header("Authorization", BEARER)
+                        
                         .param("weekOffset", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.weekOffset").value(1))
@@ -142,25 +144,18 @@ class InsightsControllerTest {
         given(insightsService.getWeeklySummary(USER_ID, 0)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/insights/weekly-summary")
-                        .header("Authorization", BEARER))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.exerciseSessionCount").value(0))
                 .andExpect(jsonPath("$.data.dietLogCount").value(0));
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 주간 요약 요청 — 401 반환")
-    void getWeeklySummary_missingAuth_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/insights/weekly-summary"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
-    }
+    @DisplayName("인증되지 않은 주간 요약 요청 — 401 반환")
+    void getWeeklySummary_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
 
-    @Test
-    @DisplayName("Bearer 접두사 없는 토큰으로 주간 요약 요청 — 401 반환")
-    void getWeeklySummary_invalidBearerFormat_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/insights/weekly-summary")
-                        .header("Authorization", "invalid-token"))
+        mockMvc.perform(get("/api/v1/insights/weekly-summary"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
@@ -199,7 +194,7 @@ class InsightsControllerTest {
         )).willReturn(response);
 
         mockMvc.perform(get("/api/v1/insights/change-analysis")
-                        .header("Authorization", BEARER)
+                        
                         .param("from", "2026-01-01")
                         .param("to", "2026-04-01"))
                 .andExpect(status().isOk())
@@ -226,7 +221,7 @@ class InsightsControllerTest {
     @DisplayName("잘못된 날짜 형식(from=bad-date) — 422 반환")
     void getChangeAnalysis_invalidDateFormat_returns422() throws Exception {
         mockMvc.perform(get("/api/v1/insights/change-analysis")
-                        .header("Authorization", BEARER)
+                        
                         .param("from", "bad-date")
                         .param("to", "2026-04-01"))
                 .andExpect(status().isUnprocessableEntity())
@@ -237,7 +232,7 @@ class InsightsControllerTest {
     @DisplayName("from > to 날짜 범위 역전 — 422 반환")
     void getChangeAnalysis_fromAfterTo_returns422() throws Exception {
         mockMvc.perform(get("/api/v1/insights/change-analysis")
-                        .header("Authorization", BEARER)
+                        
                         .param("from", "2026-04-01")
                         .param("to", "2026-01-01"))
                 .andExpect(status().isUnprocessableEntity())
@@ -245,8 +240,10 @@ class InsightsControllerTest {
     }
 
     @Test
-    @DisplayName("Authorization 헤더 없이 변화 분석 요청 — 401 반환")
-    void getChangeAnalysis_missingAuth_returns401() throws Exception {
+    @DisplayName("인증되지 않은 변화 분석 요청 — 401 반환")
+    void getChangeAnalysis_unauthenticated_returns401() throws Exception {
+        SecurityTestSupport.clear();
+
         mockMvc.perform(get("/api/v1/insights/change-analysis")
                         .param("from", "2026-01-01")
                         .param("to", "2026-04-01"))
@@ -266,7 +263,7 @@ class InsightsControllerTest {
         given(insightsService.getChangeAnalysis(USER_ID, date, date)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/insights/change-analysis")
-                        .header("Authorization", BEARER)
+                        
                         .param("from", "2026-04-24")
                         .param("to", "2026-04-24"))
                 .andExpect(status().isOk())

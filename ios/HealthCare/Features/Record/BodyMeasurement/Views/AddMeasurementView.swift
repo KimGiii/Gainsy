@@ -4,6 +4,7 @@ struct AddMeasurementView: View {
     @StateObject private var viewModel: AddMeasurementViewModel
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
+    @State private var showSources = false
 
     init(initialDate: Date = Date(), onSuccess: @escaping () -> Void) {
         _viewModel = StateObject(
@@ -19,6 +20,7 @@ struct AddMeasurementView: View {
                     bodyCompositionSection
                     circumferenceSection
                     notesSection
+                    bmiSourceFooter
                     submitButton
                 }
                 .padding(20)
@@ -41,7 +43,21 @@ struct AddMeasurementView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
+            .task { await viewModel.loadUserProfile(apiClient: container.apiClient) }
+            .sheet(isPresented: $showSources) { MedicalSourcesView() }
         }
+    }
+
+    private var bmiSourceFooter: some View {
+        Button {
+            showSources = true
+        } label: {
+            Label("BMI 계산식 및 분류 기준 출처 보기 (WHO·대한비만학회)", systemImage: "info.circle")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.brandPrimary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
     }
 
     // MARK: - Date
@@ -84,13 +100,17 @@ struct AddMeasurementView: View {
                     text: $viewModel.muscleMassKg
                 )
                 Divider().padding(.leading, 52)
-                MeasurementField(
-                    icon: "heart.fill",
-                    iconColor: Color(hex: "#EA580C"),
-                    label: "BMI",
-                    unit: "",
-                    text: $viewModel.bmi
-                )
+                if viewModel.isBMIAutoCalculated {
+                    AutoCalculatedBMIRow(bmi: viewModel.bmi)
+                } else {
+                    MeasurementField(
+                        icon: "heart.fill",
+                        iconColor: Color(hex: "#EA580C"),
+                        label: "BMI",
+                        unit: "",
+                        text: $viewModel.bmi
+                    )
+                }
             }
         }
     }
@@ -199,6 +219,37 @@ private struct FormCard<Content: View>: View {
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
         }
+    }
+}
+
+private struct AutoCalculatedBMIRow: View {
+    let bmi: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "heart.fill")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Color(hex: "#EA580C"))
+                .frame(width: 32, height: 32)
+                .background(Color(hex: "#EA580C").opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("BMI")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(Color.textPrimary)
+                Text("키 기반 자동 계산")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Color.textSecondary)
+            }
+
+            Spacer()
+
+            Text(bmi.isEmpty ? "-" : bmi)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(bmi.isEmpty ? Color.textSecondary : Color.textPrimary)
+        }
+        .padding(.vertical, 10)
     }
 }
 

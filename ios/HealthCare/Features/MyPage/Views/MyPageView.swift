@@ -7,6 +7,7 @@ struct MyPageView: View {
 
     @State private var showEditSheet = false
     @State private var showDeleteConfirm = false
+    @State private var showMedicalSources = false
     @AppStorage("appTheme") private var appThemeRawValue = AppTheme.system.rawValue
 
     private var selectedTheme: AppTheme {
@@ -16,15 +17,16 @@ struct MyPageView: View {
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    profileHeader
-                    statsRow
+                VStack(spacing: 20) {
+                    profileCard
                     menuSections
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
                 .padding(.bottom, 40)
             }
-            .background(Color.surfaceGrouped)
-            .navigationTitle("마이")
+            .background(Color.backgroundPage)
+            .navigationTitle("마이페이지")
             .navigationBarTitleDisplayMode(.large)
             .alert("오류", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
@@ -44,36 +46,55 @@ struct MyPageView: View {
                 EditProfileSheet(viewModel: viewModel, isPresented: $showEditSheet)
                     .environmentObject(container)
             }
+            .sheet(isPresented: $showMedicalSources) {
+                MedicalSourcesView()
+            }
         }
-        .task { await viewModel.load(apiClient: container.apiClient) }
+        .refreshable { await viewModel.load(apiClient: container.apiClient, authState: authState) }
+        .task { await viewModel.load(apiClient: container.apiClient, authState: authState) }
     }
 
-    // MARK: - Profile Header
+    // MARK: - Profile Card
 
-    private var profileHeader: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(LinearGradient.forestHero)
-                    .frame(width: 80, height: 80)
-                Text(viewModel.profile?.displayName.prefix(1).uppercased() ?? "?")
-                    .font(.displayMedium)
-                    .foregroundStyle(.white)
-            }
+    private var profileCard: some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient.forestHero)
+                        .frame(width: 84, height: 84)
+                        .overlay(
+                            Circle().stroke(Color.brandAccent.opacity(0.4), lineWidth: 2)
+                        )
+                        .shadow(color: Color.brandAccent.opacity(0.25), radius: 12, x: 0, y: 4)
+                    Text(viewModel.profile?.displayName.prefix(1).uppercased() ?? "?")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                }
 
-            VStack(spacing: 4) {
-                Text(viewModel.profile?.displayName ?? "불러오는 중...")
-                    .font(.headingLarge)
-                    .foregroundStyle(Color.textPrimary)
-                Text(viewModel.profile?.email ?? "")
-                    .font(.bodyMedium)
-                    .foregroundStyle(Color.textSecondary)
+                VStack(spacing: 6) {
+                    Text(viewModel.profile?.displayName ?? "불러오는 중...")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Color.textHeadline)
+                    Text(viewModel.profile?.email ?? "")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.brandAccent)
+                }
             }
+            .padding(.top, 24)
+
+            statsRow
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 32)
-        .padding(.horizontal, 20)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.hairline, lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
 
     // MARK: - Stats Row
@@ -84,48 +105,43 @@ struct MyPageView: View {
                 label: "키",
                 value: viewModel.profile?.heightCm.map { "\(Int($0))cm" } ?? "-"
             )
-            Divider().frame(height: 40)
+            statDivider
             statCell(
                 label: "체중",
                 value: viewModel.profile?.weightKg.map { String(format: "%.1fkg", $0) } ?? "-"
             )
-            Divider().frame(height: 40)
+            statDivider
             statCell(
                 label: "활동량",
                 value: viewModel.activityLevelLabel
             )
-            Divider().frame(height: 40)
+            statDivider
             statCell(
                 label: "성별",
                 value: viewModel.sexLabel
             )
         }
-        .padding(.vertical, 16)
-        .background(Color.surfacePrimary)
-        .overlay(
-            Rectangle()
-                .fill(Color.hairline)
-                .frame(height: 0.5),
-            alignment: .top
-        )
-        .overlay(
-            Rectangle()
-                .fill(Color.hairline)
-                .frame(height: 0.5),
-            alignment: .bottom
-        )
+        .padding(.vertical, 14)
+        .background(Color.backgroundPage)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+
+    private var statDivider: some View {
+        Rectangle()
+            .fill(Color.hairline)
+            .frame(width: 1, height: 32)
     }
 
     private func statCell(label: String, value: String) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.headingSmall)
-                .foregroundStyle(Color.textPrimary)
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.textHeadline)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             Text(label)
-                .font(.caption)
-                .foregroundStyle(Color.textTertiary)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -155,6 +171,28 @@ struct MyPageView: View {
                     trailingText: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
                     action: {}
                 )
+                Divider().padding(.leading, 60)
+                MenuRow(
+                    icon: "book.closed",
+                    iconColor: Color.brandMoss,
+                    label: "의학 정보 출처"
+                ) {
+                    showMedicalSources = true
+                }
+                Divider().padding(.leading, 60)
+                MenuLinkRow(
+                    icon: "doc.text",
+                    iconColor: Color.brandSecondary,
+                    label: "이용약관",
+                    url: URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/terms.html")!
+                )
+                Divider().padding(.leading, 60)
+                MenuLinkRow(
+                    icon: "hand.raised",
+                    iconColor: Color.brandSecondary,
+                    label: "개인정보처리방침",
+                    url: URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/privacy.html")!
+                )
             }
 
             MenuSection(title: "") {
@@ -166,8 +204,6 @@ struct MyPageView: View {
                 }
             }
         }
-        .padding(.top, 24)
-        .padding(.horizontal, 20)
     }
 }
 
@@ -256,7 +292,7 @@ private struct EditProfileSheet: View {
                 .padding(20)
                 .padding(.bottom, 20)
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("프로필 수정")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -288,13 +324,13 @@ private struct MenuSection<Content: View>: View {
                 Text(title)
                     .font(.eyebrow)
                     .tracking(1.5)
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(Color.textSecondary)
                     .padding(.horizontal, 4)
             }
             VStack(spacing: 0) {
                 content()
             }
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
         }
@@ -336,13 +372,45 @@ private struct MenuRow: View {
 
                 if let t = trailingText {
                     Text(t)
-                        .font(.bodySmall)
-                        .foregroundStyle(Color.textTertiary)
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color.textSecondary)
                 } else {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(Color.textSecondary.opacity(0.6))
                 }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+        }
+    }
+}
+
+private struct MenuLinkRow: View {
+    let icon: String
+    let iconColor: Color
+    let label: String
+    let url: URL
+
+    var body: some View {
+        Link(destination: url) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(iconColor)
+                    .frame(width: 30, height: 30)
+                    .background(iconColor.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Text(label)
+                    .font(.bodyMedium)
+                    .foregroundStyle(Color.textPrimary)
+
+                Spacer()
+
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
@@ -379,12 +447,12 @@ private struct ThemeMenuRow: View {
                 Spacer()
 
                 Text(selectedTheme.title)
-                    .font(.bodySmall)
-                    .foregroundStyle(Color.textTertiary)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.brandAccent)
 
                 Image(systemName: "chevron.up.chevron.down")
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
@@ -401,12 +469,12 @@ private struct EditCard<Content: View>: View {
             Text(title)
                 .font(.eyebrow)
                 .tracking(1.5)
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(Color.textSecondary)
                 .padding(.horizontal, 4)
             VStack(spacing: 0) {
                 content()
             }
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
         }

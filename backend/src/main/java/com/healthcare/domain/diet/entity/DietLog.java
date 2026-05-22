@@ -42,6 +42,24 @@ public class DietLog {
     @Column(name = "total_fat_g")
     private Double totalFatG;
 
+    @Column(name = "total_sugars_g")
+    private Double totalSugarsG;
+
+    @Column(name = "total_dietary_fiber_g")
+    private Double totalDietaryFiberG;
+
+    @Column(name = "total_saturated_fat_g")
+    private Double totalSaturatedFatG;
+
+    @Column(name = "total_trans_fat_g")
+    private Double totalTransFatG;
+
+    @Column(name = "total_cholesterol_mg")
+    private Double totalCholesterolMg;
+
+    @Column(name = "total_sodium_mg")
+    private Double totalSodiumMg;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 
@@ -66,15 +84,20 @@ public class DietLog {
     }
 
     public void update(MealType mealType, LocalDate logDate, String notes,
-                       Double totalCalories, Double totalProteinG,
-                       Double totalCarbsG, Double totalFatG) {
-        this.mealType      = mealType;
-        this.logDate       = logDate;
-        this.notes         = notes;
-        this.totalCalories = totalCalories;
-        this.totalProteinG = totalProteinG;
-        this.totalCarbsG   = totalCarbsG;
-        this.totalFatG     = totalFatG;
+                       DietLogNutritionTotals totals) {
+        this.mealType            = mealType;
+        this.logDate             = logDate;
+        this.notes               = notes;
+        this.totalCalories       = totals.totalCalories();
+        this.totalProteinG       = totals.totalProteinG();
+        this.totalCarbsG         = totals.totalCarbsG();
+        this.totalFatG           = totals.totalFatG();
+        this.totalSugarsG        = totals.totalSugarsG();
+        this.totalDietaryFiberG  = totals.totalDietaryFiberG();
+        this.totalSaturatedFatG  = totals.totalSaturatedFatG();
+        this.totalTransFatG      = totals.totalTransFatG();
+        this.totalCholesterolMg  = totals.totalCholesterolMg();
+        this.totalSodiumMg       = totals.totalSodiumMg();
     }
 
     public void softDelete() {

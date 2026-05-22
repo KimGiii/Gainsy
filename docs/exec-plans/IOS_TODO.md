@@ -1,4 +1,4 @@
-# iOS TODO — 2026년 5월 4일 기준
+# iOS TODO — 2026년 5월 20일 기준
 
 ## 목적
 
@@ -67,7 +67,7 @@
 
 - [x] 진행 사진 삭제 UX 추가 (그리드 context menu + 상세 화면 삭제 버튼, 확인 알림)
 - [x] 같은 부위 기준 before/after 비교 뷰 추가 (`PhotoCompareView`, 좌우 분할, 날짜·체중 오버레이)
-- [ ] 업로드 실패/부분 완료 상태 fallback 문구와 재시도 UX 정리
+- [x] 업로드 실패/부분 완료 상태 fallback 문구와 재시도 UX 정리 (2026-05-20)
 - [ ] 서버 썸네일 생성 도입 시 원본/썸네일 URL 분기 표시 반영
 - [ ] 촬영 시점 선택 및 메모 입력 흐름 다듬기
 
@@ -88,7 +88,7 @@
 - [x] 주요 ViewModel 테스트 (`HomeViewModel`, `GoalProgressViewModel`, `ProgressPhotoViewModel`, `MyPageViewModel`)
 - [x] `ProgressPhotoViewModel` 삭제·비교 모드 테스트
 - [x] 인증/온보딩/메인 진입 smoke UI 테스트 추가
-- [ ] 핵심 작성 플로우 UI 테스트 추가 (운동 기록, 식단 기록, 신체 측정)
+- [x] 핵심 작성 플로우 UI 테스트 추가 (운동 기록, 식단 기록, 신체 측정) (2026-05-20, [PR #25](https://github.com/KimGiii/Gainsy/pull/25))
 
 완료 기준:
 - 현재 템플릿 수준의 테스트를 넘어서 핵심 사용자 플로우 회귀를 자동 검증할 수 있다.
@@ -117,11 +117,23 @@
 
 ### 6. 출시 준비용 iOS 작업
 
-- [ ] 실제 배포 환경 Base URL 및 설정값 점검
-- [ ] 접근성 점검 (Dynamic Type, VoiceOver 기본 대응)
-- [ ] 로딩/에러/빈 상태 화면 일관성 정리
-- [ ] 앱 아이콘, 런치, 문구, 개인정보 안내 최종 점검
-- [ ] TestFlight 배포 전 체크리스트 문서화
+- [x] 실제 배포 환경 Base URL 점검 (`api.gainsy.site`, HTTPS 전환 완료)
+- [x] 접근성 점검 — Dynamic Type 전면 적용(Typography 스케일 재구성), VoiceOver 홈 대시보드 대응
+- [x] `PrivacyInfo.xcprivacy` Privacy Manifest 추가 (App Store 필수)
+- [x] `Info.plist` 권한 설명 업데이트 (카메라, 사진 라이브러리 등)
+- [x] 앱 이름 `Gainsy`, Bundle ID `com.kingloo.gainsy.ios`, `DEVELOPMENT_TEAM` 설정
+- [x] App Icon 전체 사이즈 추가 (20pt ~ 1024pt)
+- [x] 개인정보 처리방침/이용약관 URL 확정 (GitHub Pages, `https://kimgiii.github.io/Gainsy/docs/legal/…`)
+- [x] 다크모드 전면 지원 (어댑티브 컬러 토큰 전체 적용, Forest 톤 일관성)
+- [x] **재심사 거절 3건 코드 대응** ([PR #24](https://github.com/KimGiii/Gainsy/pull/24), dev → prod 머지 완료)
+  - [x] Guideline 2.5.1 — 미사용 HealthKit 권한 키 제거(`NSHealth{Share,Update}UsageDescription`)
+  - [x] Guideline 2.1 — `TrackingPermissionView` 사전 설명 화면 도입, ATT 호출을 `applicationDidBecomeActive`에서 분리
+  - [x] Guideline 1.4.1 — `MedicalSourcesView`(WHO·대한비만학회·식약처·USDA·면책 고지) 추가, BMI/영양 카드/마이페이지 4곳에 진입점
+- [x] **PR #24 머지 + Xcode Archive → TestFlight 업로드 + 재심사 제출 완료** (2026-05-20)
+- [x] **실기기 ATT 프롬프트 화면 녹화 및 App Review Notes 첨부** 완료
+- [ ] 로딩/에러/빈 상태 화면 일관성 정리 (남은 화면)
+- [x] 진행 사진 업로드 실패 fallback 문구 및 재시도 UX (2026-05-20)
+- [x] 핵심 플로우 UI 테스트 (운동 기록, 식단 기록, 신체 측정) ([PR #25](https://github.com/KimGiii/Gainsy/pull/25), 2026-05-20)
 
 ## 메모
 

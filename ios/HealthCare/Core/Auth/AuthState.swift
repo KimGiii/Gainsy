@@ -14,6 +14,8 @@ extension Notification.Name {
 @MainActor
 final class AuthState: ObservableObject {
     @Published private(set) var status: AuthStatus = .loading
+    /// 사진 분석 등 프리미엄 전용 기능 게이팅용. /me 호출로 동기화.
+    @Published private(set) var isPremium: Bool = false
 
     private let tokenStore: TokenStore
 
@@ -25,7 +27,9 @@ final class AuthState: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.setUnauthenticated()
+            Task { @MainActor [weak self] in
+                self?.setUnauthenticated()
+            }
         }
     }
 
@@ -43,7 +47,13 @@ final class AuthState: ObservableObject {
 
     func setUnauthenticated() {
         tokenStore.clearTokens()
+        isPremium = false
         status = .unauthenticated
+    }
+
+    /// /me 응답의 isPremium을 캐시. 로그인·앱 시작·구독 변경 시 호출.
+    func updatePremiumStatus(_ premium: Bool) {
+        self.isPremium = premium
     }
 
     private func checkPersistedAuth() {

@@ -24,7 +24,7 @@ struct ChangeAnalysisView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 40)
         }
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .navigationTitle("변화 분석")
         .navigationBarTitleDisplayMode(.large)
         .alert("오류", isPresented: Binding(
@@ -35,6 +35,7 @@ struct ChangeAnalysisView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
+        .refreshable { await viewModel.load(apiClient: container.apiClient) }
         .task { await viewModel.load(apiClient: container.apiClient) }
     }
 }
@@ -66,11 +67,14 @@ private struct DateRangeSection: View {
                         onAnalyze()
                     }) {
                         Text(preset.label)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(Color.brandPrimary)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.brandAccent)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 7)
-                            .background(Color.surfaceCard)
+                            .background(Color.brandAccent.opacity(0.15))
+                            .overlay(
+                                Capsule().stroke(Color.brandAccent.opacity(0.35), lineWidth: 1)
+                            )
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -86,7 +90,7 @@ private struct DateRangeSection: View {
                     .environment(\.locale, Locale(identifier: "ko_KR"))
                     .padding(14)
             }
-            .background(Color.surfacePrimary)
+            .background(Color.surfaceCard)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
 
@@ -150,7 +154,7 @@ private struct BodyChangeCard: View {
             }
         }
         .padding(18)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
@@ -211,7 +215,7 @@ private struct ExerciseActivityCard: View {
             .frame(maxWidth: .infinity)
         }
         .padding(18)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
@@ -252,7 +256,7 @@ private struct SnapshotComparisonCard: View {
             }
         }
         .padding(18)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }

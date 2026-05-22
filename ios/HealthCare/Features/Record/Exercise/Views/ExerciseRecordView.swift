@@ -21,7 +21,7 @@ struct ExerciseRecordView: View {
                 }
             }
             .ignoresSafeArea(edges: .top)
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .refreshable { await viewModel.loadSessions(apiClient: container.apiClient) }
 
             // + FAB
@@ -154,7 +154,7 @@ private struct ExerciseWaveBackground: View {
                     .rotationEffect(.degrees(-16))
 
                 ExerciseWaveCurve()
-                    .fill(Color.surfaceGrouped)
+                    .fill(Color.backgroundPage)
                     .frame(height: 72)
                     .frame(maxWidth: .infinity)
                     .offset(y: geo.size.height - 36)
@@ -256,7 +256,7 @@ private struct WeeklyStatsStrip: View {
             )
         }
         .padding(.vertical, 16)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .overlay(
             Rectangle()
                 .fill(Color(uiColor: .separator))
@@ -272,7 +272,7 @@ private struct WeeklyStatsStrip: View {
                 .foregroundStyle(Color.textSecondary)
             Text(value)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
         }
         .frame(maxWidth: .infinity)
     }
@@ -299,7 +299,7 @@ private struct SessionListSection: View {
                 HStack {
                     Text("운동 기록")
                         .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(Color.textHeadline)
                     Spacer()
                     Text("총 \(viewModel.sessions.count)회")
                         .font(.system(size: 13))
@@ -353,14 +353,14 @@ struct SessionCard: View {
             VStack(alignment: .leading, spacing: 7) {
                 Text(session.formattedDate)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(Color.textHeadline)
 
                 HStack(spacing: 14) {
                     if let vol = session.totalVolumeKg {
                         statChip(
                             icon: "figure.strengthtraining.traditional",
                             value: String(format: "%.0fkg", vol),
-                            color: Color.brandPrimary
+                            color: Color.brandAccent
                         )
                     }
                     if let cal = session.caloriesBurned {
@@ -388,7 +388,7 @@ struct SessionCard: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(Color.surfacePrimary)
+        .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
     }
@@ -418,10 +418,10 @@ struct DateBadge: View {
         VStack(spacing: 1) {
             Text(parts.count >= 2 ? "\(parts[1])월" : "")
                 .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
             Text(parts.count >= 3 ? parts[2] : "")
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.brandAccent)
         }
         .frame(width: 52, height: 60)
         .background(Color.surfaceCard)
@@ -438,12 +438,12 @@ private struct EmptyExerciseState: View {
         VStack(spacing: 20) {
             Image(systemName: "figure.strengthtraining.traditional")
                 .font(.system(size: 60))
-                .foregroundStyle(Color.brandPrimary.opacity(0.25))
+                .foregroundStyle(Color.brandAccent.opacity(0.45))
 
             VStack(spacing: 6) {
                 Text("첫 운동을 기록해보세요")
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(Color.textHeadline)
                 Text("운동을 기록하면 주간 볼륨과\n칼로리 목표가 채워집니다")
                     .font(.system(size: 14))
                     .foregroundStyle(Color.textSecondary)
