@@ -147,6 +147,11 @@ private struct TargetValueSection: View {
                         unit: type.displayUnit,
                         text: $startValueText
                     )
+
+                    Text("비워두면 가장 최근 신체 측정 기록으로 자동 채워집니다.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Color.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }

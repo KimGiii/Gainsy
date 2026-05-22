@@ -245,6 +245,12 @@ struct GoalCheckpointItem: Codable, Sendable {
     let actualValue: Double?
     let projectedValue: Double?
     let isOnTrack: Bool?
+    /// "시작" — 목표 생성 시 자동 생성된 시작 체크포인트, nil — 주간(일요일) 자동 체크포인트.
+    let notes: String?
+
+    var isStartingPoint: Bool {
+        notes == "시작"
+    }
 
     var formattedDate: String {
         let parts = checkpointDate.split(separator: "-")
