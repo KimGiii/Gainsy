@@ -623,6 +623,38 @@ class GoalServiceTest {
     }
 
     @Test
+    @DisplayName("목표 시작일 이후 측정이 없어도 시작일 이전 최근 측정으로 진행률을 계산한다")
+    void getGoalProgress_noMeasurementsAfterStartDate_fallsBackToLatestPriorMeasurement() {
+        Long userId = 1L;
+        Long goalId = 12L;
+        LocalDate today = LocalDate.now();
+        // 목표는 어제 생성, 이후 측정 0건. 하지만 3개월치 이력은 보유.
+        LocalDate startDate = today.minusDays(1);
+        Goal goal = Goal.builder()
+                .id(goalId).userId(userId)
+                .goalType(GoalType.WEIGHT_LOSS).status(Goal.GoalStatus.ACTIVE)
+                .startValue(BigDecimal.valueOf(80.0)).targetValue(BigDecimal.valueOf(70.0)).targetUnit("kg")
+                .startDate(startDate).targetDate(today.plusMonths(3))
+                .build();
+
+        given(goalRepository.findById(goalId)).willReturn(Optional.of(goal));
+        // 시작일 이후 측정은 비어 있음
+        given(bodyMeasurementRepository.findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
+                userId, startDate, today)).willReturn(List.of());
+        // fallback — 가장 최근 측정
+        BodyMeasurement priorLatest = buildMeasurement(userId, today.minusDays(5), 78.2);
+        given(bodyMeasurementRepository.findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(
+                userId, today)).willReturn(Optional.of(priorLatest));
+        given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
+                .willReturn(List.of());
+
+        GoalProgressResponse response = goalService.getGoalProgress(userId, goalId);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getCurrentValue()).isEqualByComparingTo("78.2");
+    }
+
+    @Test
     @DisplayName("ENDURANCE 목표는 운동 기록이 0건이면 NPE 없이 0분 평균으로 계산된다")
     void getGoalProgress_enduranceGoalWithNoSessions_returnsZeroAverage() {
         Long userId = 1L;

@@ -221,7 +221,7 @@ public class GoalService {
             return loadExercisePoints(userId, goal, today);
         }
 
-        return bodyMeasurementRepository
+        List<MeasurementPoint> inRange = bodyMeasurementRepository
                 .findByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(userId, goal.getStartDate(), today)
                 .stream()
                 .map(measurement -> new MeasurementPoint(
@@ -229,6 +229,23 @@ public class GoalService {
                         extractValueByGoalType(goal.getGoalType(), measurement)))
                 .filter(point -> point.value() != null)
                 .toList();
+
+        if (!inRange.isEmpty()) {
+            return inRange;
+        }
+
+        // Fallback: 목표 시작일 이후 해당 goalType 측정이 없으면 가장 최근 측정 1건을 사용.
+        // 사용자가 측정 이력은 보유했지만 목표 생성 후 새 기록을 안 한 경우에도
+        // "측정 기록 없음" 오류 없이 현재 상태를 보여주기 위함.
+        return bodyMeasurementRepository
+                .findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(userId, today)
+                .map(m -> {
+                    BigDecimal value = extractValueByGoalType(goal.getGoalType(), m);
+                    return value != null
+                            ? List.of(new MeasurementPoint(m.getMeasuredAt(), value))
+                            : List.<MeasurementPoint>of();
+                })
+                .orElse(List.of());
     }
 
     private List<MeasurementPoint> loadExercisePoints(Long userId, Goal goal, LocalDate today) {
