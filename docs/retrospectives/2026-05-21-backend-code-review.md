@@ -108,7 +108,16 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 
 전체 사용자 루프 + FCM 외부 호출이 단일 `@Transactional`. 사용자당 트랜잭션으로 분리, FCM은 트랜잭션 밖에서.
 
-### H-5. JWT Access Token 24시간 만료
+### H-5. JWT Access Token 24시간 만료 ✅ 해결 (2026-05-21)
+
+- `application.yml` — `access-token-expiry-hours: 24` → `1`. JWT secret 기본값 제거(`${JWT_SECRET}`만), 미설정 시 시작 단계 `PlaceholderResolutionException`.
+- `JwtTokenProvider` — 만료시간을 `@Value`로 주입받아 환경별 조정 가능. `getAccessTokenExpirySeconds()` 노출.
+- `SecurityConstants.ACCESS_TOKEN_EXPIRY_MS`/`REFRESH_TOKEN_EXPIRY_MS` 상수 제거 — 설정으로 단일화. `AuthService`에서 상수 참조 → provider 메서드로 교체.
+- iOS `APIClient`는 만료 30초 이내 선제 refresh + 401 응답 시 1회 재시도 + 동시 호출 단일 refresh 보장 → 1h 짧은 TTL 안전.
+
+---
+
+### (원본 지적) H-5. JWT Access Token 24시간 만료
 
 **파일**: `security/SecurityConstants.java:7`, `application.yml:60` (`access-token-expiry-hours: 24`)
 
@@ -133,14 +142,14 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 
 | 위치 | 이슈 |
 |---|---|
-| `application.yml:60` | JWT secret 기본값(`dev-secret-key-...`) 하드코딩 — `${JWT_SECRET}`만 두고 미설정 시 시작 실패시키기 |
+| ~~`application.yml:60`~~ ✅ | JWT secret 기본값(`dev-secret-key-...`) 하드코딩 — `${JWT_SECRET}`만 두고 미설정 시 시작 실패시키기 — **2026-05-21 해결**(H-5와 함께 처리) |
 | `ExerciseSessionService:140`, `DietLogService:134` | catalog 조회 N+1 (`findAllById` 사용) |
 | `WeeklyNotificationScheduler:19` | cron `0 0 0 * * MON` + UTC인데 주석은 KST 09시 → `zone="Asia/Seoul"` + `0 0 9 * * MON`으로 명시 |
 | `GlobalExceptionHandler:92` | `log.error("Unhandled", e)` 전체 스택 로깅 — 메시지만 기록 권장 |
 | `AuthService:149` | 사용자 입력값을 에러 메시지에 반사 |
 | `ExerciseCatalogRepository:28` | LIKE `%`/`_` 미이스케이프 |
 | `ProgressPhotoService:161` | storage key prefix 하드코딩 → 설정값 참조 |
-| `SecurityConfig` | HSTS/X-Content-Type-Options/X-Frame-Options/Referrer-Policy 명시 설정 누락 |
+| ~~`SecurityConfig`~~ ✅ | HSTS/X-Content-Type-Options/X-Frame-Options/Referrer-Policy 명시 설정 누락 — **2026-05-21 해결**(`.headers(...)` 체인 추가: HSTS 1년 + includeSubDomains + preload, content-type-options nosniff, X-Frame-Options DENY, Referrer-Policy strict-origin-when-cross-origin, XSS-Protection 0) |
 | `application-local.yml` (untracked) | `.gitignore` 처리되어 git 미추적이지만, OpenAI/공공API 키 평문 — `.env` 또는 시크릿 매니저 권장 |
 
 ---
@@ -155,32 +164,29 @@ public ResponseEntity<?> foo(@AuthenticationPrincipal CustomUserDetails user) {
 | HIGH | H-2 `@Modifying` 쿼리에 `@Transactional` 누락 | ⏳ 미해결 |
 | HIGH | H-3 GET 조회가 DB 쓰기 수행 | ✅ 해결 |
 | HIGH | H-4 NotificationService 대형 트랜잭션 | ✅ 해결 |
-| HIGH | H-5 JWT Access Token 24h 만료 | ⏳ 미해결 |
+| HIGH | H-5 JWT Access Token 24h 만료 | ✅ 해결 |
 | HIGH | H-6 페이징 size 상한 미설정 | ✅ 해결 |
-| MEDIUM/LOW | M-1 ~ M-9 (9건) | ⏳ 미해결 |
+| MEDIUM/LOW | JWT 기본 시크릿 | ✅ 해결 (H-5와 함께) |
+| MEDIUM/LOW | Security headers (HSTS 등) | ✅ 해결 |
+| MEDIUM/LOW | 나머지 7건 (N+1, cron, 스택 로깅, 입력 반사, LIKE 이스케이프, prefix, 로컬 API 키) | ⏳ 미해결 |
 
-**해결**: CRITICAL 2/2, HIGH 4/6, MEDIUM/LOW 0/9
-**남음**: HIGH 2건 + MEDIUM/LOW 9건 + H-1 후속(Redis 전환)
+**해결**: CRITICAL 2/2, HIGH 5/6, MEDIUM/LOW 2/9
+**남음**: H-2 + MEDIUM/LOW 7건 + H-1 후속(Redis 전환)
 
 ---
 
 ## 우선순위 권고 (남은 작업)
 
-### 1순위 — 보안 정책 (1개 PR로 묶기)
-- **H-5** JWT Access Token 만료 24h → 1h. `SecurityConstants.java:7`, `application.yml:60` 동시 수정. iOS 클라이언트의 refresh 흐름 동작 확인 필요.
-- **M(SecurityConfig)** Security headers 명시 — HSTS / X-Content-Type-Options / X-Frame-Options / Referrer-Policy. Spring Security 기본값에 의존하지 않고 `HttpSecurity.headers(...)` 체인으로 명시.
-- **M(`application.yml:60`)** JWT 기본 시크릿 제거 — `${JWT_SECRET}`만 두고 미설정 시 시작 실패. (로컬은 `application-local.yml`에서 명시.)
-
-### 2순위 — 영속성·트랜잭션 정합성
+### 1순위 — 영속성·트랜잭션 정합성
 - **H-2** `FoodCatalogRepository:66, 71` — `@Modifying` 메서드에 `@Transactional` 명시. 호출 컨텍스트 의존 제거.
 - **M(N+1)** `ExerciseSessionService:140` (`getSessionById`), `DietLogService:134` (`getDietLogById`) — 세트/식품 항목별 `catalogRepository.findById` 루프를 `findAllById(idSet)` + 인메모리 매핑으로 교체.
 
-### 3순위 — 운영 신뢰성
+### 2순위 — 운영 신뢰성
 - **M(`WeeklyNotificationScheduler:19`)** cron 표현식 명시 — `zone = "Asia/Seoul"` + `"0 0 9 * * MON"`. 동작 동등하나 의도 가시화.
 - **M(`GlobalExceptionHandler:92`)** `log.error("Unhandled", e)` → `log.error("Unhandled: {}", e.getMessage())`로 전체 스택 노출 축소(필요시 ERROR 레벨에서 trace는 유지하고 메시지만 필터링).
 - **H-1 후속** 인메모리 `ConcurrentHashMap` 기반 rate limit → Redis 기반(Bucket4j-Redis 또는 직접 구현)으로 교체. 멀티 인스턴스 환경에서만 실제 영향.
 
-### 4순위 — 작은 위생
+### 3순위 — 작은 위생
 - **M(`AuthService:149`)** `parseSex` 에러 메시지에서 사용자 입력값 반사 제거.
 - **M(`ExerciseCatalogRepository:28`)** LIKE 쿼리에서 `%` / `_` 이스케이프(`ESCAPE '\'` 절 + 입력 sanitization).
 - **M(`ProgressPhotoService:161`)** `"progress-photos/" + userId + "/"` 하드코딩 → `app.s3.upload-prefix` 설정값 참조.
