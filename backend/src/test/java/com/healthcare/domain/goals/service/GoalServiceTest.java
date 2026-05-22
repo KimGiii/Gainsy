@@ -163,6 +163,40 @@ class GoalServiceTest {
     }
 
     @Test
+    @DisplayName("startValue 미입력 시 사용자 프로필 weightKg가 측정 기록보다 우선 사용된다")
+    void createGoal_missingStartValue_prefersUserProfileOverMeasurement() {
+        Long userId = 1L;
+        LocalDate today = LocalDate.now();
+        CreateGoalRequest request = buildCreateRequest(
+                GoalType.WEIGHT_LOSS,
+                new BigDecimal("70.0"), "kg",
+                today.plusMonths(3),
+                null, new BigDecimal("-0.5"));
+
+        // 프로필에 78.0kg, 측정 기록은 80.5kg — 프로필이 우선되어야 함
+        User userWithWeight = User.builder()
+                .id(userId).email("a@b.c").passwordHash("h").displayName("T")
+                .weightKg(78.0).build();
+        given(userRepository.findByIdAndDeletedAtIsNull(userId)).willReturn(Optional.of(userWithWeight));
+        given(goalRepository.findActiveGoalByUserId(userId)).willReturn(Optional.empty());
+        Goal savedGoal = buildWeightGoal(41L, userId,
+                new BigDecimal("78.0"), new BigDecimal("70.0"),
+                today, today.plusMonths(3));
+        given(goalRepository.save(any(Goal.class))).willReturn(savedGoal);
+
+        goalService.createGoal(userId, request);
+
+        ArgumentCaptor<Goal> goalCaptor = ArgumentCaptor.forClass(Goal.class);
+        verify(goalRepository).save(goalCaptor.capture());
+        assertThat(goalCaptor.getValue().getStartValue()).isEqualByComparingTo("78.0");
+
+        // 시작 체크포인트도 프로필 값으로 생성됨
+        ArgumentCaptor<GoalCheckpoint> checkpointCaptor = ArgumentCaptor.forClass(GoalCheckpoint.class);
+        verify(goalCheckpointRepository).save(checkpointCaptor.capture());
+        assertThat(checkpointCaptor.getValue().getActualValue()).isEqualByComparingTo("78.0");
+    }
+
+    @Test
     @DisplayName("startValue 미입력 + 측정 기록 없으면 startValue는 null로 저장되고 시작 체크포인트는 생성되지 않는다")
     void createGoal_missingStartValueAndNoMeasurement_savesNullStartValueAndSkipsCheckpoint() {
         Long userId = 1L;

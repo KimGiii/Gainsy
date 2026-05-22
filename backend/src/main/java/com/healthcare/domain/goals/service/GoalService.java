@@ -58,10 +58,14 @@ public class GoalService {
         BigDecimal normalizedStartValue = normalizeTargetValue(
                 goalType, request.getTargetUnit(), request.getStartValue());
 
-        // 사용자가 startValue를 입력하지 않은 경우 최신 신체 측정에서 자동 보강.
+        // 사용자가 startValue를 입력하지 않은 경우 자동 보강.
+        // 우선순위: 사용자 프로필(User.weightKg) → 최신 신체 측정 → null.
         // (ENDURANCE는 측정값과 무관하므로 사용자 입력만 사용.)
         if (normalizedStartValue == null && goalType != Goal.GoalType.ENDURANCE) {
-            normalizedStartValue = resolveStartValueFromLatestMeasurement(userId, goalType, startDate);
+            normalizedStartValue = resolveStartValueFromUserProfile(userId, goalType);
+            if (normalizedStartValue == null) {
+                normalizedStartValue = resolveStartValueFromLatestMeasurement(userId, goalType, startDate);
+            }
         }
 
         BigDecimal normalizedWeeklyRateTarget = normalizeWeeklyRateTarget(goalType, request.getWeeklyRateTarget());
@@ -100,6 +104,21 @@ public class GoalService {
         }
 
         return GoalResponse.from(saved);
+    }
+
+    /**
+     * 사용자 프로필에 등록된 신체 스펙에서 goalType에 맞는 값을 추출한다.
+     * User 엔티티는 weightKg만 보유하므로 체중 관련 목표(WEIGHT_LOSS, GENERAL_HEALTH)만 매핑.
+     * 그 외 목표(MUSCLE_GAIN, BODY_RECOMPOSITION 등)는 프로필에 정보가 없어 null 반환.
+     */
+    private BigDecimal resolveStartValueFromUserProfile(Long userId, Goal.GoalType goalType) {
+        return userRepository.findByIdAndDeletedAtIsNull(userId)
+                .map(user -> switch (goalType) {
+                    case WEIGHT_LOSS, GENERAL_HEALTH ->
+                            user.getWeightKg() != null ? BigDecimal.valueOf(user.getWeightKg()) : null;
+                    case MUSCLE_GAIN, BODY_RECOMPOSITION, ENDURANCE -> null;
+                })
+                .orElse(null);
     }
 
     /**
