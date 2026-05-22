@@ -623,6 +623,33 @@ class GoalServiceTest {
     }
 
     @Test
+    @DisplayName("ENDURANCE 목표는 운동 기록이 0건이면 NPE 없이 0분 평균으로 계산된다")
+    void getGoalProgress_enduranceGoalWithNoSessions_returnsZeroAverage() {
+        Long userId = 1L;
+        Long goalId = 11L;
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(7);
+        Goal goal = Goal.builder()
+                .id(goalId).userId(userId)
+                .goalType(GoalType.ENDURANCE).status(Goal.GoalStatus.ACTIVE)
+                .startValue(BigDecimal.valueOf(0)).targetValue(BigDecimal.valueOf(60)).targetUnit("minutes")
+                .startDate(startDate).targetDate(today.plusDays(30))
+                .build();
+
+        given(goalRepository.findById(goalId)).willReturn(Optional.of(goal));
+        // SUM 결과가 null인 경우(운동 기록 0건) — 과거에 NPE 유발하던 회귀 케이스
+        given(exerciseSessionRepository.sumDurationMinutesByUserIdAndDateRange(
+                userId, startDate, today)).willReturn(null);
+        given(goalCheckpointRepository.findByGoalIdOrderByCheckpointDate(goalId))
+                .willReturn(List.of());
+
+        GoalProgressResponse response = goalService.getGoalProgress(userId, goalId);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getCurrentValue()).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
     @DisplayName("maintainCheckpointsForGoal — 체크포인트 on-track 여부는 실제값과 예상값 비교로 계산된다")
     @SuppressWarnings("unchecked")
     void maintainCheckpointsForGoal_checkpointOnTrack_comparesActualAndProjected() {
