@@ -233,8 +233,9 @@ public class GoalService {
 
     private List<MeasurementPoint> loadExercisePoints(Long userId, Goal goal, LocalDate today) {
         long weeksSinceStart = Math.max(1, ChronoUnit.WEEKS.between(goal.getStartDate(), today));
-        int totalMinutes = exerciseSessionRepository.sumDurationMinutesByUserIdAndDateRange(
+        Integer totalMinutesBoxed = exerciseSessionRepository.sumDurationMinutesByUserIdAndDateRange(
                 userId, goal.getStartDate(), today);
+        int totalMinutes = totalMinutesBoxed != null ? totalMinutesBoxed : 0;
         BigDecimal weeklyAvg = BigDecimal.valueOf(totalMinutes)
                 .divide(BigDecimal.valueOf(weeksSinceStart), 2, RoundingMode.HALF_UP);
         return List.of(new MeasurementPoint(today, weeklyAvg));
