@@ -17,4 +17,7 @@ struct UserProfile: Decodable {
     let weightKg: Double?
     let activityLevel: String?
     let onboardingCompleted: Bool
+    let isPremium: Bool?  // 백엔드 미응답 시 false 취급
+
+    var premium: Bool { isPremium ?? false }
 }

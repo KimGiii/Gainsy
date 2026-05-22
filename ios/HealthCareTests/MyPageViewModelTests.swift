@@ -145,7 +145,8 @@ final class MyPageViewModelTests: XCTestCase {
             heightCm: heightCm,
             weightKg: weightKg,
             activityLevel: activityLevel,
-            onboardingCompleted: onboardingCompleted
+            onboardingCompleted: onboardingCompleted,
+            isPremium: nil
         )
     }
 }
@@ -169,7 +170,8 @@ private actor MockMyPageProfileManager: MyPageProfileManaging {
             heightCm: nil,
             weightKg: nil,
             activityLevel: nil,
-            onboardingCompleted: true
+            onboardingCompleted: true,
+            isPremium: nil
         ),
         updateProfile: UserProfile? = nil,
         loadError: Error? = nil,

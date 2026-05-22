@@ -112,6 +112,12 @@ final class AddDietLogViewModelTests: XCTestCase {
             proteinPer100g: 10,
             carbsPer100g: 10,
             fatPer100g: 5,
+            sugarsPer100g: nil,
+            dietaryFiberPer100g: nil,
+            saturatedFatPer100g: nil,
+            transFatPer100g: nil,
+            cholesterolPer100gMg: nil,
+            sodiumPer100gMg: nil,
             custom: false,
             usageCount: 0,
             createdByUserId: nil
@@ -129,19 +135,38 @@ final class AddDietLogViewModelTests: XCTestCase {
             caloriesPer100g: 100,
             proteinPer100g: 10,
             carbsPer100g: 10,
-            fatPer100g: 5
+            fatPer100g: 5,
+            sugarsPer100g: nil,
+            dietaryFiberPer100g: nil,
+            saturatedFatPer100g: nil,
+            transFatPer100g: nil,
+            cholesterolPer100gMg: nil,
+            sodiumPer100gMg: nil
         )
     }
 
     private func makeAiEstimate(foodName: String) -> AiNutritionEstimateResponse {
-        AiNutritionEstimateResponse(
-            foodName: foodName,
+        let item = EstimatedItem(
+            name: foodName,
+            normalizedName: foodName,
             category: .OTHER,
-            caloriesPer100g: 100,
-            proteinPer100g: 10,
-            carbsPer100g: 10,
-            fatPer100g: 5,
+            servingBasis: .PER_100G,
+            servingDescription: "100g 기준",
+            estimatedWeightG: 100,
+            nutrition: NutritionFacts(
+                caloriesKcal: 100, carbohydrateG: 10, sugarsG: 0, dietaryFiberG: 0,
+                proteinG: 10, fatG: 5, saturatedFatG: 0, transFatG: 0,
+                cholesterolMg: 0, sodiumMg: 0
+            ),
             confidence: 0.8,
+            estimationNote: ""
+        )
+        return AiNutritionEstimateResponse(
+            isFood: true,
+            inputText: foodName,
+            items: [item],
+            totalNutrition: item.nutrition,
+            error: nil,
             disclaimer: "test",
             aiEstimated: true
         )
@@ -178,6 +203,12 @@ private actor MockDietFoodSearcher: DietFoodSearching {
                 proteinPer100g: 10,
                 carbsPer100g: 10,
                 fatPer100g: 5,
+                sugarsPer100g: nil,
+                dietaryFiberPer100g: nil,
+                saturatedFatPer100g: nil,
+                transFatPer100g: nil,
+                cholesterolPer100gMg: nil,
+                sodiumPer100gMg: nil,
                 custom: false,
                 usageCount: 0,
                 createdByUserId: nil
@@ -201,7 +232,13 @@ private actor MockDietFoodSearcher: DietFoodSearching {
                 caloriesPer100g: 100,
                 proteinPer100g: 10,
                 carbsPer100g: 10,
-                fatPer100g: 5
+                fatPer100g: 5,
+                sugarsPer100g: nil,
+                dietaryFiberPer100g: nil,
+                saturatedFatPer100g: nil,
+                transFatPer100g: nil,
+                cholesterolPer100gMg: nil,
+                sodiumPer100gMg: nil
             )
         ]
     }

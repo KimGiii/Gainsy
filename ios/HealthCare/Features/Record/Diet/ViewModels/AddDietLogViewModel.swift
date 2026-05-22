@@ -47,6 +47,11 @@ final class AddDietLogViewModel: ObservableObject {
     @Published var photoAnalysisId: Int?
     @Published var photoPreviewURL: String?
 
+    // MARK: - 프리미엄 게이팅
+    /// 사진 분석 시도 시 백엔드가 403 PREMIUM_REQUIRED로 거부한 경우 true.
+    /// 화면이 paywall 시트를 띄우는 트리거.
+    @Published var showPremiumPaywall = false
+
     private(set) var editingLogId: Int?
 
     private let debounceDuration: Duration
@@ -261,31 +266,70 @@ final class AddDietLogViewModel: ObservableObject {
                 .aiEstimateFood(body: body)
             )
             aiEstimateResult = result
+
+            // 음식으로 인식되지 않은 경우 / AI 일시 불가 — 사용자 안내
+            if !result.isFood, let error = result.error {
+                switch error.code {
+                case "NOT_FOOD_OR_UNKNOWN":
+                    errorMessage = "음식으로 인식되지 않았습니다. 다른 이름으로 검색하거나 직접 등록해 주세요."
+                case "AI_UNAVAILABLE":
+                    errorMessage = "AI 추정 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요."
+                default:
+                    errorMessage = error.message
+                }
+            }
         } catch {
             errorMessage = "AI 영양 추정에 실패했습니다. 직접 입력해 주세요."
         }
     }
 
     // MARK: - AI 추정 결과로 커스텀 식품 생성 후 항목 추가
+    /// 다중 음식인 경우에도 일단 첫 item을 카탈로그로 저장 후 draft로 추가.
+    /// 추후 다중 추가 UX는 별도 개선.
     func addAiEstimatedFood(apiClient: APIClient) async {
-        guard let estimate = aiEstimateResult else { return }
+        guard let estimate = aiEstimateResult,
+              estimate.isFood,
+              let item = estimate.firstItem else { return }
+
+        // PER_ITEM/CUSTOM_WEIGHT는 표시 nutrition이 1단위 기준 — 100g 환산해서 카탈로그 저장.
+        let weight = item.estimatedWeightG > 0 ? item.estimatedWeightG : 100.0
+        let factor: Double = {
+            switch item.servingBasis {
+            case .PER_100G:      return 1.0
+            case .PER_ITEM,
+                 .CUSTOM_WEIGHT: return 100.0 / weight
+            }
+        }()
+        let n = item.nutrition
+        let displayName = item.normalizedName.isEmpty ? item.name : item.normalizedName
 
         do {
             let payload: [String: Any] = [
-                "name": estimate.foodName,
-                "nameKo": estimate.foodName,
-                "category": estimate.category?.rawValue ?? "OTHER",
-                "caloriesPer100g": estimate.caloriesPer100g,
-                "proteinPer100g": estimate.proteinPer100g,
-                "carbsPer100g": estimate.carbsPer100g,
-                "fatPer100g": estimate.fatPer100g
+                "name": displayName,
+                "nameKo": displayName,
+                "category": (item.category ?? .OTHER).rawValue,
+                "caloriesPer100g":      n.caloriesKcal * factor,
+                "proteinPer100g":       n.proteinG * factor,
+                "carbsPer100g":         n.carbohydrateG * factor,
+                "fatPer100g":           n.fatG * factor,
+                "sugarsPer100g":        n.sugarsG * factor,
+                "dietaryFiberPer100g":  n.dietaryFiberG * factor,
+                "saturatedFatPer100g":  n.saturatedFatG * factor,
+                "transFatPer100g":      n.transFatG * factor,
+                "cholesterolPer100gMg": n.cholesterolMg * factor,
+                "sodiumPer100gMg":      n.sodiumMg * factor
             ]
             let body = try JSONSerialization.data(withJSONObject: payload)
             let catalogItem: FoodCatalogItem = try await apiClient.request(
                 .createCustomFood(body: body)
             )
-            addEntry(food: catalogItem)
+            // 사용자가 명시한 무게(있다면) 또는 기본 100g로 draft 진입.
+            var draft = DraftFoodEntry(food: catalogItem)
+            draft.servingGText = String(format: "%.0f", weight)
+            draftEntries.append(draft)
             aiEstimateResult = nil
+            // 검색 시트도 함께 닫음 — 일반 식품 추가(addEntry) 동작과 동일하게.
+            showFoodSearch = false
         } catch {
             errorMessage = "AI 추정 식품 저장에 실패했습니다."
         }
@@ -369,7 +413,13 @@ final class AddDietLogViewModel: ObservableObject {
                 caloriesPer100g: external.caloriesPer100g ?? 0,
                 proteinPer100g: external.proteinPer100g,
                 carbsPer100g: external.carbsPer100g,
-                fatPer100g: external.fatPer100g
+                fatPer100g: external.fatPer100g,
+                sugarsPer100g: external.sugarsPer100g,
+                dietaryFiberPer100g: external.dietaryFiberPer100g,
+                saturatedFatPer100g: external.saturatedFatPer100g,
+                transFatPer100g: external.transFatPer100g,
+                cholesterolPer100gMg: external.cholesterolPer100gMg,
+                sodiumPer100gMg: external.sodiumPer100gMg
             )
             let body = try JSONEncoder().encode(request)
             let catalogItem: FoodCatalogItem = try await apiClient.request(.importExternalFood(body: body))
@@ -439,6 +489,10 @@ final class AddDietLogViewModel: ObservableObject {
                 .analyzeMealPhoto(id: initiated.analysisId, body: analyzeBody)
             )
             applyPhotoDraft(analyzed)
+        } catch APIError.premiumRequired {
+            // 캐시된 isPremium이 false였어도 사전 게이트가 잡지만, 캐시 미스/만료에
+            // 대비한 안전망. 사용자에게 paywall로 안내.
+            showPremiumPaywall = true
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
@@ -507,6 +561,11 @@ final class AddDietLogViewModel: ObservableObject {
                 }
             }
             onSuccess()
+        } catch APIError.premiumRequired {
+            // 사진 분석 도중 프리미엄이 만료/취소된 드문 케이스 — 백엔드의 confirm
+            // 엔드포인트가 403 PREMIUM_REQUIRED로 거절. analyzePhoto와 동일하게
+            // paywall로 안내하고 일반 에러 메시지로 흘리지 않는다.
+            showPremiumPaywall = true
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {

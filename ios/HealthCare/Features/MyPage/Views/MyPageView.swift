@@ -50,8 +50,8 @@ struct MyPageView: View {
                 MedicalSourcesView()
             }
         }
-        .refreshable { await viewModel.load(apiClient: container.apiClient) }
-        .task { await viewModel.load(apiClient: container.apiClient) }
+        .refreshable { await viewModel.load(apiClient: container.apiClient, authState: authState) }
+        .task { await viewModel.load(apiClient: container.apiClient, authState: authState) }
     }
 
     // MARK: - Profile Card
