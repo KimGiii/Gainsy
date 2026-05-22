@@ -41,6 +41,24 @@ public class FoodCatalog {
     @Column(name = "fat_per_100g")
     private Double fatPer100g;
 
+    @Column(name = "sugars_per_100g")
+    private Double sugarsPer100g;
+
+    @Column(name = "dietary_fiber_per_100g")
+    private Double dietaryFiberPer100g;
+
+    @Column(name = "saturated_fat_per_100g")
+    private Double saturatedFatPer100g;
+
+    @Column(name = "trans_fat_per_100g")
+    private Double transFatPer100g;
+
+    @Column(name = "cholesterol_per_100g_mg")
+    private Double cholesterolPer100gMg;
+
+    @Column(name = "sodium_per_100g_mg")
+    private Double sodiumPer100gMg;
+
     @Column(name = "is_custom", nullable = false)
     private Boolean isCustom;
 

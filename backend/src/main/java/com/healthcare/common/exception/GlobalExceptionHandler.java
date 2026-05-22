@@ -43,6 +43,15 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler(PremiumRequiredException.class)
+    public ResponseEntity<ErrorResponse> handlePremiumRequired(PremiumRequiredException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse.builder()
+                .code("PREMIUM_REQUIRED")
+                .message(e.getMessage())
+                .build());
+    }
+
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ResponseEntity<ErrorResponse> handleBusinessRuleViolation(BusinessRuleViolationException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)

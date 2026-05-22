@@ -4,6 +4,7 @@ import com.healthcare.common.exception.ResourceNotFoundException;
 import com.healthcare.common.exception.UnauthorizedException;
 import com.healthcare.domain.diet.dto.*;
 import com.healthcare.domain.diet.entity.DietLog;
+import com.healthcare.domain.diet.entity.DietLogNutritionTotals;
 import com.healthcare.domain.diet.entity.FoodCatalog;
 import com.healthcare.domain.diet.entity.FoodEntry;
 import com.healthcare.domain.diet.repository.DietLogRepository;
@@ -39,85 +40,38 @@ public class DietLogService {
         userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
-        // 식품 카탈로그 로드 및 접근 검증
         Map<Long, FoodCatalog> catalogMap = loadAndValidateCatalogs(userId, request.getEntries());
 
-        // 영양소 합산 + FoodEntry 생성
-        List<FoodEntry> entries = new ArrayList<>();
-        double totalCalories = 0.0;
-        double totalProteinG = 0.0;
-        double totalCarbsG   = 0.0;
-        double totalFatG     = 0.0;
+        Aggregation agg = buildEntries(request.getEntries(), catalogMap, /* dietLogId */ null);
 
-        for (CreateFoodEntryRequest entryReq : request.getEntries()) {
-            FoodCatalog food = catalogMap.get(entryReq.getFoodCatalogId());
-            double factor = entryReq.getServingG() / 100.0;
-
-            double calories = round(food.getCaloriesPer100g() * factor);
-            double proteinG = round(orZero(food.getProteinPer100g()) * factor);
-            double carbsG   = round(orZero(food.getCarbsPer100g()) * factor);
-            double fatG     = round(orZero(food.getFatPer100g()) * factor);
-
-            totalCalories += calories;
-            totalProteinG += proteinG;
-            totalCarbsG   += carbsG;
-            totalFatG     += fatG;
-
-            entries.add(FoodEntry.builder()
-                    .dietLogId(null) // 로그 저장 후 채움
-                    .foodCatalogId(entryReq.getFoodCatalogId())
-                    .servingG(entryReq.getServingG())
-                    .calories(calories)
-                    .proteinG(proteinG)
-                    .carbsG(carbsG)
-                    .fatG(fatG)
-                    .notes(entryReq.getNotes())
-                    .build());
-        }
-
-        // 식사 기록 저장
         DietLog log = DietLog.builder()
                 .userId(userId)
                 .logDate(request.getLogDate())
                 .mealType(request.getMealType())
-                .totalCalories(round(totalCalories))
-                .totalProteinG(round(totalProteinG))
-                .totalCarbsG(round(totalCarbsG))
-                .totalFatG(round(totalFatG))
+                .totalCalories(agg.totals().totalCalories())
+                .totalProteinG(agg.totals().totalProteinG())
+                .totalCarbsG(agg.totals().totalCarbsG())
+                .totalFatG(agg.totals().totalFatG())
+                .totalSugarsG(agg.totals().totalSugarsG())
+                .totalDietaryFiberG(agg.totals().totalDietaryFiberG())
+                .totalSaturatedFatG(agg.totals().totalSaturatedFatG())
+                .totalTransFatG(agg.totals().totalTransFatG())
+                .totalCholesterolMg(agg.totals().totalCholesterolMg())
+                .totalSodiumMg(agg.totals().totalSodiumMg())
                 .notes(request.getNotes())
                 .build();
         DietLog savedLog = dietLogRepository.save(log);
 
-        // 식품 항목에 dietLogId 할당 후 저장
-        List<FoodEntry> entriesWithLogId = entries.stream()
-                .map(e -> FoodEntry.builder()
-                        .dietLogId(savedLog.getId())
-                        .foodCatalogId(e.getFoodCatalogId())
-                        .servingG(e.getServingG())
-                        .calories(e.getCalories())
-                        .proteinG(e.getProteinG())
-                        .carbsG(e.getCarbsG())
-                        .fatG(e.getFatG())
-                        .notes(e.getNotes())
-                        .build())
+        List<FoodEntry> entriesWithLogId = agg.entries().stream()
+                .map(e -> rebuildWithLogId(e, savedLog.getId()))
                 .toList();
         foodEntryRepository.saveAll(entriesWithLogId);
 
-        // usage_count는 현재 살아있는 food_entries 참조 수를 나타낸다.
         request.getEntries().stream()
                 .map(CreateFoodEntryRequest::getFoodCatalogId)
                 .forEach(foodCatalogRepository::incrementUsageCount);
 
-        return CreateDietLogResponse.builder()
-                .dietLogId(savedLog.getId())
-                .logDate(savedLog.getLogDate())
-                .mealType(savedLog.getMealType())
-                .entryCount(entries.size())
-                .totalCalories(savedLog.getTotalCalories())
-                .totalProteinG(savedLog.getTotalProteinG())
-                .totalCarbsG(savedLog.getTotalCarbsG())
-                .totalFatG(savedLog.getTotalFatG())
-                .build();
+        return toCreateResponse(savedLog, agg.entries().size());
     }
 
     // ─────────────────────────── 식사 기록 단건 조회 ───────────────────────────
@@ -174,7 +128,6 @@ public class DietLogService {
             throw new UnauthorizedException("다른 사용자의 식사 기록을 수정할 수 없습니다.");
         }
 
-        // 기존 항목 제거 (usage_count 감소)
         List<FoodEntry> oldEntries = foodEntryRepository.findByDietLogIdOrderById(logId);
         oldEntries.stream()
                 .map(FoodEntry::getFoodCatalogId)
@@ -182,67 +135,18 @@ public class DietLogService {
                 .forEach(foodCatalogRepository::decrementUsageCount);
         foodEntryRepository.deleteAll(oldEntries);
 
-        // 새 항목 생성 및 영양소 합산
         Map<Long, FoodCatalog> catalogMap = loadAndValidateCatalogs(userId, request.getEntries());
+        Aggregation agg = buildEntries(request.getEntries(), catalogMap, logId);
 
-        List<FoodEntry> newEntries = new ArrayList<>();
-        double totalCalories = 0.0;
-        double totalProteinG = 0.0;
-        double totalCarbsG   = 0.0;
-        double totalFatG     = 0.0;
-
-        for (CreateFoodEntryRequest entryReq : request.getEntries()) {
-            FoodCatalog food = catalogMap.get(entryReq.getFoodCatalogId());
-            double factor = entryReq.getServingG() / 100.0;
-
-            double calories = round(food.getCaloriesPer100g() * factor);
-            double proteinG = round(orZero(food.getProteinPer100g()) * factor);
-            double carbsG   = round(orZero(food.getCarbsPer100g()) * factor);
-            double fatG     = round(orZero(food.getFatPer100g()) * factor);
-
-            totalCalories += calories;
-            totalProteinG += proteinG;
-            totalCarbsG   += carbsG;
-            totalFatG     += fatG;
-
-            newEntries.add(FoodEntry.builder()
-                    .dietLogId(logId)
-                    .foodCatalogId(entryReq.getFoodCatalogId())
-                    .servingG(entryReq.getServingG())
-                    .calories(calories)
-                    .proteinG(proteinG)
-                    .carbsG(carbsG)
-                    .fatG(fatG)
-                    .notes(entryReq.getNotes())
-                    .build());
-        }
-
-        foodEntryRepository.saveAll(newEntries);
+        foodEntryRepository.saveAll(agg.entries());
         request.getEntries().stream()
                 .map(CreateFoodEntryRequest::getFoodCatalogId)
                 .forEach(foodCatalogRepository::incrementUsageCount);
 
-        log.update(
-                request.getMealType(),
-                request.getLogDate(),
-                request.getNotes(),
-                round(totalCalories),
-                round(totalProteinG),
-                round(totalCarbsG),
-                round(totalFatG)
-        );
+        log.update(request.getMealType(), request.getLogDate(), request.getNotes(), agg.totals());
         dietLogRepository.save(log);
 
-        return CreateDietLogResponse.builder()
-                .dietLogId(log.getId())
-                .logDate(log.getLogDate())
-                .mealType(log.getMealType())
-                .entryCount(newEntries.size())
-                .totalCalories(log.getTotalCalories())
-                .totalProteinG(log.getTotalProteinG())
-                .totalCarbsG(log.getTotalCarbsG())
-                .totalFatG(log.getTotalFatG())
-                .build();
+        return toCreateResponse(log, agg.entries().size());
     }
 
     // ─────────────────────────── 식사 기록 삭제 (소프트) ───────────────────────────
@@ -267,6 +171,104 @@ public class DietLogService {
 
     // ─────────────────────────── 내부 헬퍼 ───────────────────────────
 
+    /** 영양소 10종을 servingG/100g 비율로 환산하고 FoodEntry 목록과 합산값을 함께 반환한다. */
+    private Aggregation buildEntries(List<CreateFoodEntryRequest> entryRequests,
+                                     Map<Long, FoodCatalog> catalogMap,
+                                     Long dietLogId) {
+        List<FoodEntry> entries = new ArrayList<>(entryRequests.size());
+        double cal = 0, prot = 0, carbs = 0, fat = 0;
+        double sugars = 0, fiber = 0, satFat = 0, transFat = 0, chol = 0, sodium = 0;
+
+        for (CreateFoodEntryRequest req : entryRequests) {
+            FoodCatalog food = catalogMap.get(req.getFoodCatalogId());
+            double factor = req.getServingG() / 100.0;
+
+            double calories      = round(food.getCaloriesPer100g() * factor);
+            double proteinG      = round(orZero(food.getProteinPer100g()) * factor);
+            double carbsG        = round(orZero(food.getCarbsPer100g()) * factor);
+            double fatG          = round(orZero(food.getFatPer100g()) * factor);
+            double sugarsG       = round(orZero(food.getSugarsPer100g()) * factor);
+            double dietaryFiberG = round(orZero(food.getDietaryFiberPer100g()) * factor);
+            double saturatedFatG = round(orZero(food.getSaturatedFatPer100g()) * factor);
+            double transFatG     = round(orZero(food.getTransFatPer100g()) * factor);
+            double cholesterolMg = round(orZero(food.getCholesterolPer100gMg()) * factor);
+            double sodiumMg      = round(orZero(food.getSodiumPer100gMg()) * factor);
+
+            cal += calories;
+            prot += proteinG;
+            carbs += carbsG;
+            fat += fatG;
+            sugars += sugarsG;
+            fiber += dietaryFiberG;
+            satFat += saturatedFatG;
+            transFat += transFatG;
+            chol += cholesterolMg;
+            sodium += sodiumMg;
+
+            entries.add(FoodEntry.builder()
+                    .dietLogId(dietLogId)
+                    .foodCatalogId(req.getFoodCatalogId())
+                    .servingG(req.getServingG())
+                    .calories(calories)
+                    .proteinG(proteinG)
+                    .carbsG(carbsG)
+                    .fatG(fatG)
+                    .sugarsG(sugarsG)
+                    .dietaryFiberG(dietaryFiberG)
+                    .saturatedFatG(saturatedFatG)
+                    .transFatG(transFatG)
+                    .cholesterolMg(cholesterolMg)
+                    .sodiumMg(sodiumMg)
+                    .notes(req.getNotes())
+                    .build());
+        }
+
+        DietLogNutritionTotals totals = new DietLogNutritionTotals(
+                round(cal), round(carbs), round(sugars), round(fiber),
+                round(prot), round(fat), round(satFat), round(transFat),
+                round(chol), round(sodium));
+        return new Aggregation(entries, totals);
+    }
+
+    /** dietLogId가 null이었던 FoodEntry에 dietLogId만 채워서 재빌드한다. */
+    private FoodEntry rebuildWithLogId(FoodEntry e, Long dietLogId) {
+        return FoodEntry.builder()
+                .dietLogId(dietLogId)
+                .foodCatalogId(e.getFoodCatalogId())
+                .servingG(e.getServingG())
+                .calories(e.getCalories())
+                .proteinG(e.getProteinG())
+                .carbsG(e.getCarbsG())
+                .fatG(e.getFatG())
+                .sugarsG(e.getSugarsG())
+                .dietaryFiberG(e.getDietaryFiberG())
+                .saturatedFatG(e.getSaturatedFatG())
+                .transFatG(e.getTransFatG())
+                .cholesterolMg(e.getCholesterolMg())
+                .sodiumMg(e.getSodiumMg())
+                .notes(e.getNotes())
+                .build();
+    }
+
+    private CreateDietLogResponse toCreateResponse(DietLog log, int entryCount) {
+        return CreateDietLogResponse.builder()
+                .dietLogId(log.getId())
+                .logDate(log.getLogDate())
+                .mealType(log.getMealType())
+                .entryCount(entryCount)
+                .totalCalories(log.getTotalCalories())
+                .totalProteinG(log.getTotalProteinG())
+                .totalCarbsG(log.getTotalCarbsG())
+                .totalFatG(log.getTotalFatG())
+                .totalSugarsG(log.getTotalSugarsG())
+                .totalDietaryFiberG(log.getTotalDietaryFiberG())
+                .totalSaturatedFatG(log.getTotalSaturatedFatG())
+                .totalTransFatG(log.getTotalTransFatG())
+                .totalCholesterolMg(log.getTotalCholesterolMg())
+                .totalSodiumMg(log.getTotalSodiumMg())
+                .build();
+    }
+
     private Map<Long, FoodCatalog> loadAndValidateCatalogs(Long userId,
             List<CreateFoodEntryRequest> entries) {
         List<Long> catalogIds = entries.stream()
@@ -290,4 +292,6 @@ public class DietLogService {
     private double round(double value) {
         return Math.round(value * 10.0) / 10.0;
     }
+
+    private record Aggregation(List<FoodEntry> entries, DietLogNutritionTotals totals) {}
 }

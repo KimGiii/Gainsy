@@ -38,4 +38,28 @@ public class CreateCustomFoodRequest {
     @PositiveOrZero(message = "지방은 0 이상이어야 합니다.")
     @DecimalMax(value = "9999", message = "지방은 9999 이하여야 합니다.")
     private Double fatPer100g;
+
+    @PositiveOrZero(message = "당류는 0 이상이어야 합니다.")
+    @DecimalMax(value = "9999", message = "당류는 9999 이하여야 합니다.")
+    private Double sugarsPer100g;
+
+    @PositiveOrZero(message = "식이섬유는 0 이상이어야 합니다.")
+    @DecimalMax(value = "9999", message = "식이섬유는 9999 이하여야 합니다.")
+    private Double dietaryFiberPer100g;
+
+    @PositiveOrZero(message = "포화지방은 0 이상이어야 합니다.")
+    @DecimalMax(value = "9999", message = "포화지방은 9999 이하여야 합니다.")
+    private Double saturatedFatPer100g;
+
+    @PositiveOrZero(message = "트랜스지방은 0 이상이어야 합니다.")
+    @DecimalMax(value = "9999", message = "트랜스지방은 9999 이하여야 합니다.")
+    private Double transFatPer100g;
+
+    @PositiveOrZero(message = "콜레스테롤은 0 이상이어야 합니다.")
+    @DecimalMax(value = "99999", message = "콜레스테롤은 99999 이하여야 합니다.")
+    private Double cholesterolPer100gMg;
+
+    @PositiveOrZero(message = "나트륨은 0 이상이어야 합니다.")
+    @DecimalMax(value = "99999", message = "나트륨은 99999 이하여야 합니다.")
+    private Double sodiumPer100gMg;
 }

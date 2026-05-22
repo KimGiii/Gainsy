@@ -61,6 +61,10 @@ public class User {
     @Builder.Default
     private boolean onboardingCompleted = false;
 
+    @Column(name = "is_premium", nullable = false)
+    @Builder.Default
+    private boolean isPremium = false;
+
     @Column(name = "calorie_target")
     private Integer calorieTarget;
 

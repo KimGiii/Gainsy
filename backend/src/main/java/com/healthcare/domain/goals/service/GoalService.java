@@ -51,11 +51,19 @@ public class GoalService {
         }
 
         Goal.GoalType goalType = request.getGoalType();
+        LocalDate startDate = LocalDate.now();
         String normalizedTargetUnit = normalizeTargetUnit(goalType);
         BigDecimal normalizedTargetValue = normalizeTargetValue(
                 goalType, request.getTargetUnit(), request.getTargetValue());
         BigDecimal normalizedStartValue = normalizeTargetValue(
                 goalType, request.getTargetUnit(), request.getStartValue());
+
+        // 사용자가 startValue를 입력하지 않은 경우 최신 신체 측정에서 자동 보강.
+        // (ENDURANCE는 측정값과 무관하므로 사용자 입력만 사용.)
+        if (normalizedStartValue == null && goalType != Goal.GoalType.ENDURANCE) {
+            normalizedStartValue = resolveStartValueFromLatestMeasurement(userId, goalType, startDate);
+        }
+
         BigDecimal normalizedWeeklyRateTarget = normalizeWeeklyRateTarget(goalType, request.getWeeklyRateTarget());
 
         // 기존 ACTIVE 목표 → ABANDONED
@@ -71,13 +79,39 @@ public class GoalService {
                 .targetUnit(normalizedTargetUnit)
                 .targetDate(request.getTargetDate())
                 .startValue(normalizedStartValue)
-                .startDate(LocalDate.now())
+                .startDate(startDate)
                 .status(GoalStatus.ACTIVE)
                 .weeklyRateTarget(normalizedWeeklyRateTarget)
                 .build();
 
         Goal saved = goalRepository.save(goal);
+
+        // 시작 체크포인트 — 히스토리에서 시작점을 항상 보이도록.
+        // startValue가 있을 때만 의미가 있다. notes="시작"으로 주간 체크포인트와 구분.
+        if (normalizedStartValue != null) {
+            goalCheckpointRepository.save(GoalCheckpoint.builder()
+                    .goalId(saved.getId())
+                    .checkpointDate(startDate)
+                    .actualValue(normalizedStartValue)
+                    .projectedValue(normalizedStartValue)
+                    .isOnTrack(true)
+                    .notes("시작")
+                    .build());
+        }
+
         return GoalResponse.from(saved);
+    }
+
+    /**
+     * 사용자의 최신 신체 측정에서 goalType에 맞는 값을 추출한다.
+     * 측정 기록이 없거나 해당 필드가 비어 있으면 null 반환.
+     */
+    private BigDecimal resolveStartValueFromLatestMeasurement(
+            Long userId, Goal.GoalType goalType, LocalDate referenceDate) {
+        return bodyMeasurementRepository
+                .findFirstByUserIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(userId, referenceDate)
+                .map(m -> extractValueByGoalType(goalType, m))
+                .orElse(null);
     }
 
     // ─────────────────────────── 목표 단건 조회 ───────────────────────────

@@ -18,6 +18,12 @@ public class DietLogSummary {
     private final Double totalProteinG;
     private final Double totalCarbsG;
     private final Double totalFatG;
+    private final Double totalSugarsG;
+    private final Double totalDietaryFiberG;
+    private final Double totalSaturatedFatG;
+    private final Double totalTransFatG;
+    private final Double totalCholesterolMg;
+    private final Double totalSodiumMg;
 
     public static DietLogSummary from(DietLog log) {
         return DietLogSummary.builder()
@@ -28,6 +34,12 @@ public class DietLogSummary {
                 .totalProteinG(log.getTotalProteinG())
                 .totalCarbsG(log.getTotalCarbsG())
                 .totalFatG(log.getTotalFatG())
+                .totalSugarsG(log.getTotalSugarsG())
+                .totalDietaryFiberG(log.getTotalDietaryFiberG())
+                .totalSaturatedFatG(log.getTotalSaturatedFatG())
+                .totalTransFatG(log.getTotalTransFatG())
+                .totalCholesterolMg(log.getTotalCholesterolMg())
+                .totalSodiumMg(log.getTotalSodiumMg())
                 .build();
     }
 }
