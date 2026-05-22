@@ -181,6 +181,12 @@ public class PublicFoodApiClientImpl implements PublicFoodApiClient {
                 .proteinPer100g(parseDouble(item.getProt()))
                 .carbsPer100g(parseDouble(item.getChocdf()))
                 .fatPer100g(parseDouble(item.getFatce()))
+                .sugarsPer100g(parseDouble(item.getSugar()))
+                .dietaryFiberPer100g(parseDouble(item.getFibtg()))
+                .saturatedFatPer100g(parseDouble(item.getFasat()))
+                .transFatPer100g(parseDouble(item.getFatrn()))
+                .cholesterolPer100gMg(parseDouble(item.getChole()))
+                .sodiumPer100gMg(parseDouble(item.getNat()))
                 .build();
     }
 
@@ -250,6 +256,12 @@ public class PublicFoodApiClientImpl implements PublicFoodApiClient {
         private String prot;          // 단백질(g)
         private String fatce;         // 지방(g)
         private String chocdf;        // 탄수화물(g)
+        private String sugar;         // 당류(g)
+        private String fibtg;         // 식이섬유(g)
+        private String fasat;         // 포화지방산(g)
+        private String fatrn;         // 트랜스지방산(g)
+        private String chole;         // 콜레스테롤(mg)
+        private String nat;           // 나트륨(mg)
         private String mfrNm;         // 제조사명
         private String itemMnftrRptNo; // 품목제조보고번호
     }

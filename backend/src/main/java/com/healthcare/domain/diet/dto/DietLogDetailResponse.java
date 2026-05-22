@@ -19,6 +19,12 @@ public class DietLogDetailResponse {
     private final Double totalProteinG;
     private final Double totalCarbsG;
     private final Double totalFatG;
+    private final Double totalSugarsG;
+    private final Double totalDietaryFiberG;
+    private final Double totalSaturatedFatG;
+    private final Double totalTransFatG;
+    private final Double totalCholesterolMg;
+    private final Double totalSodiumMg;
     private final String notes;
     private final List<FoodEntryResponse> entries;
 
@@ -31,6 +37,12 @@ public class DietLogDetailResponse {
                 .totalProteinG(log.getTotalProteinG())
                 .totalCarbsG(log.getTotalCarbsG())
                 .totalFatG(log.getTotalFatG())
+                .totalSugarsG(log.getTotalSugarsG())
+                .totalDietaryFiberG(log.getTotalDietaryFiberG())
+                .totalSaturatedFatG(log.getTotalSaturatedFatG())
+                .totalTransFatG(log.getTotalTransFatG())
+                .totalCholesterolMg(log.getTotalCholesterolMg())
+                .totalSodiumMg(log.getTotalSodiumMg())
                 .notes(log.getNotes())
                 .entries(entries)
                 .build();

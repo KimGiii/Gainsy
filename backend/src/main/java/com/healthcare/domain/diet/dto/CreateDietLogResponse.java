@@ -18,4 +18,10 @@ public class CreateDietLogResponse {
     private final Double totalProteinG;
     private final Double totalCarbsG;
     private final Double totalFatG;
+    private final Double totalSugarsG;
+    private final Double totalDietaryFiberG;
+    private final Double totalSaturatedFatG;
+    private final Double totalTransFatG;
+    private final Double totalCholesterolMg;
+    private final Double totalSodiumMg;
 }

@@ -19,6 +19,12 @@ public class FoodEntryResponse {
     private final Double proteinG;
     private final Double carbsG;
     private final Double fatG;
+    private final Double sugarsG;
+    private final Double dietaryFiberG;
+    private final Double saturatedFatG;
+    private final Double transFatG;
+    private final Double cholesterolMg;
+    private final Double sodiumMg;
     private final String notes;
 
     public static FoodEntryResponse from(FoodEntry entry, String foodName, String foodNameKo,
@@ -34,6 +40,12 @@ public class FoodEntryResponse {
                 .proteinG(entry.getProteinG())
                 .carbsG(entry.getCarbsG())
                 .fatG(entry.getFatG())
+                .sugarsG(entry.getSugarsG())
+                .dietaryFiberG(entry.getDietaryFiberG())
+                .saturatedFatG(entry.getSaturatedFatG())
+                .transFatG(entry.getTransFatG())
+                .cholesterolMg(entry.getCholesterolMg())
+                .sodiumMg(entry.getSodiumMg())
                 .notes(entry.getNotes())
                 .build();
     }
