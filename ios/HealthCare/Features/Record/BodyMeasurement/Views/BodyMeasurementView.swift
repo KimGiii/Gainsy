@@ -49,7 +49,10 @@ struct BodyMeasurementView: View {
             }
             .ignoresSafeArea(edges: .top)
             .background(Color.surfaceGrouped)
-            .refreshable { await viewModel.load(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.load(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
             .sheet(isPresented: $showMedicalSources) {
                 MedicalSourcesView()
             }

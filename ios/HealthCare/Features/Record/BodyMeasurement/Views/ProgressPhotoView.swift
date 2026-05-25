@@ -240,7 +240,10 @@ struct ProgressPhotoView: View {
                 }
                 .padding(.bottom, 20)
             }
-            .refreshable { await viewModel.loadAll(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.loadAll(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
         }
     }
 

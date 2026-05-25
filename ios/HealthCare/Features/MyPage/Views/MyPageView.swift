@@ -50,7 +50,11 @@ struct MyPageView: View {
                 MedicalSourcesView()
             }
         }
-        .refreshable { await viewModel.load(apiClient: container.apiClient, authState: authState) }
+        .refreshable {
+            await viewModel.load(apiClient: container.apiClient, authState: authState)
+            // pull-to-refresh로 인한 실패는 alert으로 알리지 않음(기존 화면 데이터 유지).
+            viewModel.errorMessage = nil
+        }
         .task { await viewModel.load(apiClient: container.apiClient, authState: authState) }
         // 신체 측정 기록이 추가/수정/삭제되면 백엔드가 User.weightKg를 동기화하므로
         // 마이페이지도 즉시 다시 가져와 최신 체중을 표시.

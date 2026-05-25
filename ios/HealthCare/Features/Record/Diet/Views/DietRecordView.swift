@@ -27,7 +27,10 @@ struct DietRecordView: View {
                 }
             }
             .ignoresSafeArea(edges: .top)
-            .refreshable { await viewModel.loadLogs(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.loadLogs(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
 
             if !viewModel.todayLogs.isEmpty {
                 fabButton
