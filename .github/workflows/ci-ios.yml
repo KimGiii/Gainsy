@@ -13,6 +13,43 @@ on:
       - '.github/workflows/ci-ios.yml'
 
 jobs:
+  design-lint:
+    name: Design Lint (warning-only)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run design-lint
+        run: |
+          chmod +x ios/scripts/design-lint.sh
+          # warning-only: 위반 건수를 출력하지만 종료 코드로 잡을 실패시키지 않는다.
+          # 기존 1141건 베이스라인을 점진 감축하기 위한 가시화 용도.
+          ios/scripts/design-lint.sh || true
+
+      - name: Count violations (summary)
+        run: |
+          set +e
+          OUTPUT=$(ios/scripts/design-lint.sh 2>&1)
+          PADDING=$(echo "$OUTPUT" | grep -c '^\[PADDING\]')
+          FONT=$(echo "$OUTPUT" | grep -c '^\[FONT\]')
+          RADIUS=$(echo "$OUTPUT" | grep -c '^\[RADIUS\]')
+          TOTAL=$((PADDING + FONT + RADIUS))
+          {
+            echo "## Design Lint Summary"
+            echo ""
+            echo "| 카테고리 | 위반 |"
+            echo "|---|---|"
+            echo "| PADDING (매직넘버) | $PADDING |"
+            echo "| FONT (인라인 .font) | $FONT |"
+            echo "| RADIUS (매직넘버) | $RADIUS |"
+            echo "| **합계** | **$TOTAL** |"
+            echo ""
+            echo "> warning-only 모드입니다. 신규 코드에서는 DesignSystem 토큰(Spacing/Radius/Font)을 사용해 주세요."
+            echo "> 예외가 필요하면 줄 끝에 \`// design-lint:ignore\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   test:
     name: Test
     runs-on: macos-15
