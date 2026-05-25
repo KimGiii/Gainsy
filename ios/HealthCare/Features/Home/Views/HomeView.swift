@@ -139,10 +139,7 @@ private struct DashboardHeaderBar: View {
 
             HStack(spacing: 8) {
                 HeaderIconButton(system: "bell")
-                NavigationLink(destination: MyPageView()) {
-                    HeaderIconButton(system: "person.crop.circle")
-                }
-                .buttonStyle(.plain)
+                // 마이페이지는 하단 탭(.myPage)으로 분리됨 — 헤더 아이콘 제거.
             }
         }
     }
