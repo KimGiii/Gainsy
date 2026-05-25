@@ -91,7 +91,11 @@ struct HomeView: View {
                     .frame(height: 50)
             }
             .task { await viewModel.loadDashboard(apiClient: container.apiClient) }
-            .refreshable { await viewModel.loadDashboard(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.loadDashboard(apiClient: container.apiClient)
+                // pull-to-refresh로 인한 실패는 alert으로 알리지 않음(기존 화면 데이터 유지).
+                viewModel.errorMessage = nil
+            }
 
             // 8. 기록 FAB (기존 LogCTASection 대체)
             QuickLogFAB()
@@ -135,10 +139,7 @@ private struct DashboardHeaderBar: View {
 
             HStack(spacing: 8) {
                 HeaderIconButton(system: "bell")
-                NavigationLink(destination: MyPageView()) {
-                    HeaderIconButton(system: "person.crop.circle")
-                }
-                .buttonStyle(.plain)
+                // 마이페이지는 하단 탭(.myPage)으로 분리됨 — 헤더 아이콘 제거.
             }
         }
     }

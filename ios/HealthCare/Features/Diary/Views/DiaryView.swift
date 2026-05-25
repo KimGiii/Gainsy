@@ -60,7 +60,10 @@ struct DiaryView: View {
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
                 }
             }
-            .refreshable { await viewModel.load(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.load(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
             .alert("오류", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }

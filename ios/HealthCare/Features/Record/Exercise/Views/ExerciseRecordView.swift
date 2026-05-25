@@ -22,7 +22,10 @@ struct ExerciseRecordView: View {
             }
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPage)
-            .refreshable { await viewModel.loadSessions(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.loadSessions(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
 
             // + FAB
             if !viewModel.sessions.isEmpty {

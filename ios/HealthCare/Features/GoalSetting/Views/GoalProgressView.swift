@@ -44,7 +44,10 @@ struct GoalProgressView: View {
                 }
             }
             .ignoresSafeArea(edges: .top)
-            .refreshable { await viewModel.load(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.load(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $showEditSheet) {

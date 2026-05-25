@@ -85,10 +85,11 @@ public class DietLogService {
         }
 
         List<FoodEntry> rawEntries = foodEntryRepository.findByDietLogIdOrderById(logId);
-        Map<Long, FoodCatalog> catalogMap = rawEntries.stream()
+        List<Long> catalogIds = rawEntries.stream()
                 .map(FoodEntry::getFoodCatalogId)
                 .distinct()
-                .flatMap(cid -> foodCatalogRepository.findById(cid).stream())
+                .toList();
+        Map<Long, FoodCatalog> catalogMap = foodCatalogRepository.findAllById(catalogIds).stream()
                 .collect(Collectors.toMap(FoodCatalog::getId, c -> c));
 
         List<FoodEntryResponse> entryResponses = rawEntries.stream()

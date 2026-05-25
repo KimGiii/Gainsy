@@ -14,8 +14,8 @@ public class WeeklyNotificationScheduler {
 
     private final NotificationService notificationService;
 
-    // 매주 월요일 오전 9시 (KST = UTC+9)
-    @Scheduled(cron = "0 0 0 * * MON", zone = "UTC")
+    // 매주 월요일 오전 9시 KST
+    @Scheduled(cron = "0 0 9 * * MON", zone = "Asia/Seoul")
     public void sendWeeklySummaries() {
         log.info("[Scheduler] Weekly summary notification triggered");
         try {

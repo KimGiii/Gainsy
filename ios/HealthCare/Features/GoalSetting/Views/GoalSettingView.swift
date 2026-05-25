@@ -49,7 +49,10 @@ struct GoalSettingView: View {
             }
             .ignoresSafeArea(edges: .top)
             .background(Color.surfaceGrouped)
-            .refreshable { await viewModel.load(apiClient: container.apiClient) }
+            .refreshable {
+                await viewModel.load(apiClient: container.apiClient)
+                viewModel.errorMessage = nil
+            }
 
             // + FAB
             Button { viewModel.showAddGoal = true } label: {

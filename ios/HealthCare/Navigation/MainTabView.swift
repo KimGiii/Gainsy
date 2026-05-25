@@ -2,13 +2,23 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
+
+    // NavigationPath — push 스택 리셋용
     @State private var homePath    = NavigationPath()
     @State private var diaryPath   = NavigationPath()
     @State private var recordPath  = NavigationPath()
     @State private var explorePath = NavigationPath()
+    @State private var myPagePath  = NavigationPath()
+
+    // 각 탭 root view의 id — 변경 시 SwiftUI가 view를 새로 만들어 ViewModel/스크롤 위치까지 초기화
+    @State private var homeId    = UUID()
+    @State private var diaryId   = UUID()
+    @State private var recordId  = UUID()
+    @State private var exploreId = UUID()
+    @State private var myPageId  = UUID()
 
     enum Tab: Int, CaseIterable {
-        case home, diary, record, explore
+        case home, diary, record, explore, myPage
 
         var title: String {
             switch self {
@@ -16,6 +26,7 @@ struct MainTabView: View {
             case .diary:   return "다이어리"
             case .record:  return "기록"
             case .explore: return "탐색"
+            case .myPage:  return "마이"
             }
         }
 
@@ -25,48 +36,79 @@ struct MainTabView: View {
             case .diary:   return "calendar"
             case .record:  return "plus.circle.fill"
             case .explore: return "safari"
+            case .myPage:  return "person.crop.circle"
             }
         }
     }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: tabBinding) {
             NavigationStack(path: $homePath) {
-                HomeView()
+                HomeView().id(homeId)
             }
-            .tabItem { Label(Tab.home.title,    systemImage: Tab.home.systemImage) }
+            .tabItem { Label(Tab.home.title, systemImage: Tab.home.systemImage) }
             .tag(Tab.home)
 
             NavigationStack(path: $diaryPath) {
-                DiaryView()
+                DiaryView().id(diaryId)
             }
-            .tabItem { Label(Tab.diary.title,   systemImage: Tab.diary.systemImage) }
+            .tabItem { Label(Tab.diary.title, systemImage: Tab.diary.systemImage) }
             .tag(Tab.diary)
 
             NavigationStack(path: $recordPath) {
-                RecordHubView(showsDismissButton: false)
+                RecordHubView(showsDismissButton: false).id(recordId)
             }
-            .tabItem { Label(Tab.record.title,  systemImage: Tab.record.systemImage) }
+            .tabItem { Label(Tab.record.title, systemImage: Tab.record.systemImage) }
             .tag(Tab.record)
 
             NavigationStack(path: $explorePath) {
-                ExploreView()
+                ExploreView().id(exploreId)
             }
             .tabItem { Label(Tab.explore.title, systemImage: Tab.explore.systemImage) }
             .tag(Tab.explore)
+
+            NavigationStack(path: $myPagePath) {
+                MyPageView().id(myPageId)
+            }
+            .tabItem { Label(Tab.myPage.title, systemImage: Tab.myPage.systemImage) }
+            .tag(Tab.myPage)
         }
         .tint(Color.brandPrimary)
-        .onChange(of: selectedTab) { newTab in
-            switch newTab {
-            case .home:    homePath    = NavigationPath()
-            case .diary:   diaryPath   = NavigationPath()
-            case .record:  recordPath  = NavigationPath()
-            case .explore: explorePath = NavigationPath()
-            }
-        }
         .onReceive(NotificationCenter.default.publisher(for: .pushNotificationTapped)) { note in
             guard let type = note.userInfo?["type"] as? String else { return }
             handlePushRoute(type: type)
+        }
+    }
+
+    /// 탭을 선택할 때마다 항상 해당 탭의 path와 root view id를 리셋한다.
+    /// 같은 탭을 다시 눌러도 set이 호출되므로, 사용자가 어디까지 들어갔든 항상 시작점 페이지로 돌아간다.
+    private var tabBinding: Binding<Tab> {
+        Binding(
+            get: { selectedTab },
+            set: { newTab in
+                resetTab(newTab)
+                selectedTab = newTab
+            }
+        )
+    }
+
+    private func resetTab(_ tab: Tab) {
+        switch tab {
+        case .home:
+            homePath = NavigationPath()
+            homeId = UUID()
+        case .diary:
+            diaryPath = NavigationPath()
+            diaryId = UUID()
+        case .record:
+            recordPath = NavigationPath()
+            recordId = UUID()
+        case .explore:
+            explorePath = NavigationPath()
+            exploreId = UUID()
+        case .myPage:
+            myPagePath = NavigationPath()
+            myPageId = UUID()
         }
     }
 
@@ -74,7 +116,7 @@ struct MainTabView: View {
         switch type {
         case "WEEKLY_SUMMARY":
             selectedTab = .explore
-            explorePath = NavigationPath()
+            resetTab(.explore)
         default:
             break
         }
