@@ -119,6 +119,12 @@ extension Font {
         return Font(uiFont)
     }()
 
+    // CTA — primary/secondary 버튼 라벨 (17/semibold, Dynamic Type)
+    static let cta: Font = {
+        let uiFont = UIFont.scaled(size: 17, weight: .semibold, relativeTo: .headline)
+        return Font(uiFont)
+    }()
+
     // Data
     static let dataSmall: Font = {
         let uiFont = UIFont.scaled(size: 12, weight: .medium, design: .monospaced, relativeTo: .caption1)

@@ -57,27 +57,12 @@ struct LoginView: View {
                 Spacer()
 
                 // CTA
-                VStack(spacing: 12) {
-                    Button {
-                        Task { await viewModel.login(apiClient: container.apiClient, authState: authState) }
-                    } label: {
-                        Group {
-                            if viewModel.isLoading {
-                                ProgressView().tint(.white)
-                            } else {
-                                Text("로그인")
-                                    .font(.system(size: 17, weight: .semibold))
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.brandPrimary)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .shadow(color: Color.brandPrimary.opacity(0.3), radius: 10, x: 0, y: 5)
-                    }
-                    .disabled(viewModel.isLoading || viewModel.email.isEmpty || viewModel.password.isEmpty)
-                    .opacity(viewModel.email.isEmpty || viewModel.password.isEmpty ? 0.55 : 1)
+                PrimaryButton(
+                    "로그인하기",
+                    isEnabled: !viewModel.email.isEmpty && !viewModel.password.isEmpty,
+                    isLoading: viewModel.isLoading
+                ) {
+                    Task { await viewModel.login(apiClient: container.apiClient, authState: authState) }
                 }
                 .padding(.horizontal, 28)
                 .padding(.bottom, 48)

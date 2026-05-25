@@ -43,40 +43,22 @@ struct ProfileSetupView: View {
                 }
 
                 // CTA
-                VStack(spacing: 0) {
+                Group {
                     if step == 1 {
-                        Button {
+                        PrimaryButton(
+                            "다음으로",
+                            isEnabled: viewModel.canProceedStep1
+                        ) {
                             withAnimation { step = 2 }
-                        } label: {
-                            Text("다음")
-                                .font(.system(size: 17, weight: .semibold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(viewModel.canProceedStep1 ? Color.brandPrimary : Color.brandPrimary.opacity(0.3))
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
-                        .disabled(!viewModel.canProceedStep1)
                     } else {
-                        Button {
+                        PrimaryButton(
+                            "시작하기",
+                            isEnabled: viewModel.canSubmit,
+                            isLoading: viewModel.isLoading
+                        ) {
                             Task { await viewModel.submit(apiClient: container.apiClient, authState: authState) }
-                        } label: {
-                            Group {
-                                if viewModel.isLoading {
-                                    ProgressView().tint(.white)
-                                } else {
-                                    Text("시작하기")
-                                        .font(.system(size: 17, weight: .semibold))
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(viewModel.canSubmit ? Color.brandPrimary : Color.brandPrimary.opacity(0.3))
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .shadow(color: Color.brandPrimary.opacity(0.3), radius: 10, x: 0, y: 5)
                         }
-                        .disabled(!viewModel.canSubmit || viewModel.isLoading)
                     }
                 }
                 .padding(.horizontal, 28)

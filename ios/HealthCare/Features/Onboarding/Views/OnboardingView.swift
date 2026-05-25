@@ -47,31 +47,11 @@ struct OnboardingView: View {
                     // CTA Buttons
                     VStack(spacing: 12) {
                         NavigationLink(destination: LoginView()) {
-                            Text("로그인")
-                                .font(.system(size: 17, weight: .semibold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(Color.brandPrimary)
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                                .shadow(
-                                    color: Color.brandPrimary.opacity(0.3),
-                                    radius: 10, x: 0, y: 5
-                                )
+                            PrimaryButtonLabel(title: "로그인하기")
                         }
 
                         NavigationLink(destination: SignUpView()) {
-                            Text("계정이 없어요, 가입하기")
-                                .font(.system(size: 15, weight: .medium))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(Color.brandPrimary.opacity(0.08))
-                                .foregroundStyle(Color.brandPrimary)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .stroke(Color.brandPrimary.opacity(0.25), lineWidth: 1)
-                                )
+                            SecondaryButtonLabel(title: "계정이 없어요, 가입하기")
                         }
                     }
                     .padding(.horizontal, 28)

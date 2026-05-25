@@ -95,26 +95,13 @@ struct SignUpView: View {
                     }
                     .padding(.horizontal, 4)
 
-                    Button {
+                    PrimaryButton(
+                        "가입하기",
+                        isEnabled: canSubmit,
+                        isLoading: viewModel.isLoading
+                    ) {
                         Task { await viewModel.register(apiClient: container.apiClient, authState: authState) }
-                    } label: {
-                        Group {
-                            if viewModel.isLoading {
-                                ProgressView().tint(.white)
-                            } else {
-                                Text("가입하기")
-                                    .font(.system(size: 17, weight: .semibold))
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(canSubmit ? Color.brandPrimary : Color.brandPrimary.opacity(0.4))
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .shadow(color: Color.brandPrimary.opacity(canSubmit ? 0.3 : 0), radius: 10, x: 0, y: 5)
                     }
-                    .disabled(!canSubmit)
-                    .animation(.easeInOut(duration: 0.2), value: canSubmit)
                 }
                 .padding(.horizontal, 28)
                 .padding(.bottom, 48)
