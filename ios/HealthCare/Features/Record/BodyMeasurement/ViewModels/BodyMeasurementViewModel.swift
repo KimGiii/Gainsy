@@ -1,5 +1,11 @@
 import Foundation
 
+extension Notification.Name {
+    /// 신체 측정 기록의 생성/수정/삭제가 일어난 직후 발행.
+    /// 마이페이지 등 사용자 프로필을 표시하는 화면이 최신 weightKg를 다시 가져오도록 함.
+    static let bodyMeasurementDidChange = Notification.Name("com.healthcare.bodyMeasurementDidChange")
+}
+
 @MainActor
 final class BodyMeasurementViewModel: ObservableObject {
     @Published var measurements: [MeasurementResponse] = []
@@ -107,11 +113,14 @@ final class BodyMeasurementViewModel: ObservableObject {
                 latestMeasurement = measurements.first
             }
             await loadTrendData(apiClient: apiClient)
+            NotificationCenter.default.post(name: .bodyMeasurementDidChange, object: nil)
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 
+    /// AddMeasurement에서 측정을 추가한 직후 호출되는 콜백.
+    /// `bodyMeasurementDidChange` 알림은 AddMeasurementViewModel이 직접 발행하므로 여기서는 발행하지 않음(중복 방지).
     func measurementAdded(apiClient: APIClient) async {
         await load(apiClient: apiClient)
     }
