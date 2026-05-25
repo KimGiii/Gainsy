@@ -8,6 +8,7 @@ import com.healthcare.domain.bodymeasurement.repository.BodyMeasurementRepositor
 import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class BodyMeasurementService {
     // ─────────────────────────── 측정 기록 생성 ───────────────────────────
 
     @Transactional
+    @CacheEvict(cacheNames = "userProfile", key = "#userId")
     public MeasurementResponse createMeasurement(Long userId, CreateMeasurementRequest request) {
         BodyMeasurement measurement = BodyMeasurement.builder()
                 .userId(userId)
@@ -86,6 +88,7 @@ public class BodyMeasurementService {
     // ─────────────────────────── 측정 기록 수정 ───────────────────────────
 
     @Transactional
+    @CacheEvict(cacheNames = "userProfile", key = "#userId")
     public MeasurementResponse updateMeasurement(Long userId, Long measurementId, UpdateMeasurementRequest request) {
         BodyMeasurement measurement = findAndVerifyOwnership(userId, measurementId);
         measurement.update(
@@ -101,6 +104,7 @@ public class BodyMeasurementService {
     // ─────────────────────────── 측정 기록 삭제 (soft delete) ───────────────────────────
 
     @Transactional
+    @CacheEvict(cacheNames = "userProfile", key = "#userId")
     public void deleteMeasurement(Long userId, Long measurementId) {
         BodyMeasurement measurement = findAndVerifyOwnership(userId, measurementId);
         measurement.delete();
