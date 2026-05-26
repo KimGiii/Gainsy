@@ -125,6 +125,19 @@ extension Font {
         return Font(uiFont)
     }()
 
+    // Label — 폼 필드 라벨, 토글 라벨, 마이크로 헤더 (13/semibold, Dynamic Type)
+    static let labelSmall: Font = {
+        let uiFont = UIFont.scaled(size: 13, weight: .semibold, relativeTo: .footnote)
+        return Font(uiFont)
+    }()
+
+    // Brand wordmark — 앱 이름/로고 옆 워드마크 (32/bold rounded, Dynamic Type)
+    // 브랜드 표현 전용. 일반 헤딩에는 displayMedium / headingLarge 사용.
+    static let brandWordmark: Font = {
+        let uiFont = UIFont.scaled(size: 32, weight: .bold, design: .rounded, relativeTo: .largeTitle)
+        return Font(uiFont)
+    }()
+
     // Data
     static let dataSmall: Font = {
         let uiFont = UIFont.scaled(size: 12, weight: .medium, design: .monospaced, relativeTo: .caption1)

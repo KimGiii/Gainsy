@@ -32,11 +32,11 @@ struct OnboardingView: View {
                     // Copy
                     VStack(spacing: 10) {
                         Text("Gainsy")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .font(.brandWordmark)
                             .foregroundStyle(Color.brandPrimary)
 
                         Text("운동·식단·신체변화를 하나로\n매일 기록하고 꾸준히 성장하세요")
-                            .font(.system(size: 15))
+                            .font(.bodyMedium)
                             .foregroundStyle(Color.textSecondary)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)

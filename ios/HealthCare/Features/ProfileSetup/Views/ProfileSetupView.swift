@@ -109,17 +109,17 @@ private struct StepOneView: View {
                 // Title
                 VStack(alignment: .leading, spacing: 6) {
                     Text("신체 정보를 알려주세요")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
                     Text("맞춤형 목표 설정에 사용됩니다")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
 
                 // Sex
                 VStack(alignment: .leading, spacing: 12) {
                     Text("성별")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                         .foregroundStyle(Color.textSecondary)
 
                     HStack(spacing: 10) {
@@ -137,7 +137,7 @@ private struct StepOneView: View {
                 // Height & Weight
                 VStack(alignment: .leading, spacing: 12) {
                     Text("키 / 몸무게")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                         .foregroundStyle(Color.textSecondary)
 
                     HStack(spacing: 12) {
@@ -170,10 +170,10 @@ private struct StepTwoView: View {
             VStack(alignment: .leading, spacing: 32) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("평소 활동 수준은?")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
                     Text("칼로리 목표 계산에 반영됩니다")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
 
@@ -227,10 +227,10 @@ private struct SexCard: View {
         Button(action: action) {
             VStack(spacing: 8) {
                 Image(systemName: option.icon)
-                    .font(.system(size: 22))
+                    .font(.system(size: 22)) // design-lint:ignore — SF Symbol size
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                 Text(option.label)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.labelSmall)
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
             }
             .frame(maxWidth: .infinity)
@@ -256,11 +256,12 @@ private struct MeasurementField: View {
     var body: some View {
         HStack(spacing: 4) {
             TextField(placeholder, text: $text)
-                .font(.system(size: 17, weight: .medium))
+                .font(.bodyLarge)
+                .fontWeight(.medium)
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.trailing)
             Text(unit)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 16)
@@ -323,16 +324,16 @@ private struct ActivityCard: View {
         Button(action: action) {
             HStack(spacing: 16) {
                 Image(systemName: option.icon)
-                    .font(.system(size: 22))
+                    .font(.system(size: 22)) // design-lint:ignore — SF Symbol size
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     .frame(width: 28)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(option.title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.headingSmall)
                         .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     Text(option.description)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(isSelected ? .white.opacity(0.8) : Color.textSecondary)
                 }
 

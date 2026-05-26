@@ -16,11 +16,11 @@ struct LoginView: View {
                         .padding(.bottom, 4)
 
                     Text("다시 만나서 반가워요")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
 
-                    Text("계속하려면 로그인해주세요")
-                        .font(.system(size: 14))
+                    Text("계속하려면 로그인해 주세요")
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.top, 40)
@@ -86,7 +86,7 @@ struct StyledTextField: View {
                 .frame(width: 20)
 
             TextField(placeholder, text: $text)
-                .font(.system(size: 15))
+                .font(.bodyMedium)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -114,10 +114,10 @@ struct StyledSecureField: View {
 
             if isVisible {
                 TextField(placeholder, text: $text)
-                    .font(.system(size: 15))
+                    .font(.bodyMedium)
             } else {
                 SecureField(placeholder, text: $text)
-                    .font(.system(size: 15))
+                    .font(.bodyMedium)
             }
 
             Button {

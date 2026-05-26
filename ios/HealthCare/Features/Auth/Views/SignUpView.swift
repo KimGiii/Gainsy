@@ -25,12 +25,12 @@ struct SignUpView: View {
                     BrandLogoView(size: 72, color: Color.brandPrimary)
                         .padding(.bottom, 4)
 
-                    Text("함께 시작해봐요")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                    Text("함께 시작해 봐요")
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
 
                     Text("건강한 습관의 첫 걸음")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.top, 36)
@@ -119,23 +119,24 @@ struct SignUpView: View {
                 isChecked.wrappedValue.toggle()
             } label: {
                 Image(systemName: isChecked.wrappedValue ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22))
+                    .font(.system(size: 22)) // design-lint:ignore — SF Symbol size
                     .foregroundStyle(isChecked.wrappedValue ? Color.brandPrimary : Color.textSecondary.opacity(0.5))
                     .animation(.easeInOut(duration: 0.15), value: isChecked.wrappedValue)
             }
 
             HStack(spacing: 4) {
                 Text("(필수)")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.captionBold)
                     .foregroundStyle(Color.brandDanger)
 
                 Link(label, destination: url)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.bodySmall)
+                    .fontWeight(.medium)
                     .foregroundStyle(Color.brandPrimary)
                     .underline()
 
                 Text("에 동의합니다")
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textPrimary)
             }
 
