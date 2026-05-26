@@ -62,7 +62,7 @@ struct DietLogDetailView: View {
         .overlay(alignment: .topLeading) {
             Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.cta)
                     .foregroundColor(.white)
                     .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                     .background(Color.black.opacity(0.25))
@@ -77,7 +77,7 @@ struct DietLogDetailView: View {
                     showingEdit = true
                 } label: {
                     Image(systemName: "pencil")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.cta)
                         .foregroundColor(.white)
                         .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                         .background(Color.black.opacity(0.25))
@@ -111,7 +111,7 @@ struct DietLogDetailView: View {
                     showingSources = true
                 } label: {
                     Image(systemName: "info.circle")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
                 .accessibilityLabel("영양 정보 출처 보기")
@@ -203,7 +203,7 @@ private struct DietDetailHeader: View {
 
             VStack(spacing: 6) {
                 Text(detail.mealType.emoji)
-                    .font(.system(size: 44))
+                    .font(.system(size: 44)) // design-lint:ignore — SF Symbol/hero
                 Text(detail.mealType.displayName)
                     .font(.title2.bold())
                     .foregroundColor(.white)

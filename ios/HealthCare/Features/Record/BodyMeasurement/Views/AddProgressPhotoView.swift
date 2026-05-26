@@ -71,7 +71,7 @@ struct AddProgressPhotoView: View {
     private var typeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("포즈")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(Color.textSecondary)
                 .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
@@ -82,9 +82,9 @@ struct AddProgressPhotoView: View {
                     } label: {
                         VStack(spacing: 4) {
                             Image(systemName: type.icon)
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.bodyLarge).fontWeight(.medium)
                             Text(type.label)
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.captionXSmall).fontWeight(.semibold)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
@@ -110,7 +110,7 @@ struct AddProgressPhotoView: View {
     private var metaSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("신체 정보 (선택)")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(Color.textSecondary)
                 .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
@@ -126,7 +126,7 @@ struct AddProgressPhotoView: View {
                         .frame(width: 56, alignment: .leading)
                     TextField("특이사항 (선택)", text: $notes, axis: .vertical)
                         .lineLimit(1...3)
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textPrimary)
                 }
                 .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
@@ -149,7 +149,7 @@ struct AddProgressPhotoView: View {
                 TextField("0.0", text: text)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
                     .frame(width: 70)
                 Text(unit)
@@ -218,20 +218,20 @@ struct AddProgressPhotoView: View {
                                 .tint(.white)
                                 .frame(width: 160)
                             Text("업로드 중 \(Int(viewModel.uploadProgress * 100))%")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.bodySmall).fontWeight(.medium)
                                 .foregroundStyle(.white.opacity(0.85))
                         }
                     } else if isRetryState {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(.headingSmall)
                             Text("다시 시도")
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.bodyLarge).fontWeight(.semibold)
                         }
                         .foregroundStyle(.white)
                     } else {
                         Text("저장하기")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.bodyLarge).fontWeight(.semibold)
                             .foregroundStyle(.white)
                     }
                 }
@@ -254,11 +254,11 @@ struct AddProgressPhotoView: View {
     private var uploadFailureBanner: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.bodyMedium).fontWeight(.semibold)
                 .foregroundStyle(Color.brandDanger)
                 .padding(.top, 1) // design-lint:ignore — micro/hero spacing
             Text(viewModel.uploadFailureMessage)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
@@ -303,7 +303,7 @@ private struct PhotoPickerSection: View {
                                 .fill(Color.surfaceCard)
                                 .frame(width: 64, height: 64)
                             Image(systemName: "camera.fill")
-                                .font(.system(size: 24, weight: .semibold))
+                                .font(.system(size: 24, weight: .semibold)) // design-lint:ignore — SF Symbol/hero
                                 .foregroundStyle(Color.brandSecondary)
                         }
                         VStack(spacing: 4) {

@@ -533,7 +533,7 @@ struct FoodSearchSheet: View {
         VStack(spacing: 12) {
             Spacer()
             Image(systemName: "fork.knife.circle")
-                .font(.system(size: 48))
+                .font(.system(size: 48)) // design-lint:ignore — SF Symbol/hero
                 .foregroundColor(.secondary.opacity(0.5))
             Text(message)
                 .font(.subheadline)

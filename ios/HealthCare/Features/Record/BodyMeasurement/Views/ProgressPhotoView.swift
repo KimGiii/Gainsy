@@ -32,7 +32,7 @@ struct ProgressPhotoView: View {
                         }
                     } label: {
                         Text(viewModel.isCompareMode ? "취소" : "비교")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.bodyMedium).fontWeight(.medium)
                             .foregroundStyle(viewModel.isCompareMode ? Color.textSecondary : Color.brandPrimary)
                     }
                 }
@@ -43,7 +43,7 @@ struct ProgressPhotoView: View {
                         showAddSheet = true
                     } label: {
                         Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.bodyLarge).fontWeight(.semibold)
                             .foregroundStyle(Color.brandPrimary)
                     }
                 }
@@ -118,10 +118,10 @@ struct ProgressPhotoView: View {
                     } label: {
                         HStack(spacing: 6) {
                             Text(type.label)
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.labelSmall)
                             if count > 0 {
                                 Text("\(count)")
-                                    .font(.system(size: 11, weight: .heavy, design: .rounded))
+                                    .font(.system(size: 11, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol/hero
                                     .padding(.horizontal, 5) // design-lint:ignore — micro/hero spacing
                                     .padding(.vertical, 1) // design-lint:ignore — micro/hero spacing
                                     .background(
@@ -169,16 +169,16 @@ struct ProgressPhotoView: View {
         HStack(spacing: 12) {
             Image(systemName: "square.split.2x1")
                 .foregroundStyle(Color.brandPrimary)
-                .font(.system(size: 15))
+                .font(.bodyMedium)
             Text(compareBarLabel)
-                .font(.system(size: 14, weight: .medium))
+                .font(.bodyMedium).fontWeight(.medium)
                 .foregroundStyle(Color.textPrimary)
             Spacer()
             Button {
                 showCompareSheet = true
             } label: {
                 Text("비교 보기")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
                     .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
@@ -296,7 +296,7 @@ private struct PhotoGridCell: View {
                 VStack(alignment: .leading, spacing: 2) {
                     if photo.isBaseline {
                         Text("기준")
-                            .font(.system(size: 9, weight: .heavy))
+                            .font(.system(size: 9, weight: .heavy)) // design-lint:ignore — SF Symbol/hero
                             .foregroundStyle(Color.textHeadline)
                             .padding(.horizontal, 5) // design-lint:ignore — micro/hero spacing
                             .padding(.vertical, 2) // design-lint:ignore — micro/hero spacing
@@ -304,7 +304,7 @@ private struct PhotoGridCell: View {
                             .clipShape(Capsule())
                     }
                     Text(photo.displayDate)
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.captionXSmall).fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
                 }
@@ -320,7 +320,7 @@ private struct PhotoGridCell: View {
                     ZStack(alignment: .topTrailing) {
                         Color.black.opacity(isSelected ? 0 : 0.25)
                         Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                            .font(.system(size: 22, weight: .semibold))
+                            .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol/hero
                             .foregroundStyle(isSelected ? Color.brandPrimary : .white)
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                             .padding(Spacing.sm) // design-lint:ignore — micro/hero spacing
@@ -394,7 +394,7 @@ private struct PhotoDetailView: View {
                         showDeleteConfirm = true
                     } label: {
                         Label("사진 삭제", systemImage: "trash")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.bodyMedium).fontWeight(.medium)
                             .foregroundStyle(Color.red)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
@@ -489,11 +489,11 @@ struct PhotoCompareView: View {
 
             VStack(spacing: 4) {
                 Text(photo.displayDate)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.labelSmall)
                     .foregroundStyle(.white)
                 if let w = photo.bodyWeightKg {
                     Text(String(format: "%.1f kg", w))
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.white.opacity(0.7))
                 }
             }

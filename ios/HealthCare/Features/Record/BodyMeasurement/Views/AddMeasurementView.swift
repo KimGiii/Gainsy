@@ -53,7 +53,7 @@ struct AddMeasurementView: View {
             showSources = true
         } label: {
             Label("BMI 계산식 및 분류 기준 출처 보기 (WHO·대한비만학회)", systemImage: "info.circle")
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundStyle(Color.brandPrimary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -169,7 +169,7 @@ struct AddMeasurementView: View {
         FormCard(title: "메모") {
             TextField("특이사항이나 컨디션을 기록하세요 (선택)", text: $viewModel.notes, axis: .vertical)
                 .lineLimit(3...5)
-                .font(.system(size: 14))
+                .font(.bodyMedium)
                 .foregroundStyle(Color.textPrimary)
         }
     }
@@ -185,7 +185,7 @@ struct AddMeasurementView: View {
                     ProgressView().tint(.white)
                 } else {
                     Text("저장하기")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.bodyLarge).fontWeight(.semibold)
                         .foregroundStyle(.white)
                 }
             }
@@ -208,7 +208,7 @@ private struct FormCard<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(Color.textSecondary)
                 .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
             VStack(alignment: .leading, spacing: 0) {
@@ -228,7 +228,7 @@ private struct AutoCalculatedBMIRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "heart.fill")
-                .font(.system(size: 15, weight: .medium))
+                .font(.bodyMedium).fontWeight(.medium)
                 .foregroundStyle(Color(hex: "#EA580C"))
                 .frame(width: 32, height: 32)
                 .background(Color(hex: "#EA580C").opacity(0.1))
@@ -236,17 +236,17 @@ private struct AutoCalculatedBMIRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("BMI")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.bodyMedium).fontWeight(.medium)
                     .foregroundStyle(Color.textPrimary)
                 Text("키 기반 자동 계산")
-                    .font(.system(size: 11))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
 
             Text(bmi.isEmpty ? "-" : bmi)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(bmi.isEmpty ? Color.textSecondary : Color.textPrimary)
         }
         .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
@@ -263,14 +263,14 @@ private struct MeasurementField: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 15, weight: .medium))
+                .font(.bodyMedium).fontWeight(.medium)
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
                 .background(iconColor.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
             Text(label)
-                .font(.system(size: 14, weight: .medium))
+                .font(.bodyMedium).fontWeight(.medium)
                 .foregroundStyle(Color.textPrimary)
 
             Spacer()
@@ -279,13 +279,13 @@ private struct MeasurementField: View {
                 TextField("0.0", text: $text)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
                     .frame(width: 70)
 
                 if !unit.isEmpty {
                     Text(unit)
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }

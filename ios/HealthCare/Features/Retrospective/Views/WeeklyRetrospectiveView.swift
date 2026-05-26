@@ -56,7 +56,7 @@ private struct WeekNavigationBar: View {
         HStack {
             Button(action: onPrev) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.brandPrimary)
                     .frame(width: 36, height: 36)
                     .background(Color.surfaceCard)
@@ -64,12 +64,12 @@ private struct WeekNavigationBar: View {
             }
             Spacer()
             Text(weekRange)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(Color.textPrimary)
             Spacer()
             Button(action: onNext) {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(canGoNext ? Color.brandPrimary : Color.textSecondary)
                     .frame(width: 36, height: 36)
                     .background(Color.surfaceCard)
@@ -267,10 +267,10 @@ private struct InsightCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(color)
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
             }
             content()
@@ -291,10 +291,10 @@ private struct InsightStat: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(.numeralMedium).fontWeight(.bold)
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)

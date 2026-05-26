@@ -54,7 +54,7 @@ struct AddGoalView: View {
                                 }
                             }
                         }
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.headingSmall)
                         .foregroundStyle(viewModel.isValid ? Color.brandPrimary : Color.textSecondary)
                         .disabled(!viewModel.isValid)
                     }
@@ -97,7 +97,7 @@ private struct GoalTypeCard: View {
         Button(action: onTap) {
             VStack(spacing: 10) {
                 Image(systemName: type.icon)
-                    .font(.system(size: 22))
+                    .font(.headingLarge)
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     .frame(width: 52, height: 52)
                     .background(
@@ -106,7 +106,8 @@ private struct GoalTypeCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
 
                 Text(type.displayName)
-                    .font(.system(size: 12, weight: isSelected ? .bold : .regular))
+                    .font(.caption)
+                    .fontWeight(isSelected ? .bold : .regular)
                     .foregroundStyle(isSelected ? Color.brandPrimary : Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -149,7 +150,7 @@ private struct TargetValueSection: View {
                     )
 
                     Text("비워두면 가장 최근 신체 측정 기록으로 자동 채워집니다.")
-                        .font(.system(size: 11))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -215,7 +216,7 @@ private struct SectionLabel: View {
 
     var body: some View {
         Text(title)
-            .font(.system(size: 15, weight: .semibold))
+            .font(.headingSmall)
             .foregroundStyle(Color.textPrimary)
     }
 }
@@ -246,17 +247,17 @@ private struct NumericField: View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
                 Text(label)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
                 TextField(placeholder, text: $text)
                     .keyboardType(.decimalPad)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
             }
             Spacer()
             if !unit.isEmpty {
                 Text(unit)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.bodyMedium).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
                     .padding(.horizontal, Spacing.md) // design-lint:ignore — micro/hero spacing
                     .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
@@ -274,7 +275,7 @@ private struct PresetChip: View {
     var body: some View {
         Button(action: onTap) {
             Text(label)
-                .font(.system(size: 13, weight: .medium))
+                .font(.bodySmall).fontWeight(.medium)
                 .foregroundStyle(Color.brandPrimary)
                 .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .padding(.vertical, 7) // design-lint:ignore — micro/hero spacing
@@ -293,7 +294,7 @@ private struct ErrorBanner: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(Color.brandDanger)
             Text(message)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.brandDanger)
         }
         .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing

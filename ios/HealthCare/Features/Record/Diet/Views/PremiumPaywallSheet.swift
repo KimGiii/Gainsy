@@ -35,7 +35,7 @@ struct PremiumPaywallSheet: View {
                     .fill(Color.brandPrimary.opacity(0.12))
                     .frame(width: 88, height: 88)
                 Image(systemName: "sparkles")
-                    .font(.system(size: 38, weight: .semibold))
+                    .font(.system(size: 38, weight: .semibold)) // design-lint:ignore — SF Symbol/hero
                     .foregroundColor(Color.brandPrimary)
             }
             Text("Gainsy PRO")

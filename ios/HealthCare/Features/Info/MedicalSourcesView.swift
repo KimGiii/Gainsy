@@ -89,11 +89,11 @@ struct MedicalSourcesView: View {
                 Image(systemName: "book.closed.fill")
                     .foregroundStyle(Color.brandPrimary)
                 Text("정보 출처 안내")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
             }
             Text("본 앱이 제공하는 BMI, 영양 정보, 운동 권장량 등의 의학·건강 정보는 아래 공인 기관 자료를 근거로 합니다. 각 항목의 링크를 통해 원본 출처를 확인하실 수 있습니다.")
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(3)
         }
@@ -110,11 +110,11 @@ struct MedicalSourcesView: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(Color(hex: "#D97706"))
                 Text("의료 면책 고지")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
             }
             Text("본 앱이 제공하는 정보는 일반적인 건강 관리 참고용이며, 의학적 진단·치료·처방을 대체하지 않습니다. 건강 관련 결정은 반드시 의료 전문가와 상의하시기 바랍니다.")
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(3)
         }
@@ -127,10 +127,10 @@ struct MedicalSourcesView: View {
     private func sourceSection(title: String, body: String, sources: [SourceLink]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(Color.textPrimary)
             Text(body)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
@@ -140,9 +140,9 @@ struct MedicalSourcesView: View {
                         Link(destination: url) {
                             HStack(spacing: 6) {
                                 Image(systemName: "link")
-                                    .font(.system(size: 11))
+                                    .font(.captionXSmall)
                                 Text(source.label)
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(.bodySmall).fontWeight(.medium)
                                     .underline()
                                 Spacer(minLength: 0)
                             }

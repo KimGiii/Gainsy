@@ -170,7 +170,7 @@ struct DietRecordView: View {
             viewModel.showAddLog = true
         } label: {
             Image(systemName: "plus")
-                .font(.system(size: 22, weight: .bold))
+                .font(.headingLarge)
                 .foregroundColor(.white)
                 .frame(width: 56, height: 56)
                 .background(Color.brandPrimary)
@@ -210,7 +210,7 @@ private struct DietHeroSection: View {
                 HStack {
                     Button(action: onDismiss) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundColor(.white)
                             .padding(Spacing.sm) // design-lint:ignore — micro/hero spacing
                             .background(Color.white.opacity(0.2))
@@ -233,7 +233,7 @@ private struct DietHeroSection: View {
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
                     Text(String(format: "%.0f kcal", viewModel.todayCalories))
-                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                        .font(.system(size: 40, weight: .bold, design: .rounded)) // design-lint:ignore — SF Symbol/hero
                         .foregroundColor(.white)
                     Text("오늘 섭취 칼로리")
                         .font(.caption)
