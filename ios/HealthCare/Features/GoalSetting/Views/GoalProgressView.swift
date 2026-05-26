@@ -518,18 +518,10 @@ private struct CheckpointRow: View {
 
 private struct EmptyProgressState: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 40))
-                .foregroundStyle(Color.textSecondary.opacity(0.5))
-            Text("진행률 데이터 없음")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color.textSecondary)
-            Text("신체 측정 기록을 추가하면\n목표 진행률을 확인할 수 있어요.")
-                .font(.system(size: 13))
-                .foregroundStyle(Color.textSecondary.opacity(0.7))
-                .multilineTextAlignment(.center)
-                .lineSpacing(4)
-        }
+        EmptyState(
+            icon: "chart.line.uptrend.xyaxis",
+            title: "진행률 데이터가 아직 없어요",
+            message: "신체 측정 기록을 추가하면\n목표 진행률을 확인할 수 있어요"
+        )
     }
 }

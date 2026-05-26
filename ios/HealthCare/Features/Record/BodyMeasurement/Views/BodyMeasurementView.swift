@@ -188,14 +188,16 @@ private struct HeroStatItem: View {
     }
 }
 
+// 다크 hero 배경 안에 표시되는 빈 상태이므로 EmptyState(라이트 배경 전제) 대신
+// 인라인 유지 + 카피만 통일 (docs/COPY.md §4).
 private struct HeroEmptyState: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: "scalemass.fill")
-                .font(.system(size: 30, weight: .semibold))
+                .font(.system(size: 30, weight: .semibold)) // design-lint:ignore — SF Symbol size
                 .foregroundStyle(.white.opacity(0.5))
-            Text("측정 기록이 없습니다")
-                .font(.system(size: 13))
+            Text("측정 기록이 아직 없어요")
+                .font(.bodySmall)
                 .foregroundStyle(.white.opacity(0.65))
         }
         .padding(.bottom, 16)

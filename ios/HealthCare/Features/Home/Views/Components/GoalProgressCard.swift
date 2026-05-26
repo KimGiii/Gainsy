@@ -105,11 +105,11 @@ private struct EmptyGoalContent: View {
             }
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
-                Text("목표 없음")
-                    .font(.system(size: 15, weight: .bold))
+                Text("목표가 아직 없어요")
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textHeadline)
-                Text("목표를 세우고 여정을 시작하세요")
-                    .font(.system(size: 12))
+                Text("목표를 세우고 기록을 시작해 보세요")
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
             Spacer()

@@ -248,39 +248,14 @@ struct ProgressPhotoView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            ZStack {
-                Circle()
-                    .fill(Color.surfaceCard)
-                    .frame(width: 96, height: 96)
-                Image(systemName: "camera")
-                    .font(.system(size: 36, weight: .light))
-                    .foregroundStyle(Color.brandSecondary)
-            }
-            VStack(spacing: 8) {
-                Text("아직 사진이 없어요")
-                    .font(.headingMedium)
-                    .foregroundStyle(Color.textPrimary)
-                Text("+ 버튼으로 \(viewModel.selectedType.label) 사진을 추가하세요")
-                    .font(.bodyMedium)
-                    .foregroundStyle(Color.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-            Button {
+        EmptyState(
+            icon: "camera",
+            title: "진행 사진이 아직 없어요",
+            message: "\(viewModel.selectedType.label) 사진을 추가해\n변화를 시각적으로 확인해 보세요",
+            action: .init(label: "사진 추가하기") {
                 showAddSheet = true
-            } label: {
-                Text("사진 추가")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 28)
-                    .padding(.vertical, 13)
-                    .background(Color.brandPrimary)
-                    .clipShape(Capsule())
             }
-            Spacer()
-        }
-        .padding(.horizontal, 40)
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

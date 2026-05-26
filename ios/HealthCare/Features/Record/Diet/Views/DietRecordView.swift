@@ -153,32 +153,14 @@ struct DietRecordView: View {
     // MARK: - 빈 상태
 
     private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "fork.knife.circle")
-                .font(.system(size: 56))
-                .foregroundColor(.brandAccent.opacity(0.6))
-                .padding(.top, 40)
-            Text("아직 식단 기록이 없어요")
-                .font(.headline)
-                .foregroundColor(Color.textHeadline)
-            Text("오늘 먹은 음식을 기록해보세요.\n영양 목표 달성을 도와드립니다.")
-                .font(.subheadline)
-                .foregroundColor(Color.textSecondary)
-                .multilineTextAlignment(.center)
-            Button {
+        EmptyState(
+            icon: "fork.knife.circle",
+            title: "오늘 식단 기록이 아직 없어요",
+            message: "오늘 먹은 음식을 기록해 보세요\n영양 목표 달성을 도와드려요",
+            action: .init(label: "첫 식사 기록하기") {
                 viewModel.showAddLog = true
-            } label: {
-                Label("첫 식사 기록하기", systemImage: "plus")
-                    .font(.subheadline.bold())
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.brandPrimary)
-                    .clipShape(Capsule())
             }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.bottom, 40)
+        )
     }
 
     // MARK: - FAB

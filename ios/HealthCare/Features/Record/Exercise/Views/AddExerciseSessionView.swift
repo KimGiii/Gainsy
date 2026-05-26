@@ -610,12 +610,10 @@ struct ExerciseCatalogPickerView: View {
 
     private var emptySearchResult: some View {
         VStack(spacing: 14) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 44))
-                .foregroundStyle(Color.textSecondary.opacity(0.6))
-            Text("'\(viewModel.catalogQuery)'에 대한 결과 없음")
-                .font(.system(size: 15))
-                .foregroundStyle(Color.textSecondary)
+            EmptyState(
+                icon: "magnifyingglass",
+                title: "'\(viewModel.catalogQuery)'에 대한 결과가 없어요"
+            )
 
             // Codex 작업: 검색 결과가 없을 때 AI 운동 추정 플로우를 화면에 연결합니다.
             if let estimate = viewModel.aiEstimateResult {

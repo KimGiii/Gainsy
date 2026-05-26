@@ -229,14 +229,16 @@ private struct DaysRemainingBadge: View {
     }
 }
 
+// 다크 hero 배경 안에 표시되는 빈 상태이므로 EmptyState(라이트 배경 전제) 대신
+// 인라인 유지 + 카피만 통일 (docs/COPY.md §4).
 private struct NoGoalPlaceholder: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "target")
-                .font(.system(size: 34))
+                .font(.system(size: 34)) // design-lint:ignore — SF Symbol size
                 .foregroundStyle(.white.opacity(0.45))
-            Text("설정된 목표가 없습니다")
-                .font(.system(size: 14, weight: .medium))
+            Text("목표가 아직 없어요")
+                .font(.bodyMedium)
                 .foregroundStyle(.white.opacity(0.65))
         }
         .frame(height: 110)

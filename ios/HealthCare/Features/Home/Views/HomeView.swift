@@ -271,13 +271,15 @@ private struct EmptyMealCard: View {
                     .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .stroke(Color.textHeadline.opacity(0.08), style: StrokeStyle(lineWidth: 1, dash: [4])))
                 VStack(spacing: 8) {
-                    Text("🌱").font(.system(size: 30)).opacity(0.5)
-                    Text("아직 기록 없음").font(.system(size: 11, weight: .medium)).foregroundStyle(Color.textTertiary)
+                    Image(systemName: "fork.knife")
+                        .font(.system(size: 28, weight: .light)) // design-lint:ignore — SF Symbol size
+                        .foregroundStyle(Color.textTertiary.opacity(0.6))
+                    Text("기록이 아직 없어요").font(.caption).foregroundStyle(Color.textTertiary)
                 }
             }
             .frame(width: 140, height: 114)
-            Text("첫 식사를 기록하세요")
-                .font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.textSecondary)
+            Text("첫 식사를 기록해 보세요")
+                .font(.captionBold).foregroundStyle(Color.textSecondary)
                 .frame(width: 140, alignment: .leading).padding(.top, 9)
         }
     }

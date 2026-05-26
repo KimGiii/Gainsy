@@ -303,14 +303,9 @@ private struct InsightStat: View {
 
 private struct WeeklyEmptyState: View {
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "chart.bar.doc.horizontal")
-                .font(.system(size: 48))
-                .foregroundStyle(Color.textSecondary.opacity(0.5))
-            Text("이 주에는 기록이 없어요")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(Color.textSecondary)
-        }
-        .padding(.top, 60)
+        EmptyState(
+            icon: "chart.bar.doc.horizontal",
+            title: "이 주에는 기록이 아직 없어요"
+        )
     }
 }
