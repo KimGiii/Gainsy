@@ -1,5 +1,5 @@
 import SwiftUI
-import PhotosUI
+@preconcurrency import PhotosUI
 
 @MainActor
 struct AddProgressPhotoView: View {
@@ -63,42 +63,7 @@ struct AddProgressPhotoView: View {
     // MARK: - Photo Picker
 
     private var photoPickerSection: some View {
-        PhotosPicker(selection: $selectedItem, matching: .images) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.surfacePrimary)
-                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
-                    .frame(height: 240)
-
-                if let img = selectedImage {
-                    Image(uiImage: img)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 240)
-                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                } else {
-                    VStack(spacing: 14) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.surfaceCard)
-                                .frame(width: 64, height: 64)
-                            Image(systemName: "camera.fill")
-                                .font(.system(size: 24, weight: .semibold))
-                                .foregroundStyle(Color.brandSecondary)
-                        }
-                        VStack(spacing: 4) {
-                            Text("사진 선택")
-                                .font(.headingSmall)
-                                .foregroundStyle(Color.textPrimary)
-                            Text("갤러리에서 가져오기")
-                                .font(.bodySmall)
-                                .foregroundStyle(Color.textTertiary)
-                        }
-                    }
-                }
-            }
-        }
+        PhotoPickerSection(selectedItem: $selectedItem, selectedImage: selectedImage)
     }
 
     // MARK: - Type Selector
@@ -303,5 +268,55 @@ struct AddProgressPhotoView: View {
         .background(Color.brandDanger.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .transition(.opacity.combined(with: .move(edge: .bottom)))
+    }
+}
+
+// MARK: - Photo Picker Section
+//
+// PhotosPicker의 label 클로저가 Swift 6 strict concurrency에서 nonisolated로
+// 추론되는 문제를 피하기 위해 별도 @MainActor View로 분리.
+
+@MainActor
+private struct PhotoPickerSection: View {
+    @Binding var selectedItem: PhotosPickerItem?
+    let selectedImage: UIImage?
+
+    var body: some View {
+        PhotosPicker(selection: $selectedItem, matching: .images) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(Color.surfacePrimary)
+                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                    .frame(height: 240)
+
+                if let img = selectedImage {
+                    Image(uiImage: img)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 240)
+                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                } else {
+                    VStack(spacing: 14) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.surfaceCard)
+                                .frame(width: 64, height: 64)
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 24, weight: .semibold))
+                                .foregroundStyle(Color.brandSecondary)
+                        }
+                        VStack(spacing: 4) {
+                            Text("사진 선택")
+                                .font(.headingSmall)
+                                .foregroundStyle(Color.textPrimary)
+                            Text("갤러리에서 가져오기")
+                                .font(.bodySmall)
+                                .foregroundStyle(Color.textTertiary)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
