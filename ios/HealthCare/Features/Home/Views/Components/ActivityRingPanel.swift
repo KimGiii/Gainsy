@@ -111,15 +111,15 @@ struct ActivityRingPanel: View {
     private func summaryChip(icon: String, color: Color, value: String, unit: String) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 11, weight: .bold))
+                .font(.captionXSmall).fontWeight(.bold)
                 .foregroundStyle(color)
                 .accessibilityHidden(true)
             HStack(alignment: .lastTextBaseline, spacing: 3) {
                 Text(value)
-                    .font(.system(size: 15, weight: .heavy, design: .rounded))
+                    .font(.system(size: 15, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
                     .foregroundStyle(Color.textPrimary)
                 Text(unit)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textSecondary)
             }
         }

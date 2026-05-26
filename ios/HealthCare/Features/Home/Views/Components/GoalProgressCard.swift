@@ -48,7 +48,7 @@ private struct ActiveGoalContent: View {
                 Text("GOAL · \(goal.goalType.displayName.uppercased())")
                     .eyebrowStyle()
                 Text("\(goal.goalType.emoji)  \(goal.goalType.displayName)")
-                    .font(.system(size: 17, weight: .bold, design: .serif))
+                    .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textHeadline)
 
                 if let days = goal.daysRemaining {
@@ -58,11 +58,11 @@ private struct ActiveGoalContent: View {
                             .frame(width: 48, height: 20)
                             .overlay(
                                 Text("D-\(days)")
-                                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                                    .font(.system(size: 10, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
                                     .foregroundStyle(Color.surfaceCard)
                             )
                         Text("\(percentText)% 완료")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.caption).fontWeight(.medium)
                             .foregroundStyle(Color.textSecondary)
                     }
                 }
@@ -71,7 +71,7 @@ private struct ActiveGoalContent: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
+                .font(.captionBold).fontWeight(.bold)
                 .foregroundStyle(Color.textHeadline.opacity(0.30))
                 .accessibilityHidden(true)
         }
@@ -100,7 +100,7 @@ private struct EmptyGoalContent: View {
                     .fill(LinearGradient.forestHero)
                     .frame(width: 52, height: 52)
                 Image(systemName: "target")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.headingLarge)
                     .foregroundStyle(Color.brandAccentGlow)
             }
             .accessibilityHidden(true)
@@ -114,7 +114,7 @@ private struct EmptyGoalContent: View {
             }
             Spacer()
             Image(systemName: "plus.circle.fill")
-                .font(.system(size: 24))
+                .font(.system(size: 24)) // design-lint:ignore — SF Symbol or hero numeric
                 .foregroundStyle(Color.brandAccent)
                 .accessibilityHidden(true)
         }

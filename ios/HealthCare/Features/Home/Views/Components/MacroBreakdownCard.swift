@@ -21,7 +21,7 @@ struct MacroBreakdownCard: View {
                     .eyebrowStyle()
                 Spacer()
                 Text("오늘 섭취")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textTertiary)
             }
 
@@ -77,15 +77,15 @@ private struct MacroRow: View {
         VStack(spacing: 5) {
             HStack(alignment: .lastTextBaseline) {
                 Text(label)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.captionBold)
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(String(format: "%.0f", current))
-                        .font(.system(size: 14, weight: .heavy, design: .rounded))
+                        .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
                         .foregroundStyle(Color.textPrimary)
                     Text("/ \(Int(goal))\(unit)")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textTertiary)
                 }
             }

@@ -25,16 +25,16 @@ struct WeeklyTrendCard: View {
                 if let sel = selectedDay {
                     HStack(alignment: .lastTextBaseline, spacing: 2) {
                         Text(String(format: "%.0f", sel.caloriesIn))
-                            .font(.system(size: 14, weight: .heavy, design: .rounded))
+                            .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
                             .foregroundStyle(Color.brandPrimary)
                         Text("kcal")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.captionXSmall)
                             .foregroundStyle(Color.textSecondary)
                     }
                     .transition(.opacity)
                 } else {
                     Text("7일 섭취 추세")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textTertiary)
                 }
             }
@@ -56,7 +56,7 @@ struct WeeklyTrendCard: View {
             .chartXAxis {
                 AxisMarks(values: .automatic) { _ in
                     AxisValueLabel()
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textTertiary)
                 }
             }
@@ -85,10 +85,10 @@ struct WeeklyTrendCard: View {
             if totalBurned > 0 {
                 HStack(spacing: 6) {
                     Image(systemName: "flame.fill")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.captionXSmall).fontWeight(.bold)
                         .foregroundStyle(Color.brandEmber)
                     Text("이번 주 \(Int(totalBurned)) kcal 소모")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }

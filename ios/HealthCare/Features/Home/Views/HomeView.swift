@@ -127,11 +127,11 @@ private struct DashboardHeaderBar: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(dateText)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.captionXSmall).fontWeight(.semibold)
                     .tracking(0.5)
                     .foregroundStyle(Color.textTertiary)
                 Text(greetingText)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.numeralMedium).fontWeight(.bold)
                     .foregroundStyle(Color.textHeadline)
             }
 
@@ -158,7 +158,7 @@ private struct HeaderIconButton: View {
 
     var body: some View {
         Image(systemName: system)
-            .font(.system(size: 14, weight: .semibold))
+            .font(.bodyMedium).fontWeight(.semibold)
             .foregroundStyle(Color.textHeadline.opacity(0.65))
             .frame(width: 38, height: 38)
             .background(
@@ -225,7 +225,7 @@ private struct MealCard: View {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .fill(Color.surfaceCard)
                 Text(log.mealType.emoji)
-                    .font(.system(size: 52))
+                    .font(.system(size: 52)) // design-lint:ignore — SF Symbol or hero numeric
                     .offset(x: 16, y: 14)
                     .rotationEffect(.degrees(-4))
                     .accessibilityHidden(true)
@@ -233,7 +233,7 @@ private struct MealCard: View {
             .frame(width: 140, height: 114)
             .overlay(alignment: .topTrailing) {
                 Text(log.mealType.displayName)
-                    .font(.system(size: 9, weight: .heavy)).tracking(1.0).textCase(.uppercase)
+                    .font(.system(size: 9, weight: .heavy)).tracking(1.0).textCase(.uppercase) // design-lint:ignore — 마이크로 라벨
                     .foregroundStyle(Color.textHeadline)
                     .padding(.horizontal, 7).padding(.vertical, 3)
                     .background(Capsule().fill(Color.surfaceCard))
@@ -243,10 +243,10 @@ private struct MealCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(String(format: "%.0f", log.totalCalories ?? 0))
-                        .font(.system(size: 20, weight: .heavy, design: .rounded))
+                        .font(.numeralMedium).fontWeight(.heavy)
                         .foregroundStyle(Color.textHeadline)
                     Text("kcal")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
                 if let p = log.totalProteinG, let c = log.totalCarbsG {
@@ -292,14 +292,14 @@ private struct AddMealCard: View {
                 RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color.brandDusk)
                 VStack(spacing: 8) {
                     Image(systemName: "plus")
-                        .font(.system(size: 18, weight: .heavy)).foregroundStyle(Color.brandDusk)
+                        .font(.headingMedium).fontWeight(.heavy).foregroundStyle(Color.brandDusk)
                         .frame(width: 38, height: 38).background(Circle().fill(Color.brandAccentGlow))
-                    Text("기록 추가").font(.system(size: 12, weight: .bold)).foregroundStyle(.white)
+                    Text("기록 추가").font(.captionBold).fontWeight(.bold).foregroundStyle(.white)
                 }
             }
             .frame(width: 140, height: 114)
             Text("+ 새 식단")
-                .font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.textHeadline)
+                .font(.captionXSmall).fontWeight(.semibold).foregroundStyle(Color.textHeadline)
                 .frame(width: 140, alignment: .leading).padding(.top, 9)
         }
     }
@@ -359,7 +359,7 @@ private struct WorkoutCompactCard: View {
                         Text("READY")
                             .eyebrowStyle(Color.brandAccentGlow)
                         Text("오늘 운동을 시작해보세요")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.headingSmall).fontWeight(.bold)
                             .foregroundStyle(.white)
                     }
                 }
@@ -369,7 +369,7 @@ private struct WorkoutCompactCard: View {
                 ZStack {
                     Circle().fill(Color.brandAccentGlow).frame(width: 46, height: 46)
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 16, weight: .heavy))
+                        .font(.bodyLarge).fontWeight(.heavy)
                         .foregroundStyle(Color.brandDusk)
                 }
                 .accessibilityHidden(true)
@@ -387,12 +387,12 @@ private struct WorkoutChip: View {
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: icon)
-                .font(.system(size: 9, weight: .bold))
+                .font(.system(size: 9, weight: .bold)) // design-lint:ignore — SF Symbol or hero numeric
                 .foregroundStyle(Color.brandAccentGlow)
                 .accessibilityHidden(true)
             HStack(alignment: .lastTextBaseline, spacing: 3) {
-                Text(value).font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(.white)
-                Text(unit).font(.system(size: 9, weight: .medium)).foregroundStyle(.white.opacity(0.6))
+                Text(value).font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(.white) // design-lint:ignore — 데이터 카운터
+                Text(unit).font(.system(size: 9, weight: .medium)).foregroundStyle(.white.opacity(0.6)) // design-lint:ignore — 단위 라벨
             }
         }
         .padding(.horizontal, 9).padding(.vertical, 5)
@@ -415,7 +415,7 @@ private struct SectionLabel: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(eyebrow).eyebrowStyle(Color.textTertiary)
                 Text(title)
-                    .font(.system(size: 18, weight: .bold, design: .serif))
+                    .font(.headingMedium).fontWeight(.bold)
                     .foregroundStyle(Color.textHeadline)
             }
             Spacer()

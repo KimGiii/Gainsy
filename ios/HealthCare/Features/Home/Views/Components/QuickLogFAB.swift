@@ -43,7 +43,7 @@ struct QuickLogFAB: View {
                         .shadow(color: Color.brandEmber.opacity(0.45), radius: 14, x: 0, y: 6)
 
                     Image(systemName: isExpanded ? "xmark" : "plus")
-                        .font(.system(size: 22, weight: .heavy))
+                        .font(.headingLarge).fontWeight(.heavy)
                         .foregroundStyle(.white)
                         .rotationEffect(.degrees(isExpanded ? 45 : 0))
                         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isExpanded)
@@ -66,7 +66,7 @@ private struct FABMenuItem: View {
         NavigationLink(destination: destination) {
             HStack(spacing: 10) {
                 Text(label)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.labelSmall)
                     .foregroundStyle(Color.textHeadline)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 9)
@@ -81,7 +81,7 @@ private struct FABMenuItem: View {
                         .fill(Color.brandDusk)
                         .frame(width: 40, height: 40)
                     Image(systemName: icon)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.bodyMedium).fontWeight(.bold)
                         .foregroundStyle(Color.brandAccentGlow)
                 }
             }
