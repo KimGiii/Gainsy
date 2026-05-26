@@ -26,7 +26,7 @@ struct AddMeasurementView: View {
                 .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
                 .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("신체 측정 기록")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

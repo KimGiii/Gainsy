@@ -48,7 +48,7 @@ struct BodyMeasurementView: View {
                 }
             }
             .ignoresSafeArea(edges: .top)
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .refreshable {
                 await viewModel.load(apiClient: container.apiClient)
                 viewModel.errorMessage = nil
@@ -63,9 +63,9 @@ struct BodyMeasurementView: View {
                     .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(.white)
                     .frame(width: 58, height: 58)
-                    .background(Color(hex: "#2563EB"))
+                    .background(Color.brandPrimary)
                     .clipShape(Circle())
-                    .shadow(color: Color(hex: "#2563EB").opacity(0.45), radius: 12, x: 0, y: 6)
+                    .shadow(color: Color.brandPrimary.opacity(0.45), radius: 12, x: 0, y: 6)
             }
             .padding(.trailing, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
@@ -210,8 +210,9 @@ private struct BodyWaveBackground: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
+                // 브랜드 hero: GoalSetting/GoalProgress와 동일한 forest 그린 톤.
                 LinearGradient(
-                    colors: [Color(hex: "#1E3A5F"), Color(hex: "#2563EB").opacity(0.85)],
+                    colors: [Color.brandPrimary, Color.brandSecondary.opacity(0.85)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -221,7 +222,7 @@ private struct BodyWaveBackground: View {
                     .offset(x: geo.size.width * 0.25, y: -geo.size.height * 0.12)
                     .rotationEffect(.degrees(-18))
                 BodyWaveCurve()
-                    .fill(Color.surfaceGrouped)
+                    .fill(Color.backgroundPage)
                     .frame(height: 80)
                     .frame(maxWidth: .infinity)
                     .offset(y: geo.size.height - 40)
@@ -689,16 +690,16 @@ private struct EmptyMeasurementCard: View {
         Button(action: onTap) {
             VStack(spacing: 16) {
                 ZStack {
-                    Circle().fill(Color(hex: "#EAF4FF")).frame(width: 72, height: 72)
+                    Circle().fill(Color.brandSurface).frame(width: 72, height: 72)
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 32)) // design-lint:ignore — SF Symbol or special
-                        .foregroundStyle(Color(hex: "#2563EB"))
+                        .foregroundStyle(Color.brandPrimary)
                 }
                 VStack(spacing: 6) {
-                    Text("첫 번째 측정을 기록해보세요")
+                    Text("첫 번째 측정을 기록해 보세요")
                         .font(.bodyLarge).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
-                    Text("체중, 체지방률, 근육량 등\n신체 변화를 꾸준히 기록하세요.")
+                    Text("체중, 체지방률, 근육량 등\n신체 변화를 꾸준히 기록하세요")
                         .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
@@ -709,7 +710,7 @@ private struct EmptyMeasurementCard: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 30) // design-lint:ignore — micro/hero spacing
                     .padding(.vertical, 11) // design-lint:ignore — micro/hero spacing
-                    .background(Color(hex: "#2563EB"))
+                    .background(Color.brandPrimary)
                     .clipShape(Capsule())
             }
             .frame(maxWidth: .infinity)
