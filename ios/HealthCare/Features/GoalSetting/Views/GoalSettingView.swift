@@ -57,7 +57,7 @@ struct GoalSettingView: View {
             // + FAB
             Button { viewModel.showAddGoal = true } label: {
                 Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(.white)
                     .frame(width: 58, height: 58)
                     .background(Color.brandPrimary)
@@ -99,7 +99,7 @@ private struct GoalHeroSection: View {
                 HStack {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundStyle(.white)
                             .padding(10)
                             .background(.white.opacity(0.15))
@@ -107,7 +107,7 @@ private struct GoalHeroSection: View {
                     }
                     Spacer()
                     Text("나의 목표")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.numeralMedium).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Spacer()
                     Color.clear.frame(width: 40, height: 40)
@@ -178,10 +178,10 @@ private struct GoalProgressRing: View {
                     .animation(.easeInOut(duration: 0.8), value: goal.progressRatio)
                 VStack(spacing: 1) {
                     Text(String(format: "%.0f%%", goal.progressRatio * 100))
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.numeralMedium).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Text("달성")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(.white.opacity(0.7))
                 }
             }
@@ -189,17 +189,17 @@ private struct GoalProgressRing: View {
             VStack(alignment: .leading, spacing: 9) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(goal.goalType.displayName)
-                        .font(.system(size: 17, weight: .bold))
+                        .font(.cta).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Text("목표: \(goal.targetText)")
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(.white.opacity(0.8))
                 }
                 HStack(spacing: 5) {
                     Image(systemName: "calendar")
-                        .font(.system(size: 11))
+                        .font(.captionXSmall)
                     Text(goal.formattedTargetDate)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.caption).fontWeight(.medium)
                 }
                 .foregroundStyle(.white.opacity(0.8))
 
@@ -218,8 +218,8 @@ private struct DaysRemainingBadge: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Image(systemName: "clock.fill").font(.system(size: 10))
-            Text("D-\(days)").font(.system(size: 11, weight: .semibold))
+            Image(systemName: "clock.fill").font(.captionXSmall)
+            Text("D-\(days)").font(.captionXSmall).fontWeight(.semibold)
         }
         .foregroundStyle(color)
         .padding(.horizontal, 10)
@@ -258,24 +258,24 @@ private struct ActiveGoalCard<Destination: View>: View {
             HStack {
                 HStack(spacing: 10) {
                     Image(systemName: goal.goalType.icon)
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.cta)
                         .foregroundStyle(Color.brandPrimary)
                         .frame(width: 40, height: 40)
                         .background(Color.surfaceCard)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     VStack(alignment: .leading, spacing: 2) {
                         Text("진행 중인 목표")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.captionXSmall)
                             .foregroundStyle(Color.textSecondary)
                         Text(goal.goalType.displayName)
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.headingSmall).fontWeight(.bold)
                             .foregroundStyle(Color.textPrimary)
                     }
                 }
                 Spacer()
                 Button { showAbandonConfirm = true } label: {
                     Image(systemName: "ellipsis")
-                        .font(.system(size: 15))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                         .frame(width: 34, height: 34)
                         .background(Color.surfaceSecondary)
@@ -304,12 +304,12 @@ private struct ActiveGoalCard<Destination: View>: View {
             NavigationLink(destination: progressDestination()) {
                 HStack(spacing: 6) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                     Text("상세 진행률 보기")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.captionXSmall).fontWeight(.semibold)
                 }
                 .foregroundStyle(Color.brandPrimary)
             }
@@ -335,10 +335,10 @@ private struct GoalStatItem: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
             Text(value)
-                .font(.system(size: 14, weight: .bold))
+                .font(.bodyMedium).fontWeight(.bold)
                 .foregroundStyle(valueColor)
         }
     }
@@ -355,21 +355,21 @@ private struct EmptyGoalCard: View {
                 ZStack {
                     Circle().fill(Color.surfaceCard).frame(width: 68, height: 68)
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 30))
+                        .font(.system(size: 30)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color.brandPrimary)
                 }
                 VStack(spacing: 6) {
                     Text("목표를 설정해보세요")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.bodyLarge).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
                     Text("체중 감량, 근육 증가 등 나만의 목표를\n설정하고 달성률을 추적하세요.")
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(3)
                 }
                 Text("목표 설정하기")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 30)
                     .padding(.vertical, 11)
@@ -394,7 +394,7 @@ private struct PastGoalsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("목표 히스토리")
-                .font(.system(size: 18, weight: .bold))
+                .font(.headingMedium).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
                 .padding(.horizontal, 20)
 
@@ -413,7 +413,7 @@ private struct PastGoalRow: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: goal.goalType.icon)
-                .font(.system(size: 15))
+                .font(.bodyMedium)
                 .foregroundStyle(Color.textSecondary)
                 .frame(width: 36, height: 36)
                 .background(Color.surfaceSecondary)
@@ -421,17 +421,17 @@ private struct PastGoalRow: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(goal.goalType.displayName)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
                 Text(goal.formattedTargetDate)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
 
             Text(goal.status.displayName)
-                .font(.system(size: 12, weight: .semibold))
+                .font(.captionBold)
                 .foregroundStyle(goal.status.badgeColor)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)

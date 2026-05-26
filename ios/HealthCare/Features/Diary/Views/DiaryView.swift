@@ -123,7 +123,7 @@ private struct MonthPickerHeader: View {
                 viewModel.previousMonth()
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.brandAccent)
                     .frame(width: 36, height: 36)
                     .background(Color.brandAccent.opacity(0.15))
@@ -133,7 +133,7 @@ private struct MonthPickerHeader: View {
             Spacer()
 
             Text(viewModel.monthYearText)
-                .font(.system(size: 18, weight: .bold))
+                .font(.headingMedium).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
 
             Spacer()
@@ -142,7 +142,7 @@ private struct MonthPickerHeader: View {
                 viewModel.nextMonth()
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.brandAccent)
                     .frame(width: 36, height: 36)
                     .background(Color.brandAccent.opacity(0.15))
@@ -179,10 +179,10 @@ private struct QuickAddSection: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("빠른 기록")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.bodyLarge).fontWeight(.bold)
                             .foregroundStyle(Color.textPrimary)
                         Text(dateText)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundStyle(Color.textSecondary)
                     }
                     Spacer()
@@ -238,14 +238,14 @@ private struct QuickAddButton: View {
         Button(action: action) {
             VStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.cta)
                     .foregroundStyle(tint)
                     .frame(width: 34, height: 34)
                     .background(tint.opacity(0.12))
                     .clipShape(Circle())
 
                 Text(title)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.captionBold)
                     .foregroundStyle(Color.textPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -273,7 +273,7 @@ private struct CalendarGrid: View {
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(weekdaySymbols.indices, id: \.self) { index in
                     Text(weekdaySymbols[index])
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.captionBold)
                         .foregroundStyle(
                             index == 0 ? Color.brandDanger :
                             index == 6 ? Color.brandAccent :
@@ -343,7 +343,8 @@ private struct CalendarDayCell: View {
                     }
 
                     Text("\(dayNumber)")
-                        .font(.system(size: 15, weight: isToday || isSelected ? .semibold : .regular))
+                        .font(.bodyMedium)
+                        .fontWeight(isToday || isSelected ? .semibold : .regular)
                         .foregroundStyle(
                             isSelected ? Color.textHeadline :
                             isToday ? Color.brandAccent :
@@ -399,17 +400,17 @@ private struct ExerciseRecordsSection: View {
             // 헤더
             HStack {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 16))
+                    .font(.bodyLarge)
                     .foregroundStyle(Color.green)
 
                 Text("운동 완료")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
 
                 Spacer()
 
                 Text(dateText)
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
             .padding(.horizontal, 16)
@@ -444,7 +445,7 @@ private struct ExerciseSessionSummaryCard: View {
         HStack(spacing: 12) {
             // 아이콘
             Image(systemName: "figure.strengthtraining.traditional")
-                .font(.system(size: 18))
+                .font(.headingMedium).fontWeight(.regular)
                 .foregroundStyle(Color.brandAccent)
                 .frame(width: 40, height: 40)
                 .background(Color.brandAccent.opacity(0.15))
@@ -475,7 +476,7 @@ private struct ExerciseSessionSummaryCard: View {
 
                 if let notes = session.notes, !notes.isEmpty {
                     Text(notes)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                         .lineLimit(1)
                 }
@@ -484,7 +485,7 @@ private struct ExerciseSessionSummaryCard: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .medium))
+                .font(.bodySmall).fontWeight(.medium)
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(12)
@@ -495,10 +496,10 @@ private struct ExerciseSessionSummaryCard: View {
     private func statChip(icon: String, value: String) -> some View {
         HStack(spacing: 3) {
             Image(systemName: icon)
-                .font(.system(size: 10))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.brandAccent)
             Text(value)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 6)
@@ -526,17 +527,17 @@ private struct DietRecordsSection: View {
             // 헤더
             HStack {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 16))
+                    .font(.bodyLarge)
                     .foregroundStyle(Color.orange)
 
                 Text("식단 완료")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
 
                 Spacer()
 
                 Text(dateText)
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
             .padding(.horizontal, 16)
@@ -579,17 +580,17 @@ private struct MeasurementRecordsSection: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "scalemass.fill")
-                    .font(.system(size: 16))
+                    .font(.bodyLarge)
                     .foregroundStyle(Color.brandAccent)
 
                 Text("신체 측정")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
 
                 Spacer()
 
                 Text(dateText)
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
             .padding(.horizontal, 16)
@@ -615,7 +616,7 @@ private struct MeasurementSummaryCard: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "scalemass.fill")
-                .font(.system(size: 18))
+                .font(.headingMedium).fontWeight(.regular)
                 .foregroundStyle(Color.brandAccent)
                 .frame(width: 40, height: 40)
                 .background(Color.brandAccent.opacity(0.15))
@@ -635,7 +636,7 @@ private struct MeasurementSummaryCard: View {
                 }
                 if let notes = measurement.notes, !notes.isEmpty {
                     Text(notes)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                         .lineLimit(1)
                 }
@@ -651,10 +652,10 @@ private struct MeasurementSummaryCard: View {
     private func statChip(icon: String, value: String, color: Color) -> some View {
         HStack(spacing: 3) {
             Image(systemName: icon)
-                .font(.system(size: 10))
+                .font(.captionXSmall)
                 .foregroundStyle(color)
             Text(value)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 6)
@@ -674,9 +675,9 @@ private struct DietLogSummaryCard: View {
             // 식사 유형 아이콘
             VStack(spacing: 2) {
                 Text(log.mealType.emoji)
-                    .font(.system(size: 20))
+                    .font(.system(size: 20)) // design-lint:ignore — SF Symbol or special
                 Text(log.mealType.displayName)
-                    .font(.system(size: 9, weight: .semibold))
+                    .font(.system(size: 9, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(Color.brandAccent)
             }
             .frame(width: 40, height: 40)
@@ -710,7 +711,7 @@ private struct DietLogSummaryCard: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .medium))
+                .font(.bodySmall).fontWeight(.medium)
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(12)
@@ -721,10 +722,10 @@ private struct DietLogSummaryCard: View {
     private func statChip(icon: String, value: String) -> some View {
         HStack(spacing: 3) {
             Image(systemName: icon)
-                .font(.system(size: 10))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.orange)
             Text(value)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 6)

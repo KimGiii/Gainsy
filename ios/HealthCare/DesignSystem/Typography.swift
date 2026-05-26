@@ -131,6 +131,13 @@ extension Font {
         return Font(uiFont)
     }()
 
+    // Caption XSmall — 데이터 라벨, 미니 인디케이터 (11/medium, Dynamic Type)
+    // 더 작은 게 필요하면 .eyebrow(11/heavy mono) 검토.
+    static let captionXSmall: Font = {
+        let uiFont = UIFont.scaled(size: 11, weight: .medium, relativeTo: .caption2)
+        return Font(uiFont)
+    }()
+
     // Brand wordmark — 앱 이름/로고 옆 워드마크 (32/bold rounded, Dynamic Type)
     // 브랜드 표현 전용. 일반 헤딩에는 displayMedium / headingLarge 사용.
     static let brandWordmark: Font = {

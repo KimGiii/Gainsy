@@ -60,7 +60,7 @@ struct BodyMeasurementView: View {
             // FAB
             Button { viewModel.showAddSheet = true } label: {
                 Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(.white)
                     .frame(width: 58, height: 58)
                     .background(Color(hex: "#2563EB"))
@@ -114,7 +114,7 @@ private struct BodyHeroSection: View {
                 HStack {
                     Button(action: onDismiss) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundStyle(.white)
                             .padding(10)
                             .background(.white.opacity(0.15))
@@ -122,7 +122,7 @@ private struct BodyHeroSection: View {
                     }
                     Spacer()
                     Text("신체 변화")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.headingMedium).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Spacer()
                     Color.clear.frame(width: 40, height: 40)
@@ -175,14 +175,14 @@ private struct HeroStatItem: View {
         VStack(spacing: 2) {
             HStack(alignment: .lastTextBaseline, spacing: 2) {
                 Text(value)
-                    .font(.system(size: 26, weight: .bold, design: .rounded))
+                    .font(.numeralLarge)
                     .foregroundStyle(.white)
                 Text(unit)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.bodySmall).fontWeight(.medium)
                     .foregroundStyle(.white.opacity(0.75))
             }
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(.white.opacity(0.65))
         }
     }
@@ -256,11 +256,11 @@ private struct LatestStatsCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("최근 측정")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Spacer()
                 Text(measurement.formattedDate)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
 
@@ -309,7 +309,7 @@ private struct LatestStatsCard: View {
             if measurement.bmi != nil, let tap = onSourceTap {
                 Button(action: tap) {
                     Label("BMI 분류 기준: WHO·대한비만학회 출처 보기", systemImage: "info.circle")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.brandPrimary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -332,7 +332,7 @@ private struct StatCell: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
+                .font(.bodyLarge).fontWeight(.medium)
                 .foregroundStyle(color)
                 .frame(width: 40, height: 40)
                 .background(color.opacity(0.1))
@@ -340,16 +340,16 @@ private struct StatCell: View {
 
             HStack(alignment: .lastTextBaseline, spacing: 1) {
                 Text(value)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 if !unit.isEmpty {
                     Text(unit)
-                        .font(.system(size: 10))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }
             Text(label)
-                .font(.system(size: 11))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
     }
@@ -365,21 +365,21 @@ private struct MeasurementTrendSection: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("변화 추세")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.headingMedium).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
                     Text("선택한 기간 동안의 변화 흐름")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                 }
                 Spacer()
                 if let latestValue = viewModel.latestTrendValueText {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(latestValue + viewModel.currentMetricUnit)
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .font(.numeralMedium).fontWeight(.bold)
                             .foregroundStyle(Color.textPrimary)
                         if let delta = viewModel.trendChangeText {
                             Text(delta + "  ·  " + viewModel.trendSummaryText)
-                                .font(.system(size: 12, weight: .medium))
+                                .font(.caption).fontWeight(.medium)
                                 .foregroundStyle(delta.hasPrefix("-") ? Color.brandDanger : Color.brandPrimary)
                         }
                     }
@@ -481,13 +481,13 @@ private struct MeasurementTrendSection: View {
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color.textSecondary.opacity(0.6))
                     Text("추세를 보여주기엔 기록이 조금 더 필요해요")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.bodyMedium).fontWeight(.semibold)
                         .foregroundStyle(Color.textPrimary)
                     Text("선택한 기간 안에 \(viewModel.selectedMetric.title) 기록이 2개 이상 있으면 그래프로 보여드릴게요.")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                 }
@@ -533,7 +533,7 @@ private struct MetricChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(isSelected ? .white : accent)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 9)
@@ -553,14 +553,14 @@ private struct TrendSummaryPill: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textSecondary)
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(value)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(.system(size: 16, weight: .bold, design: .rounded)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color.textPrimary)
                     Text(unit)
-                        .font(.system(size: 10))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }
@@ -594,7 +594,7 @@ private struct MeasurementHistorySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("측정 기록")
-                .font(.system(size: 18, weight: .bold))
+                .font(.headingMedium).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
                 .padding(.horizontal, 20)
 
@@ -614,9 +614,9 @@ private struct MeasurementHistorySection: View {
                             Text(isExpanded
                                  ? "접기"
                                  : "더보기 (\(measurements.count - visibleLimit)개)")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(.bodyMedium).fontWeight(.semibold)
                             Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.captionBold)
                         }
                         .foregroundStyle(Color.brandPrimary)
                         .frame(maxWidth: .infinity)
@@ -640,10 +640,10 @@ private struct MeasurementRow: View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(measurement.formattedDate)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
                 Text(summaryText)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
                     .lineLimit(1)
             }
@@ -652,7 +652,7 @@ private struct MeasurementRow: View {
 
             Button { showDeleteConfirm = true } label: {
                 Image(systemName: "ellipsis")
-                    .font(.system(size: 14))
+                    .font(.bodyMedium)
                     .foregroundStyle(Color.textSecondary)
                     .frame(width: 32, height: 32)
                     .background(Color.surfaceSecondary)
@@ -691,21 +691,21 @@ private struct EmptyMeasurementCard: View {
                 ZStack {
                     Circle().fill(Color(hex: "#EAF4FF")).frame(width: 72, height: 72)
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 32))
+                        .font(.system(size: 32)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color(hex: "#2563EB"))
                 }
                 VStack(spacing: 6) {
                     Text("첫 번째 측정을 기록해보세요")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.bodyLarge).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
                     Text("체중, 체지방률, 근육량 등\n신체 변화를 꾸준히 기록하세요.")
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(3)
                 }
                 Text("기록 추가하기")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 30)
                     .padding(.vertical, 11)
