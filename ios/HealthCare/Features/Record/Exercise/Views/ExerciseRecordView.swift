@@ -33,7 +33,7 @@ struct ExerciseRecordView: View {
                     viewModel.showAddSession = true
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(.white)
                         .frame(width: 58, height: 58)
                         .background(Color.brandPrimary)
@@ -81,7 +81,7 @@ private struct ExerciseHeroSection: View {
                 HStack {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundStyle(.white)
                             .padding(10)
                             .background(.white.opacity(0.15))
@@ -91,7 +91,7 @@ private struct ExerciseHeroSection: View {
                     Spacer()
 
                     Text("운동 기록")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.headingMedium).fontWeight(.bold)
                         .foregroundStyle(.white)
 
                     Spacer()
@@ -100,7 +100,7 @@ private struct ExerciseHeroSection: View {
                         viewModel.showAddSession = true
                     } label: {
                         Image(systemName: "plus")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundStyle(.white)
                             .padding(10)
                             .background(.white.opacity(0.15))
@@ -210,17 +210,17 @@ private struct ExerciseRingView: View {
 
                 VStack(spacing: 2) {
                     Text(displayValue)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(.numeralMedium).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
                     Text(unit)
-                        .font(.system(size: 11))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }
             .frame(width: 96, height: 96)
 
             Text(label)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(Color.textSecondary)
         }
     }
@@ -271,10 +271,10 @@ private struct WeeklyStatsStrip: View {
     private func statCell(label: String, value: String) -> some View {
         VStack(spacing: 4) {
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
             Text(value)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(.numeralMedium).fontWeight(.bold)
                 .foregroundStyle(Color.brandAccent)
         }
         .frame(maxWidth: .infinity)
@@ -301,11 +301,11 @@ private struct SessionListSection: View {
                 // 섹션 헤더
                 HStack {
                     Text("운동 기록")
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.headingSmall).fontWeight(.bold)
                         .foregroundStyle(Color.textHeadline)
                     Spacer()
                     Text("총 \(viewModel.sessions.count)회")
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.horizontal, 20)
@@ -355,7 +355,7 @@ struct SessionCard: View {
             // 본문
             VStack(alignment: .leading, spacing: 7) {
                 Text(session.formattedDate)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textHeadline)
 
                 HStack(spacing: 14) {
@@ -386,7 +386,7 @@ struct SessionCard: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .medium))
+                .font(.bodySmall).fontWeight(.medium)
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
         .padding(.horizontal, 16)
@@ -399,10 +399,10 @@ struct SessionCard: View {
     private func statChip(icon: String, value: String, color: Color) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 11))
+                .font(.captionXSmall)
                 .foregroundStyle(color)
             Text(value)
-                .font(.system(size: 12, weight: .medium))
+                .font(.caption).fontWeight(.medium)
                 .foregroundStyle(Color.textSecondary)
         }
     }
@@ -420,10 +420,10 @@ struct DateBadge: View {
     var body: some View {
         VStack(spacing: 1) {
             Text(parts.count >= 2 ? "\(parts[1])월" : "")
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.brandAccent)
             Text(parts.count >= 3 ? parts[2] : "")
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.headingLarge)
                 .foregroundStyle(Color.brandAccent)
         }
         .frame(width: 52, height: 60)
@@ -440,15 +440,15 @@ private struct EmptyExerciseState: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "figure.strengthtraining.traditional")
-                .font(.system(size: 60))
+                .font(.system(size: 60)) // design-lint:ignore — SF Symbol or special
                 .foregroundStyle(Color.brandAccent.opacity(0.45))
 
             VStack(spacing: 6) {
                 Text("첫 운동을 기록해보세요")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.headingMedium).fontWeight(.bold)
                     .foregroundStyle(Color.textHeadline)
                 Text("운동을 기록하면 주간 볼륨과\n칼로리 목표가 채워집니다")
-                    .font(.system(size: 14))
+                    .font(.bodyMedium)
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
@@ -456,7 +456,7 @@ private struct EmptyExerciseState: View {
 
             Button(action: onTap) {
                 Text("운동 기록 시작")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 14)

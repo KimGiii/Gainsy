@@ -77,16 +77,16 @@ struct MyPageView: View {
                         )
                         .shadow(color: Color.brandAccent.opacity(0.25), radius: 12, x: 0, y: 4)
                     Text(viewModel.profile?.displayName.prefix(1).uppercased() ?? "?")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .font(.brandWordmark)
                         .foregroundStyle(.white)
                 }
 
                 VStack(spacing: 6) {
                     Text(viewModel.profile?.displayName ?? "불러오는 중...")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.numeralMedium).fontWeight(.bold)
                         .foregroundStyle(Color.textHeadline)
                     Text(viewModel.profile?.email ?? "")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.bodySmall).fontWeight(.medium)
                         .foregroundStyle(Color.brandAccent)
                 }
             }
@@ -144,12 +144,12 @@ struct MyPageView: View {
     private func statCell(label: String, value: String) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .font(.headingSmall).fontWeight(.bold)
                 .foregroundStyle(Color.textHeadline)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -261,7 +261,7 @@ private struct EditProfileSheet: View {
                                         if viewModel.editActivityLevel == option.value {
                                             Image(systemName: "checkmark")
                                                 .foregroundStyle(Color.brandAccent)
-                                                .font(.system(size: 14, weight: .semibold))
+                                                .font(.bodyMedium).fontWeight(.semibold)
                                         }
                                     }
                                     .padding(.vertical, 12)
@@ -287,7 +287,7 @@ private struct EditProfileSheet: View {
                                 ProgressView().tint(.white)
                             } else {
                                 Text("저장하기")
-                                    .font(.system(size: 16, weight: .semibold))
+                                    .font(.bodyLarge).fontWeight(.semibold)
                                     .foregroundStyle(.white)
                             }
                         }
@@ -365,7 +365,7 @@ private struct MenuRow: View {
         Button(action: action) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.bodyMedium).fontWeight(.medium)
                     .foregroundStyle(iconColor)
                     .frame(width: 30, height: 30)
                     .background(iconColor.opacity(0.12))
@@ -381,11 +381,11 @@ private struct MenuRow: View {
 
                 if let t = trailingText {
                     Text(t)
-                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .font(.labelSmall)
                         .foregroundStyle(Color.textSecondary)
                 } else {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.captionBold)
                         .foregroundStyle(Color.textSecondary.opacity(0.6))
                 }
             }
@@ -405,7 +405,7 @@ private struct MenuLinkRow: View {
         Link(destination: url) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.bodyMedium).fontWeight(.medium)
                     .foregroundStyle(iconColor)
                     .frame(width: 30, height: 30)
                     .background(iconColor.opacity(0.12))
@@ -418,7 +418,7 @@ private struct MenuLinkRow: View {
                 Spacer()
 
                 Image(systemName: "arrow.up.right")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
             .padding(.horizontal, 16)
@@ -443,7 +443,7 @@ private struct ThemeMenuRow: View {
         } label: {
             HStack(spacing: 14) {
                 Image(systemName: selectedTheme.iconName)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.bodyMedium).fontWeight(.medium)
                     .foregroundStyle(Color.brandAccent)
                     .frame(width: 30, height: 30)
                     .background(Color.brandAccent.opacity(0.12))
@@ -456,11 +456,11 @@ private struct ThemeMenuRow: View {
                 Spacer()
 
                 Text(selectedTheme.title)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.labelSmall)
                     .foregroundStyle(Color.brandAccent)
 
                 Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
             .padding(.horizontal, 16)
@@ -526,7 +526,7 @@ private struct EditNumericField: View {
                 TextField("0", text: $text)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
                     .frame(width: 72)
                 Text(unit)
@@ -565,7 +565,7 @@ private struct EditPickerField: View {
                     .font(.bodyMedium)
                     .foregroundStyle(Color.textPrimary)
                 Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.textTertiary)
             }
             .padding(.horizontal, 16)

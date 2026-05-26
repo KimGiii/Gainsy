@@ -96,7 +96,7 @@ struct ExerciseSessionDetailView: View {
 
                 // 날짜
                 Text(session.formattedDate)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(.numeralMedium).fontWeight(.bold)
                     .foregroundStyle(.white)
                     .padding(.top, 8)
 
@@ -149,18 +149,18 @@ struct ExerciseSessionDetailView: View {
     private func detailStat(icon: String, value: String, unit: String, label: String, color: Color) -> some View {
         VStack(spacing: 5) {
             Image(systemName: icon)
-                .font(.system(size: 14))
+                .font(.bodyMedium)
                 .foregroundStyle(color)
             HStack(alignment: .lastTextBaseline, spacing: 2) {
                 Text(value)
-                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .font(.cta).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Text(unit)
-                    .font(.system(size: 10))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textSecondary)
             }
             Text(label)
-                .font(.system(size: 10))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -171,14 +171,14 @@ struct ExerciseSessionDetailView: View {
     private func prBanner(sets: [SetDetail]) -> some View {
         HStack(spacing: 12) {
             Image(systemName: "trophy.fill")
-                .font(.system(size: 20))
+                .font(.system(size: 20)) // design-lint:ignore — SF Symbol or special
                 .foregroundStyle(.yellow)
             VStack(alignment: .leading, spacing: 3) {
                 Text("개인 최고 기록 달성! 🎉")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.bodyMedium).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Text(sets.map(\.displayExerciseName).joined(separator: ", "))
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
                     .lineLimit(2)
             }
@@ -201,7 +201,7 @@ struct ExerciseSessionDetailView: View {
                 .foregroundStyle(Color.brandAccent)
                 .padding(.top, 1)
             Text(text)
-                .font(.system(size: 14))
+                .font(.bodyMedium)
                 .foregroundStyle(Color.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
@@ -217,10 +217,10 @@ struct ExerciseSessionDetailView: View {
     private func errorState(message: String) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 44))
+                .font(.system(size: 44)) // design-lint:ignore — SF Symbol or special
                 .foregroundStyle(Color.brandWarning)
             Text(message)
-                .font(.system(size: 15))
+                .font(.bodyMedium)
                 .foregroundStyle(Color.textSecondary)
                 .multilineTextAlignment(.center)
             Button("다시 시도") {
@@ -282,11 +282,11 @@ private struct ExerciseGroupCard: View {
             // 그룹 헤더
             HStack {
                 Text(name)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Spacer()
                 Text("\(sets.count)세트")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -318,7 +318,7 @@ private struct SetRow: View {
         HStack(spacing: 12) {
             // 세트 번호
             Text("\(set.setNumber)")
-                .font(.system(size: 13, weight: .bold))
+                .font(.bodySmall).fontWeight(.bold)
                 .foregroundStyle(Color.brandAccent)
                 .frame(width: 28, height: 28)
                 .background(Color.surfaceCard)
@@ -326,7 +326,7 @@ private struct SetRow: View {
 
             // 내용
             Text(set.setDescription)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.bodyLarge).fontWeight(.semibold)
                 .foregroundStyle(Color.textPrimary)
 
             Spacer()
@@ -335,10 +335,10 @@ private struct SetRow: View {
             if set.personalRecord {
                 HStack(spacing: 3) {
                     Image(systemName: "trophy.fill")
-                        .font(.system(size: 10))
+                        .font(.captionXSmall)
                         .foregroundStyle(.yellow)
                     Text("PR")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.captionXSmall).fontWeight(.bold)
                         .foregroundStyle(Color.brandWarning)
                 }
                 .padding(.horizontal, 8)
