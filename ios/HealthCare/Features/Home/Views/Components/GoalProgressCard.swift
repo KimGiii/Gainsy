@@ -26,6 +26,12 @@ struct GoalProgressCard: View {
 private struct ActiveGoalContent: View {
     let goal: GoalSummary
 
+    /// 표시용 진행률(%) — 반올림. 링·라벨·접근성 라벨이 동일 값을 쓰도록 한 곳에서 계산한다.
+    /// 다른 화면(GoalProgressView, GoalSettingView)도 %.0f 반올림을 사용한다.
+    private var percentText: String {
+        String(format: "%.0f", goal.progressRatio * 100)
+    }
+
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
             // 진행 링 (compact ProgressRing)
@@ -33,7 +39,7 @@ private struct ActiveGoalContent: View {
                 progress: goal.progressRatio,
                 gradient: .ringCalorie,
                 size: .standard,
-                value: "\(Int(goal.progressRatio * 100))",
+                value: percentText,
                 unit: "%",
                 trackColor: Color.brandDusk.opacity(0.10)
             )
@@ -55,7 +61,7 @@ private struct ActiveGoalContent: View {
                                     .font(.system(size: 10, weight: .heavy, design: .rounded))
                                     .foregroundStyle(Color.surfaceCard)
                             )
-                        Text("\(String(format: "%.0f", goal.progressRatio * 100))% 완료")
+                        Text("\(percentText)% 완료")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(Color.textSecondary)
                     }
@@ -80,7 +86,7 @@ private struct ActiveGoalContent: View {
         )
         .elevation(.low)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("목표: \(goal.goalType.displayName), \(Int(goal.progressRatio * 100))% 완료\(goal.daysRemaining.map { ", \($0)일 남음" } ?? "")")
+        .accessibilityLabel("목표: \(goal.goalType.displayName), \(percentText)% 완료\(goal.daysRemaining.map { ", \($0)일 남음" } ?? "")")
     }
 }
 
