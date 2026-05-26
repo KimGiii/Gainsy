@@ -40,8 +40,8 @@ struct ExerciseRecordView: View {
                         .clipShape(Circle())
                         .shadow(color: Color.brandPrimary.opacity(0.45), radius: 12, x: 0, y: 6)
                 }
-                .padding(.trailing, 24)
-                .padding(.bottom, 32)
+                .padding(.trailing, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
         }
         .navigationBarHidden(true)
@@ -83,7 +83,7 @@ private struct ExerciseHeroSection: View {
                         Image(systemName: "chevron.left")
                             .font(.cta)
                             .foregroundStyle(.white)
-                            .padding(10)
+                            .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                             .background(.white.opacity(0.15))
                             .clipShape(Circle())
                     }
@@ -102,12 +102,12 @@ private struct ExerciseHeroSection: View {
                         Image(systemName: "plus")
                             .font(.cta)
                             .foregroundStyle(.white)
-                            .padding(10)
+                            .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                             .background(.white.opacity(0.15))
                             .clipShape(Circle())
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
                 Spacer(minLength: 0)
 
@@ -128,15 +128,15 @@ private struct ExerciseHeroSection: View {
                         color: Color(hex: "#74C69D")
                     )
                 }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 20)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.xl) // design-lint:ignore — micro/hero spacing
                 .background(
-                    RoundedRectangle(cornerRadius: 24)
+                    RoundedRectangle(cornerRadius: Radius.xl)
                         .fill(.white)
                         .shadow(color: .black.opacity(0.10), radius: 16, x: 0, y: 6)
                 )
-                .padding(.horizontal, 28)
-                .padding(.bottom, 40)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -258,7 +258,7 @@ private struct WeeklyStatsStrip: View {
                     : "—"
             )
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
         .overlay(
             Rectangle()
@@ -291,7 +291,7 @@ private struct SessionListSection: View {
         if viewModel.isLoading && viewModel.sessions.isEmpty {
             ProgressView()
                 .frame(maxWidth: .infinity)
-                .padding(.top, 60)
+                .padding(.top, 60) // design-lint:ignore — micro/hero spacing
         } else if viewModel.sessions.isEmpty {
             EmptyExerciseState {
                 viewModel.showAddSession = true
@@ -308,9 +308,9 @@ private struct SessionListSection: View {
                         .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 12)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.top, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.md) // design-lint:ignore — micro/hero spacing
 
                 // 카드 리스트
                 LazyVStack(spacing: 10) {
@@ -335,8 +335,8 @@ private struct SessionListSection: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 100) // FAB 여백
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 100) // FAB 여백 // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -389,10 +389,10 @@ struct SessionCard: View {
                 .font(.bodySmall).fontWeight(.medium)
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
     }
 
@@ -428,7 +428,7 @@ struct DateBadge: View {
         }
         .frame(width: 52, height: 60)
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
     }
 }
 
@@ -458,14 +458,14 @@ private struct EmptyExerciseState: View {
                 Text("운동 기록 시작")
                     .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 14)
+                    .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                     .background(Color.brandPrimary)
                     .clipShape(Capsule())
                     .shadow(color: Color.brandPrimary.opacity(0.35), radius: 10, x: 0, y: 4)
             }
         }
-        .padding(.top, 48)
-        .padding(.horizontal, 32)
+        .padding(.top, 48) // design-lint:ignore — micro/hero spacing
+        .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
     }
 }

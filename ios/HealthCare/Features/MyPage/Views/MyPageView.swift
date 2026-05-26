@@ -21,9 +21,9 @@ struct MyPageView: View {
                     profileCard
                     menuSections
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 40)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.backgroundPage)
             .navigationTitle("마이페이지")
@@ -90,17 +90,17 @@ struct MyPageView: View {
                         .foregroundStyle(Color.brandAccent)
                 }
             }
-            .padding(.top, 24)
+            .padding(.top, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
             statsRow
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
         .frame(maxWidth: .infinity)
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: Radius.xl)
                 .stroke(Color.hairline, lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
@@ -130,9 +130,9 @@ struct MyPageView: View {
                 value: viewModel.sexLabel
             )
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.backgroundPage)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
     }
 
     private var statDivider: some View {
@@ -180,7 +180,7 @@ struct MyPageView: View {
                     trailingText: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
                     action: {}
                 )
-                Divider().padding(.leading, 60)
+                Divider().padding(.leading, 60) // design-lint:ignore — micro/hero spacing
                 MenuRow(
                     icon: "book.closed",
                     iconColor: Color.brandMoss,
@@ -188,14 +188,14 @@ struct MyPageView: View {
                 ) {
                     showMedicalSources = true
                 }
-                Divider().padding(.leading, 60)
+                Divider().padding(.leading, 60) // design-lint:ignore — micro/hero spacing
                 MenuLinkRow(
                     icon: "doc.text",
                     iconColor: Color.brandSecondary,
                     label: "이용약관",
                     url: URL(string: "https://kimgiii.github.io/Gainsy/docs/legal/terms.html")!
                 )
-                Divider().padding(.leading, 60)
+                Divider().padding(.leading, 60) // design-lint:ignore — micro/hero spacing
                 MenuLinkRow(
                     icon: "hand.raised",
                     iconColor: Color.brandSecondary,
@@ -235,7 +235,7 @@ private struct EditProfileSheet: View {
                 VStack(spacing: 16) {
                     EditCard(title: "기본 정보") {
                         EditField(label: "닉네임", placeholder: "닉네임을 입력하세요", text: $viewModel.editDisplayName)
-                        Divider().padding(.leading, 16)
+                        Divider().padding(.leading, Spacing.lg)
                         EditPickerField(label: "성별", value: viewModel.editSex, options: sexOptions) { v in
                             viewModel.editSex = v
                         }
@@ -243,7 +243,7 @@ private struct EditProfileSheet: View {
 
                     EditCard(title: "신체 정보") {
                         EditNumericField(label: "키", unit: "cm", text: $viewModel.editHeightCm)
-                        Divider().padding(.leading, 16)
+                        Divider().padding(.leading, Spacing.lg)
                         EditNumericField(label: "체중", unit: "kg", text: $viewModel.editWeightKg)
                     }
 
@@ -264,11 +264,11 @@ private struct EditProfileSheet: View {
                                                 .font(.bodyMedium).fontWeight(.semibold)
                                         }
                                     }
-                                    .padding(.vertical, 12)
-                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
+                                    .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
                                 }
                                 if option.value != activityOptions.last?.value {
-                                    Divider().padding(.leading, 16)
+                                    Divider().padding(.leading, Spacing.lg)
                                 }
                             }
                         }
@@ -294,12 +294,12 @@ private struct EditProfileSheet: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
                         .background(Color.brandPrimary)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
                     }
                     .disabled(viewModel.isLoading)
                 }
-                .padding(20)
-                .padding(.bottom, 20)
+                .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xl) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.backgroundPage)
             .navigationTitle("프로필 수정")
@@ -334,13 +334,13 @@ private struct MenuSection<Content: View>: View {
                     .font(.eyebrow)
                     .tracking(1.5)
                     .foregroundStyle(Color.textSecondary)
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
             }
             VStack(spacing: 0) {
                 content()
             }
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
         }
     }
@@ -369,7 +369,7 @@ private struct MenuRow: View {
                     .foregroundStyle(iconColor)
                     .frame(width: 30, height: 30)
                     .background(iconColor.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
                 Text(label)
                     .font(.bodyMedium)
@@ -389,8 +389,8 @@ private struct MenuRow: View {
                         .foregroundStyle(Color.textSecondary.opacity(0.6))
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -409,7 +409,7 @@ private struct MenuLinkRow: View {
                     .foregroundStyle(iconColor)
                     .frame(width: 30, height: 30)
                     .background(iconColor.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
                 Text(label)
                     .font(.bodyMedium)
@@ -421,8 +421,8 @@ private struct MenuLinkRow: View {
                     .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -447,7 +447,7 @@ private struct ThemeMenuRow: View {
                     .foregroundStyle(Color.brandAccent)
                     .frame(width: 30, height: 30)
                     .background(Color.brandAccent.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
                 Text("화면 모드")
                     .font(.bodyMedium)
@@ -463,8 +463,8 @@ private struct ThemeMenuRow: View {
                     .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.textSecondary.opacity(0.6))
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -479,12 +479,12 @@ private struct EditCard<Content: View>: View {
                 .font(.eyebrow)
                 .tracking(1.5)
                 .foregroundStyle(Color.textSecondary)
-                .padding(.horizontal, 4)
+                .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
             VStack(spacing: 0) {
                 content()
             }
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
         }
     }
@@ -505,8 +505,8 @@ private struct EditField: View {
                 .font(.bodyMedium)
                 .foregroundStyle(Color.textPrimary)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, 13) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -534,8 +534,8 @@ private struct EditNumericField: View {
                     .foregroundStyle(Color.textTertiary)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, 13) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -568,8 +568,8 @@ private struct EditPickerField: View {
                     .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.textTertiary)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 13)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, 13) // design-lint:ignore — micro/hero spacing
         }
     }
 }

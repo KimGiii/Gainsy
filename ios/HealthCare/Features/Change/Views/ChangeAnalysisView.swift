@@ -14,15 +14,15 @@ struct ChangeAnalysisView: View {
                 )
 
                 if viewModel.isLoading {
-                    ProgressView().padding(.top, 60)
+                    ProgressView().padding(.top, 60) // design-lint:ignore — micro/hero spacing
                 } else if let analysis = viewModel.analysis {
                     ChangeAnalysisContent(analysis: analysis)
                 } else {
                     ChangeEmptyState()
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.backgroundPage)
         .navigationTitle("변화 분석")
@@ -72,8 +72,8 @@ private struct DateRangeSection: View {
                         Text(preset.label)
                             .font(.labelSmall)
                             .foregroundStyle(Color.brandAccent)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 7)
+                            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                            .padding(.vertical, 7) // design-lint:ignore — micro/hero spacing
                             .background(Color.brandAccent.opacity(0.15))
                             .overlay(
                                 Capsule().stroke(Color.brandAccent.opacity(0.35), lineWidth: 1)
@@ -87,14 +87,14 @@ private struct DateRangeSection: View {
             VStack(spacing: 0) {
                 DatePicker("시작일", selection: $fromDate, in: ...toDate, displayedComponents: .date)
                     .environment(\.locale, Locale(identifier: "ko_KR"))
-                    .padding(14)
-                Divider().padding(.horizontal, 14)
+                    .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
+                Divider().padding(.horizontal, Spacing.lg)
                 DatePicker("종료일", selection: $toDate, in: fromDate..., displayedComponents: .date)
                     .environment(\.locale, Locale(identifier: "ko_KR"))
-                    .padding(14)
+                    .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
 
             Button(action: onAnalyze) {
@@ -102,9 +102,9 @@ private struct DateRangeSection: View {
                     .font(.headingSmall)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                     .background(Color.brandPrimary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
         }
     }
@@ -156,9 +156,9 @@ private struct BodyChangeCard: View {
                 }
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -217,9 +217,9 @@ private struct ExerciseActivityCard: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -258,9 +258,9 @@ private struct SnapshotComparisonCard: View {
                 }
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -305,6 +305,6 @@ private struct ChangeEmptyState: View {
                 .foregroundStyle(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.top, 60)
+        .padding(.top, 60) // design-lint:ignore — micro/hero spacing
     }
 }

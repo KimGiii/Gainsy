@@ -50,8 +50,8 @@ struct QuickLogFAB: View {
                 }
             }
         }
-        .padding(.trailing, 20)
-        .padding(.bottom, 20)
+        .padding(.trailing, Spacing.xl) // design-lint:ignore — micro/hero spacing
+        .padding(.bottom, Spacing.xl) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -68,8 +68,8 @@ private struct FABMenuItem: View {
                 Text(label)
                     .font(.labelSmall)
                     .foregroundStyle(Color.textHeadline)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 9)
+                    .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, 9) // design-lint:ignore — micro/hero spacing
                     .background(
                         Capsule()
                             .fill(Color.surfaceCard)

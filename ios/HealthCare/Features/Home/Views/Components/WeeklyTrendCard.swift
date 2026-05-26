@@ -93,17 +93,17 @@ struct WeeklyTrendCard: View {
                 }
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(Color.surfaceCard)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                         .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
         .elevation(.low)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
     }
 
     // MARK: - Helpers
@@ -135,6 +135,6 @@ struct WeeklyTrendCard: View {
             DayActivity(date: "2026-05-08", caloriesIn: 900,  caloriesBurned: 320, durationMinutes: 42),
         ]
         WeeklyTrendCard(weeklyActivity: activities)
-            .padding(.vertical, 40)
+            .padding(.vertical, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
     }
 }

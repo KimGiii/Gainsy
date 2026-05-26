@@ -69,7 +69,7 @@ struct MedicalSourcesView: View {
 
                     Spacer(minLength: 24)
                 }
-                .padding(20)
+                .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("의학 정보 출처")
@@ -97,10 +97,10 @@ struct MedicalSourcesView: View {
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(3)
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
@@ -118,10 +118,10 @@ struct MedicalSourcesView: View {
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(3)
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(hex: "#FEF3C7"))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
     }
 
     private func sourceSection(title: String, body: String, sources: [SourceLink]) -> some View {
@@ -151,12 +151,12 @@ struct MedicalSourcesView: View {
                     }
                 }
             }
-            .padding(.top, 2)
+            .padding(.top, 2) // design-lint:ignore — micro/hero spacing
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }

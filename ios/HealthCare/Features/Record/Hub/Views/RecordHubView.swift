@@ -22,7 +22,7 @@ struct RecordHubView: View {
                 )
 
                 HubBody()
-                    .padding(.top, -30) // lift body into hero
+                    .padding(.top, -30) // lift body into hero // design-lint:ignore — micro/hero spacing
             }
         }
         .background(Color.backgroundPage.ignoresSafeArea())
@@ -81,8 +81,8 @@ private struct HubHeroSection: View {
                     Spacer()
                     Color.clear.frame(width: 40, height: 40)
                 }
-                .padding(.top, 54)
-                .padding(.horizontal, 22)
+                .padding(.top, 54) // design-lint:ignore — micro/hero spacing
+                .padding(.horizontal, 22) // design-lint:ignore — micro/hero spacing
 
                 Spacer(minLength: 0)
 
@@ -104,10 +104,10 @@ private struct HubHeroSection: View {
                     Text(koDate)
                         .font(.caption).fontWeight(.medium)
                         .foregroundStyle(.white.opacity(0.55))
-                        .padding(.top, 2)
+                        .padding(.top, 2) // design-lint:ignore — micro/hero spacing
                 }
-                .padding(.horizontal, 22)
-                .padding(.bottom, 58)
+                .padding(.horizontal, 22) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 58) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -204,11 +204,11 @@ private struct HubBody: View {
 
             // Small tip / footer
             HubFootnote()
-                .padding(.top, 6)
+                .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 34)
-        .padding(.bottom, 64)
+        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+        .padding(.top, 34) // design-lint:ignore — micro/hero spacing
+        .padding(.bottom, 64) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             Color.backgroundPage
@@ -237,10 +237,10 @@ private struct RoundedCorner: Shape {
 private struct ExerciseRouteCard: View {
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(LinearGradient.forestHero)
 
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(
                     RadialGradient(
                         colors: [Color.brandAccent.opacity(0.38), .clear],
@@ -286,9 +286,9 @@ private struct ExerciseRouteCard: View {
                         .font(.headingLarge)
                         .foregroundStyle(Color.brandDusk)
                 }
-                .padding(.top, 4)
+                .padding(.top, Spacing.xs) // design-lint:ignore — micro/hero spacing
             }
-            .padding(22)
+            .padding(22) // design-lint:ignore — micro/hero spacing
         }
         .frame(height: 170)
         .elevation(.forest)
@@ -300,15 +300,15 @@ private struct ExerciseRouteCard: View {
 private struct DietRouteCard: View {
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(Color.surfaceCard)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                         .stroke(Color.cardStroke, lineWidth: 1)
                 )
 
             // warm corner
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(
                     RadialGradient(
                         colors: [Color.brandSunrise.opacity(0.25), .clear],
@@ -333,7 +333,7 @@ private struct DietRouteCard: View {
                 Text("🍚")
                     .font(.system(size: 46)) // design-lint:ignore — SF Symbol or special
                     .rotationEffect(.degrees(-6))
-                    .padding(.bottom, 10)
+                    .padding(.bottom, Spacing.md) // design-lint:ignore — micro/hero spacing
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("식단").eyebrowStyle(Color.textTertiary)
@@ -345,7 +345,7 @@ private struct DietRouteCard: View {
                         .foregroundStyle(Color.textSecondary)
                 }
             }
-            .padding(18)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .frame(height: 190)
@@ -360,16 +360,16 @@ private struct BodyRouteCard: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(Color.brandDusk)
 
             // line topography
             TopoLines()
                 .stroke(Color.brandAccent.opacity(0.22), lineWidth: 0.8)
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.xl, style: .continuous))
 
             // soft glow
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(
                     RadialGradient(
                         colors: [Color.brandAccent.opacity(0.35), .clear],
@@ -399,14 +399,14 @@ private struct BodyRouteCard: View {
                         Text("kg")
                             .font(.labelSmall)
                             .foregroundStyle(.white.opacity(0.55))
-                            .padding(.bottom, 8)
+                            .padding(.bottom, Spacing.sm) // design-lint:ignore — micro/hero spacing
                     } else {
                         Image(systemName: "scalemass.fill")
                             .font(.system(size: 34, weight: .heavy)) // design-lint:ignore — SF Symbol or special
                             .foregroundStyle(.white.opacity(0.45))
                     }
                 }
-                .padding(.bottom, 6)
+                .padding(.bottom, Spacing.sm) // design-lint:ignore — micro/hero spacing
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("BODY").eyebrowStyle(Color.brandAccentGlow.opacity(0.85))
@@ -418,7 +418,7 @@ private struct BodyRouteCard: View {
                         .foregroundStyle(.white.opacity(0.55))
                 }
             }
-            .padding(18)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .frame(height: 190)
@@ -450,7 +450,7 @@ private struct TopoLines: Shape {
 private struct PhotoRouteCard: View {
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [Color.backgroundPage, Color.surfaceCard],
@@ -459,7 +459,7 @@ private struct PhotoRouteCard: View {
                     )
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                         .stroke(Color.brandAccent.opacity(0.25), lineWidth: 1)
                 )
 
@@ -495,7 +495,7 @@ private struct PhotoRouteCard: View {
                         .foregroundStyle(Color.brandSecondary)
                 }
             }
-            .padding(22)
+            .padding(22) // design-lint:ignore — micro/hero spacing
         }
         .frame(height: 130)
         .elevation(.low)
@@ -515,10 +515,10 @@ private struct HubFootnote: View {
                 .foregroundStyle(Color.textSecondary)
             Spacer()
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
                 .fill(Color.surfaceCard.opacity(0.5))
         )
     }

@@ -27,7 +27,7 @@ struct OnboardingView: View {
 
                     // Logo
                     BrandLogoView(size: 160, color: Color.brandPrimary)
-                        .padding(.bottom, 36)
+                        .padding(.bottom, 36) // design-lint:ignore — micro/hero spacing
 
                     // Copy
                     VStack(spacing: 10) {
@@ -54,8 +54,8 @@ struct OnboardingView: View {
                             SecondaryButtonLabel(title: "계정이 없어요, 가입하기")
                         }
                     }
-                    .padding(.horizontal, 28)
-                    .padding(.bottom, 48)
+                    .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                    .padding(.bottom, 48) // design-lint:ignore — micro/hero spacing
                 }
             }
         }

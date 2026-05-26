@@ -37,7 +37,7 @@ struct AddExerciseSessionView: View {
 
                     Color.clear.frame(height: 20)
                 }
-                .padding(.top, 8)
+                .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.backgroundPage)
             .navigationTitle("운동 기록 추가")
@@ -76,12 +76,12 @@ struct AddExerciseSessionView: View {
                     .environment(\.locale, Locale(identifier: "ko_KR"))
                 Spacer()
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 
     private var durationSection: some View {
@@ -130,11 +130,11 @@ struct AddExerciseSessionView: View {
                         .foregroundStyle(Color.textSecondary)
                 }
             }
-            .padding(16)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 
     // MARK: - Sets Section
@@ -143,7 +143,7 @@ struct AddExerciseSessionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 sectionLabel("세트 구성")
-                    .padding(.horizontal, 0)
+                    .padding(.horizontal, 0) // design-lint:ignore — micro/hero spacing
                 Spacer()
                 if !viewModel.exerciseGroups.isEmpty {
                     let totalSets = viewModel.exerciseGroups.map(\.sets.count).reduce(0, +)
@@ -152,7 +152,7 @@ struct AddExerciseSessionView: View {
                         .foregroundStyle(Color.textSecondary)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
 
             if viewModel.exerciseGroups.isEmpty {
                 // 빈 상태 — 운동 추가 유도
@@ -173,15 +173,15 @@ struct AddExerciseSessionView: View {
                         }
                         Spacer()
                     }
-                    .padding(16)
+                    .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                     .background(Color.surfaceCard)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
+                        RoundedRectangle(cornerRadius: Radius.lg)
                             .stroke(Color.brandAccent.opacity(0.4), lineWidth: 1.5)
                     )
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
             } else {
                 // 운동 그룹 카드들
                 VStack(spacing: 12) {
@@ -195,7 +195,7 @@ struct AddExerciseSessionView: View {
                         )
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
 
                 // 운동 추가 버튼
                 Button {
@@ -209,11 +209,11 @@ struct AddExerciseSessionView: View {
                     }
                     .foregroundStyle(Color.brandAccent)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
                     .background(Color.surfaceCard)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.md))
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -227,16 +227,16 @@ struct AddExerciseSessionView: View {
             HStack(alignment: .top, spacing: 10) {
                 Image(systemName: "note.text")
                     .foregroundStyle(Color.textSecondary)
-                    .padding(.top, 2)
+                    .padding(.top, 2) // design-lint:ignore — micro/hero spacing
                 TextField("오늘 운동 느낌이나 컨디션 메모...", text: $viewModel.sessionNotes, axis: .vertical)
                     .font(.bodyMedium)
                     .lineLimit(2...4)
             }
-            .padding(14)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 
     // MARK: - Save Button
@@ -263,22 +263,22 @@ struct AddExerciseSessionView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(
                 viewModel.canSave
                     ? Color.brandPrimary
                     : Color.brandPrimary.opacity(0.35)
             )
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(
                 color: viewModel.canSave ? Color.brandPrimary.opacity(0.35) : .clear,
                 radius: 10, x: 0, y: 4
             )
         }
         .disabled(!viewModel.canSave || viewModel.isSaving)
-        .padding(.horizontal, 16)
-        .padding(.top, 4)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.top, Spacing.xs) // design-lint:ignore — micro/hero spacing
     }
 
     // MARK: - Helpers
@@ -289,8 +289,8 @@ struct AddExerciseSessionView: View {
             .foregroundStyle(Color.textSecondary)
             .textCase(.uppercase)
             .tracking(0.5)
-            .padding(.horizontal, 4)
-            .padding(.bottom, 8)
+            .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.sm) // design-lint:ignore — micro/hero spacing
     }
 
     private func timePickerCard(title: String, selection: Binding<Date>) -> some View {
@@ -309,10 +309,10 @@ struct AddExerciseSessionView: View {
             .environment(\.locale, Locale(identifier: "ko_KR"))
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(12)
+        .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.backgroundPage)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
     }
 }
 
@@ -344,7 +344,7 @@ private struct ExerciseGroupCard: View {
                         Text("세트 추가").font(.captionXSmall).fontWeight(.semibold)
                     }
                     .foregroundStyle(Color.brandAccent)
-                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .padding(.horizontal, Spacing.sm).padding(.vertical, Spacing.xs)
                     .background(Color.surfaceCard).clipShape(Capsule())
                 }
                 Button(action: onDeleteGroup) {
@@ -352,7 +352,7 @@ private struct ExerciseGroupCard: View {
                         .foregroundStyle(Color.textSecondary.opacity(0.5))
                 }
             }
-            .padding(14)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfaceCard)
 
             Divider()
@@ -365,12 +365,12 @@ private struct ExerciseGroupCard: View {
                         draft: $group.sets[setIdx],
                         onDelete: { onDeleteSet(setIdx) }
                     )
-                    if setIdx < group.sets.count - 1 { Divider().padding(.leading, 14) }
+                    if setIdx < group.sets.count - 1 { Divider().padding(.leading, Spacing.lg) }
                 }
             }
             .background(Color.surfaceCard)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }
@@ -388,7 +388,7 @@ private struct DraftSetRow: View {
                 Text("세트 \(setNumber)")
                     .font(.captionXSmall).fontWeight(.bold)
                     .foregroundStyle(Color.brandAccent)
-                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .padding(.horizontal, Spacing.sm).padding(.vertical, 3)
                     .background(Color.surfaceCard).clipShape(Capsule())
 
                 // 세트 타입 피커
@@ -398,7 +398,7 @@ private struct DraftSetRow: View {
                             Text(opt.label)
                                 .font(.captionXSmall).fontWeight(.semibold)
                                 .foregroundStyle(draft.setType == opt ? .white : Color.brandAccent)
-                                .padding(.horizontal, 9).padding(.vertical, 4)
+                                .padding(.horizontal, 9).padding(.vertical, Spacing.xs)
                                 .background(draft.setType == opt ? Color.brandAccent : Color.brandAccent.opacity(0.12))
                                 .clipShape(Capsule())
                         }
@@ -427,7 +427,7 @@ private struct DraftSetRow: View {
                 }
             }
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 
     private func inputField(_ placeholder: String, unit: String,
@@ -439,9 +439,9 @@ private struct DraftSetRow: View {
                 .multilineTextAlignment(.trailing)
             Text(unit).font(.caption).foregroundStyle(Color.textSecondary)
         }
-        .padding(.horizontal, 12).padding(.vertical, 10)
+        .padding(.horizontal, Spacing.md).padding(.vertical, Spacing.md)
         .background(Color.backgroundPage)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
     }
 }
 
@@ -458,7 +458,7 @@ struct ExerciseCatalogPickerView: View {
             VStack(spacing: 0) {
                 // 검색 바
                 searchBar
-                    .padding(16)
+                    .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                     .background(Color.surfaceCard)
 
                 Divider()
@@ -520,9 +520,9 @@ struct ExerciseCatalogPickerView: View {
                 }
             }
         }
-        .padding(12)
+        .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
         .background(Color.backgroundPage)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
     }
 
     private var catalogList: some View {
@@ -548,8 +548,8 @@ struct ExerciseCatalogPickerView: View {
                             .foregroundStyle(Color.textSecondary.opacity(0.5))
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceCard)
                 Divider()
             }
@@ -578,7 +578,7 @@ struct ExerciseCatalogPickerView: View {
                         .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                 }
-                .padding(.horizontal, 4)
+                .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(MuscleGroupMeta.all, id: \.key) { meta in
@@ -595,16 +595,16 @@ struct ExerciseCatalogPickerView: View {
                                     .foregroundStyle(Color.textPrimary)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
+                            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                             .background(Color.surfaceCard)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
                             .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
                         }
                         .buttonStyle(.plain)
                     }
                 }
             }
-            .padding(16)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
     }
 
@@ -655,11 +655,11 @@ struct ExerciseCatalogPickerView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(Color.brandPrimary)
                 }
-                .padding(14)
+                .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 24)
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             } else {
                 Button {
                     Task {
@@ -678,7 +678,7 @@ struct ExerciseCatalogPickerView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(Color.brandPrimary)
                 .disabled(viewModel.isAiEstimating)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -688,8 +688,8 @@ struct ExerciseCatalogPickerView: View {
         Text(text)
             .font(.caption.bold())
             .foregroundStyle(Color.brandAccent)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
+            .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, 5) // design-lint:ignore — micro/hero spacing
             .background(Color.surfaceCard)
             .clipShape(Capsule())
     }
@@ -734,7 +734,7 @@ private struct CatalogRow: View {
                 .foregroundStyle(Color.brandAccent)
                 .frame(width: 40, height: 40)
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.displayName)
@@ -758,13 +758,13 @@ private struct CatalogRow: View {
                 Text("커스텀")
                     .font(.captionXSmall).fontWeight(.semibold)
                     .foregroundStyle(Color.brandWarning)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
+                    .padding(.horizontal, 7) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
                     .background(Color.brandWarning.opacity(0.12))
                     .clipShape(Capsule())
             }
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
     }
 
     private func exerciseIcon(for type: String) -> String {

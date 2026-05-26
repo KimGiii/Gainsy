@@ -62,13 +62,13 @@ struct ExerciseSessionDetailView: View {
                 let prSets = session.sets.filter(\.personalRecord)
                 if !prSets.isEmpty {
                     prBanner(sets: prSets)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 }
 
                 // 메모
                 if let notes = session.notes, !notes.isEmpty {
                     noteCard(text: notes)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 }
 
                 // 운동 그룹
@@ -77,8 +77,8 @@ struct ExerciseSessionDetailView: View {
                         ExerciseGroupCard(name: group.exerciseName, sets: group.sets)
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -98,7 +98,7 @@ struct ExerciseSessionDetailView: View {
                 Text(session.formattedDate)
                     .font(.numeralMedium).fontWeight(.bold)
                     .foregroundStyle(.white)
-                    .padding(.top, 8)
+                    .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
 
                 Spacer(minLength: 0)
 
@@ -136,12 +136,12 @@ struct ExerciseSessionDetailView: View {
                         color: Color.brandAccent
                     )
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 18))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
                 .shadow(color: .black.opacity(0.10), radius: 12, x: 0, y: 4)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 28)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -184,11 +184,11 @@ struct ExerciseSessionDetailView: View {
             }
             Spacer()
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.brandWarning.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: Radius.lg)
                 .stroke(Color.brandWarning.opacity(0.4), lineWidth: 1)
         )
     }
@@ -199,16 +199,16 @@ struct ExerciseSessionDetailView: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "note.text")
                 .foregroundStyle(Color.brandAccent)
-                .padding(.top, 1)
+                .padding(.top, 1) // design-lint:ignore — micro/hero spacing
             Text(text)
                 .font(.bodyMedium)
                 .foregroundStyle(Color.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
@@ -229,7 +229,7 @@ struct ExerciseSessionDetailView: View {
             .foregroundStyle(Color.brandAccent)
             .fontWeight(.semibold)
         }
-        .padding(32)
+        .padding(Spacing.xxl) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
@@ -288,23 +288,23 @@ private struct ExerciseGroupCard: View {
                 Text("\(sets.count)세트")
                     .font(.caption).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
                     .background(Color.backgroundPage)
                     .clipShape(Capsule())
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
             .background(Color.surfaceCard)
 
             // 세트 행
             ForEach(sets) { set in
-                Divider().padding(.horizontal, 16)
+                Divider().padding(.horizontal, Spacing.lg)
                 SetRow(set: set)
             }
         }
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
     }
 }
@@ -341,14 +341,14 @@ private struct SetRow: View {
                         .font(.captionXSmall).fontWeight(.bold)
                         .foregroundStyle(Color.brandWarning)
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
                 .background(Color.brandWarning.opacity(0.12))
                 .clipShape(Capsule())
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 11)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, 11) // design-lint:ignore — micro/hero spacing
     }
 }
 

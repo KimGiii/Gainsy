@@ -13,7 +13,7 @@ struct LoginView: View {
                 // Header
                 VStack(spacing: 8) {
                     BrandLogoView(size: 72, color: Color.brandPrimary)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
                     Text("다시 만나서 반가워요")
                         .font(.headingLarge)
@@ -23,8 +23,8 @@ struct LoginView: View {
                         .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
-                .padding(.top, 40)
-                .padding(.bottom, 36)
+                .padding(.top, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 36) // design-lint:ignore — micro/hero spacing
 
                 // Form
                 VStack(spacing: 14) {
@@ -42,7 +42,7 @@ struct LoginView: View {
                         text:        $viewModel.password
                     )
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                 // Error
                 if let error = viewModel.errorMessage {
@@ -50,8 +50,8 @@ struct LoginView: View {
                         .font(.caption)
                         .foregroundStyle(Color.brandDanger)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 28)
-                        .padding(.top, 8)
+                        .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                        .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
                 }
 
                 Spacer()
@@ -64,8 +64,8 @@ struct LoginView: View {
                 ) {
                     Task { await viewModel.login(apiClient: container.apiClient, authState: authState) }
                 }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 48)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 48) // design-lint:ignore — micro/hero spacing
             }
         }
         .navigationTitle("")

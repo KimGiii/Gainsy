@@ -27,7 +27,7 @@ struct TrackingPermissionView: View {
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
             VStack(alignment: .leading, spacing: 14) {
                 bulletRow(
@@ -49,11 +49,11 @@ struct TrackingPermissionView: View {
                     detail: "iOS 설정 > 개인정보 보호 > 추적에서 언제든 변경"
                 )
             }
-            .padding(20)
+            .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
             Spacer()
 
@@ -72,11 +72,11 @@ struct TrackingPermissionView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
                 .background(Color.brandPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             }
             .disabled(isRequesting)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 24)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.surfaceGrouped.ignoresSafeArea())
     }

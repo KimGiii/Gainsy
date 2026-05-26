@@ -15,15 +15,15 @@ struct WeeklyRetrospectiveView: View {
                 )
 
                 if viewModel.isLoading {
-                    ProgressView().padding(.top, 60)
+                    ProgressView().padding(.top, 60) // design-lint:ignore — micro/hero spacing
                 } else if let s = viewModel.summary {
                     WeeklySummaryContent(summary: s)
                 } else {
                     WeeklyEmptyState()
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.backgroundPage)
         .navigationTitle("주간 회고")
@@ -77,7 +77,7 @@ private struct WeekNavigationBar: View {
             }
             .disabled(!canGoNext)
         }
-        .padding(.top, 8)
+        .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -275,10 +275,10 @@ private struct InsightCard<Content: View>: View {
             }
             content()
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity)
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }

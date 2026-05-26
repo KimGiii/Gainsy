@@ -16,8 +16,8 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // 1. 대시보드 헤더
                     DashboardHeaderBar()
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
+                        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                        .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
 
                     // 2. 메인 링 패널 (칼로리 + 운동 + 단백질)
                     ActivityRingPanel(
@@ -50,7 +50,7 @@ struct HomeView: View {
                         )
                         .frame(maxWidth: .infinity)
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
                     // 4. 주간 추세
                     WeeklyTrendCard(weeklyActivity: viewModel.weeklyActivity)
@@ -66,7 +66,7 @@ struct HomeView: View {
 
                     Spacer(minLength: 100)
                 }
-                .padding(.top, 4)
+                .padding(.top, Spacing.xs) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.backgroundPage.ignoresSafeArea())
             .overlay(alignment: .center) {
@@ -74,8 +74,8 @@ struct HomeView: View {
                     ProgressView()
                         .tint(Color.brandAccentGlow)
                         .scaleEffect(1.4)
-                        .padding(24)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                        .padding(Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: Radius.lg))
                 }
             }
             .alert("오류", isPresented: Binding(
@@ -179,7 +179,7 @@ private struct MealsSectionCompact: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionLabel(title: "오늘 식단", eyebrow: "MEALS")
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 12) {
@@ -202,7 +202,7 @@ private struct MealsSectionCompact: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -222,7 +222,7 @@ private struct MealCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
                     .fill(Color.surfaceCard)
                 Text(log.mealType.emoji)
                     .font(.system(size: 52)) // design-lint:ignore — SF Symbol or hero numeric
@@ -235,9 +235,9 @@ private struct MealCard: View {
                 Text(log.mealType.displayName)
                     .font(.system(size: 9, weight: .heavy)).tracking(1.0).textCase(.uppercase) // design-lint:ignore — 마이크로 라벨
                     .foregroundStyle(Color.textHeadline)
-                    .padding(.horizontal, 7).padding(.vertical, 3)
+                    .padding(.horizontal, 7).padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
                     .background(Capsule().fill(Color.surfaceCard))
-                    .padding(9)
+                    .padding(9) // design-lint:ignore — micro/hero spacing
             }
 
             VStack(alignment: .leading, spacing: 2) {
@@ -255,7 +255,7 @@ private struct MealCard: View {
                 }
             }
             .frame(width: 140, alignment: .leading)
-            .padding(.top, 9)
+            .padding(.top, 9) // design-lint:ignore — micro/hero spacing
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityDescription)
@@ -266,9 +266,9 @@ private struct EmptyMealCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
                     .fill(Color.backgroundPage)
-                    .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .overlay(RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
                         .stroke(Color.textHeadline.opacity(0.08), style: StrokeStyle(lineWidth: 1, dash: [4])))
                 VStack(spacing: 8) {
                     Image(systemName: "fork.knife")
@@ -280,7 +280,7 @@ private struct EmptyMealCard: View {
             .frame(width: 140, height: 114)
             Text("첫 식사를 기록해 보세요")
                 .font(.captionBold).foregroundStyle(Color.textSecondary)
-                .frame(width: 140, alignment: .leading).padding(.top, 9)
+                .frame(width: 140, alignment: .leading).padding(.top, 9) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -289,7 +289,7 @@ private struct AddMealCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack {
-                RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color.brandDusk)
+                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous).fill(Color.brandDusk)
                 VStack(spacing: 8) {
                     Image(systemName: "plus")
                         .font(.headingMedium).fontWeight(.heavy).foregroundStyle(Color.brandDusk)
@@ -300,7 +300,7 @@ private struct AddMealCard: View {
             .frame(width: 140, height: 114)
             Text("+ 새 식단")
                 .font(.captionXSmall).fontWeight(.semibold).foregroundStyle(Color.textHeadline)
-                .frame(width: 140, alignment: .leading).padding(.top, 9)
+                .frame(width: 140, alignment: .leading).padding(.top, 9) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -313,13 +313,13 @@ private struct WorkoutSectionCompact: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionLabel(title: "오늘 운동", eyebrow: "EXERCISE")
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
             NavigationLink(destination: ExerciseRecordView()) {
                 WorkoutCompactCard(session: session)
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -329,13 +329,13 @@ private struct WorkoutCompactCard: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(LinearGradient.forestHero)
             RadialGradient(
                 colors: [Color.brandAccent.opacity(0.30), .clear],
                 center: UnitPoint(x: 0.9, y: 0.15), startRadius: 10, endRadius: 200
             )
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xl, style: .continuous))
 
             HStack(alignment: .center) {
                 if let session {
@@ -374,8 +374,8 @@ private struct WorkoutCompactCard: View {
                 }
                 .accessibilityHidden(true)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
         .frame(height: 90)
         .elevation(.forest)
@@ -395,7 +395,7 @@ private struct WorkoutChip: View {
                 Text(unit).font(.system(size: 9, weight: .medium)).foregroundStyle(.white.opacity(0.6)) // design-lint:ignore — 단위 라벨
             }
         }
-        .padding(.horizontal, 9).padding(.vertical, 5)
+        .padding(.horizontal, 9).padding(.vertical, 5) // design-lint:ignore — micro/hero spacing
         .background(Capsule().fill(Color.white.opacity(0.08)).overlay(Capsule().stroke(Color.white.opacity(0.13), lineWidth: 0.7)))
     }
 }

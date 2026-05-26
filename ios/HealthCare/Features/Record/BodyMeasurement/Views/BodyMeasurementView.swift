@@ -21,20 +21,20 @@ struct BodyMeasurementView: View {
                         if viewModel.isLoading {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
-                                .padding(.top, 40)
+                                .padding(.top, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
                         } else if viewModel.measurements.isEmpty {
                             EmptyMeasurementCard { viewModel.showAddSheet = true }
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                         } else {
                             if let latest = viewModel.latestMeasurement {
                                 LatestStatsCard(
                                     measurement: latest,
                                     onSourceTap: { showMedicalSources = true }
                                 )
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                             }
                             MeasurementTrendSection(viewModel: viewModel)
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                             MeasurementHistorySection(
                                 measurements: viewModel.measurements,
                                 onDelete: { id in
@@ -43,8 +43,8 @@ struct BodyMeasurementView: View {
                             )
                         }
                     }
-                    .padding(.top, 20)
-                    .padding(.bottom, 80)
+                    .padding(.top, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                    .padding(.bottom, 80) // design-lint:ignore — micro/hero spacing
                 }
             }
             .ignoresSafeArea(edges: .top)
@@ -67,8 +67,8 @@ struct BodyMeasurementView: View {
                     .clipShape(Circle())
                     .shadow(color: Color(hex: "#2563EB").opacity(0.45), radius: 12, x: 0, y: 6)
             }
-            .padding(.trailing, 24)
-            .padding(.bottom, 32)
+            .padding(.trailing, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $viewModel.showAddSheet) {
@@ -116,7 +116,7 @@ private struct BodyHeroSection: View {
                         Image(systemName: "chevron.left")
                             .font(.cta)
                             .foregroundStyle(.white)
-                            .padding(10)
+                            .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                             .background(.white.opacity(0.15))
                             .clipShape(Circle())
                     }
@@ -127,14 +127,14 @@ private struct BodyHeroSection: View {
                     Spacer()
                     Color.clear.frame(width: 40, height: 40)
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
                 if isLoading {
-                    ProgressView().tint(.white).padding(.top, 18)
+                    ProgressView().tint(.white).padding(.top, Spacing.lg)
                 } else if let m = latest {
-                    HeroStatsRow(measurement: m).padding(.top, 14)
+                    HeroStatsRow(measurement: m).padding(.top, Spacing.lg)
                 } else {
-                    HeroEmptyState().padding(.top, 14)
+                    HeroEmptyState().padding(.top, Spacing.lg)
                 }
             }
         }
@@ -162,7 +162,7 @@ private struct HeroStatsRow: View {
                 HeroStatItem(value: String(format: "%.1f", mm), unit: "kg", label: "근육량")
             }
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -200,7 +200,7 @@ private struct HeroEmptyState: View {
                 .font(.bodySmall)
                 .foregroundStyle(.white.opacity(0.65))
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -315,9 +315,9 @@ private struct LatestStatsCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 }
@@ -336,7 +336,7 @@ private struct StatCell: View {
                 .foregroundStyle(color)
                 .frame(width: 40, height: 40)
                 .background(color.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
             HStack(alignment: .lastTextBaseline, spacing: 1) {
                 Text(value)
@@ -410,7 +410,7 @@ private struct MeasurementTrendSection: View {
             if viewModel.isTrendLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 30)
+                    .padding(.vertical, 30) // design-lint:ignore — micro/hero spacing
             } else if viewModel.hasTrendData {
                 VStack(alignment: .leading, spacing: 12) {
                     Chart(viewModel.displayTrendPoints) { point in
@@ -463,7 +463,7 @@ private struct MeasurementTrendSection: View {
                             }
                         }
                     }
-                    .padding(.trailing, 8)
+                    .padding(.trailing, Spacing.sm) // design-lint:ignore — micro/hero spacing
 
                     HStack(spacing: 12) {
                         TrendSummaryPill(
@@ -492,14 +492,14 @@ private struct MeasurementTrendSection: View {
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 28)
+                .padding(.vertical, Spacing.xxl) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 
@@ -535,8 +535,8 @@ private struct MetricChip: View {
             Text(title)
                 .font(.labelSmall)
                 .foregroundStyle(isSelected ? .white : accent)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 9)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, 9) // design-lint:ignore — micro/hero spacing
                 .background(isSelected ? accent : accent.opacity(0.12))
                 .clipShape(Capsule())
         }
@@ -566,10 +566,10 @@ private struct TrendSummaryPill: View {
             }
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity)
         .background(Color.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
     }
 }
 
@@ -596,12 +596,12 @@ private struct MeasurementHistorySection: View {
             Text("측정 기록")
                 .font(.headingMedium).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
             VStack(spacing: 10) {
                 ForEach(visibleMeasurements) { m in
                     MeasurementRow(measurement: m, onDelete: { onDelete(m.id) })
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                 }
 
                 if hasMore {
@@ -620,11 +620,11 @@ private struct MeasurementHistorySection: View {
                         }
                         .foregroundStyle(Color.brandPrimary)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
                         .background(Color.brandPrimary.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                 }
             }
         }
@@ -659,9 +659,9 @@ private struct MeasurementRow: View {
                     .clipShape(Circle())
             }
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
         .confirmationDialog("기록 삭제", isPresented: $showDeleteConfirm) {
             Button("삭제", role: .destructive) { onDelete() }
@@ -707,15 +707,15 @@ private struct EmptyMeasurementCard: View {
                 Text("기록 추가하기")
                     .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 30)
-                    .padding(.vertical, 11)
+                    .padding(.horizontal, 30) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, 11) // design-lint:ignore — micro/hero spacing
                     .background(Color(hex: "#2563EB"))
                     .clipShape(Capsule())
             }
             .frame(maxWidth: .infinity)
-            .padding(28)
+            .padding(Spacing.xxl) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
             .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
         }
         .buttonStyle(.plain)

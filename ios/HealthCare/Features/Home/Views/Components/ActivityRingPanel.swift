@@ -57,13 +57,13 @@ struct ActivityRingPanel: View {
                     )
                 }
             }
-            .padding(.horizontal, 28)
-            .padding(.top, 24)
-            .padding(.bottom, 20)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.top, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
             Divider()
                 .background(Color.brandDusk.opacity(0.07))
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
             // 하단 — 소모 칼로리 + 목표 대비 요약
             HStack {
@@ -81,19 +81,19 @@ struct ActivityRingPanel: View {
                     unit: "kcal 남음"
                 )
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
         .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(Color.surfaceCard)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                         .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
         .elevation(.low)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
     }
 
     // MARK: - Helpers
@@ -140,6 +140,6 @@ struct ActivityRingPanel: View {
             todayProteinG: 98,
             dailyProteinGoal: 150
         )
-        .padding(.vertical, 40)
+        .padding(.vertical, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
     }
 }

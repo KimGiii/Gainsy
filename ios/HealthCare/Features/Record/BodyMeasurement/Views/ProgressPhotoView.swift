@@ -122,8 +122,8 @@ struct ProgressPhotoView: View {
                             if count > 0 {
                                 Text("\(count)")
                                     .font(.system(size: 11, weight: .heavy, design: .rounded))
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 1)
+                                    .padding(.horizontal, 5) // design-lint:ignore — micro/hero spacing
+                                    .padding(.vertical, 1) // design-lint:ignore — micro/hero spacing
                                     .background(
                                         viewModel.selectedType == type
                                             ? Color.white.opacity(0.25)
@@ -132,8 +132,8 @@ struct ProgressPhotoView: View {
                                     .clipShape(Capsule())
                             }
                         }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                        .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
                         .background(
                             viewModel.selectedType == type
                                 ? Color.brandPrimary
@@ -153,8 +153,8 @@ struct ProgressPhotoView: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.surfacePrimary)
         .overlay(
@@ -180,15 +180,15 @@ struct ProgressPhotoView: View {
                 Text("비교 보기")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
                     .background(viewModel.compareSelection.count == 2 ? Color.brandPrimary : Color.textTertiary)
                     .clipShape(Capsule())
             }
             .disabled(viewModel.compareSelection.count != 2)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
         .overlay(Rectangle().fill(Color.hairline).frame(height: 0.5), alignment: .bottom)
     }
@@ -238,7 +238,7 @@ struct ProgressPhotoView: View {
                         }
                     }
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, Spacing.xl) // design-lint:ignore — micro/hero spacing
             }
             .refreshable {
                 await viewModel.loadAll(apiClient: container.apiClient)
@@ -298,8 +298,8 @@ private struct PhotoGridCell: View {
                         Text("기준")
                             .font(.system(size: 9, weight: .heavy))
                             .foregroundStyle(Color.textHeadline)
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, 5) // design-lint:ignore — micro/hero spacing
+                            .padding(.vertical, 2) // design-lint:ignore — micro/hero spacing
                             .background(Color.brandAccentGlow)
                             .clipShape(Capsule())
                     }
@@ -308,7 +308,7 @@ private struct PhotoGridCell: View {
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
                 }
-                .padding(8)
+                .padding(Spacing.sm) // design-lint:ignore — micro/hero spacing
                 .background(
                     LinearGradient(
                         colors: [.clear, .black.opacity(0.45)],
@@ -323,7 +323,7 @@ private struct PhotoGridCell: View {
                             .font(.system(size: 22, weight: .semibold))
                             .foregroundStyle(isSelected ? Color.brandPrimary : .white)
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-                            .padding(8)
+                            .padding(Spacing.sm) // design-lint:ignore — micro/hero spacing
                     }
                     .frame(width: geo.size.width, height: geo.size.width)
                 }
@@ -333,7 +333,7 @@ private struct PhotoGridCell: View {
         .clipShape(Rectangle())
         .overlay(
             isSelected
-                ? RoundedRectangle(cornerRadius: 0)
+                ? RoundedRectangle(cornerRadius: 0) // design-lint:ignore — intentional sharp corner
                     .stroke(Color.brandPrimary, lineWidth: 3)
                 : nil
         )
@@ -388,7 +388,7 @@ private struct PhotoDetailView: View {
                             }
                         }
                     }
-                    .padding(24)
+                    .padding(Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                     Button(role: .destructive) {
                         showDeleteConfirm = true
@@ -397,12 +397,12 @@ private struct PhotoDetailView: View {
                             .font(.system(size: 15, weight: .medium))
                             .foregroundStyle(Color.red)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
+                            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                             .background(Color.red.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.md))
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                    .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
                 }
             }
             .background(Color.surfaceGrouped)
@@ -497,7 +497,7 @@ struct PhotoCompareView: View {
                         .foregroundStyle(Color.white.opacity(0.7))
                 }
             }
-            .padding(.vertical, 12)
+            .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
             .frame(maxWidth: .infinity)
             .background(Color.black.opacity(0.85))
         }

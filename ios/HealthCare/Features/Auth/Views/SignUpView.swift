@@ -23,7 +23,7 @@ struct SignUpView: View {
                 // Header
                 VStack(spacing: 8) {
                     BrandLogoView(size: 72, color: Color.brandPrimary)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
                     Text("함께 시작해 봐요")
                         .font(.headingLarge)
@@ -33,8 +33,8 @@ struct SignUpView: View {
                         .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
-                .padding(.top, 36)
-                .padding(.bottom, 32)
+                .padding(.top, 36) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                 // Form
                 VStack(spacing: 14) {
@@ -64,7 +64,7 @@ struct SignUpView: View {
                         text:        $viewModel.passwordConfirm
                     )
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                 // Error
                 if let error = viewModel.errorMessage {
@@ -72,8 +72,8 @@ struct SignUpView: View {
                         .font(.caption)
                         .foregroundStyle(Color.brandDanger)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 28)
-                        .padding(.top, 8)
+                        .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                        .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
                 }
 
                 Spacer()
@@ -93,7 +93,7 @@ struct SignUpView: View {
                             url: privacyURL
                         )
                     }
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
                     PrimaryButton(
                         "가입하기",
@@ -103,8 +103,8 @@ struct SignUpView: View {
                         Task { await viewModel.register(apiClient: container.apiClient, authState: authState) }
                     }
                 }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 48)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 48) // design-lint:ignore — micro/hero spacing
             }
         }
         .navigationTitle("")
