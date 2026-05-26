@@ -32,7 +32,9 @@ configFiles:
 packages:
   FirebaseSDK:
     url: https://github.com/firebase/firebase-ios-sdk
-    from: "11.0.0"
+    # 11.15.0의 GoogleAppMeasurementOnDeviceConversion 바이너리 아티팩트가 깨져 있어 11.14.0에 핀.
+    # 업그레이드 시 SPM resolve 검증 후 풀 것.
+    exactVersion: "11.14.0"
   GoogleMobileAds:
     url: https://github.com/googleads/swift-package-manager-google-mobile-ads
     from: "11.0.0"
