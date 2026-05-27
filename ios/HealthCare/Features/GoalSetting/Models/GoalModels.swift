@@ -41,16 +41,6 @@ enum GoalType: String, Codable, CaseIterable, Sendable {
         }
     }
 
-    var emoji: String {
-        switch self {
-        case .WEIGHT_LOSS:        return "⚖️"
-        case .MUSCLE_GAIN:        return "💪"
-        case .BODY_RECOMPOSITION: return "🔥"
-        case .ENDURANCE:          return "🏃"
-        case .GENERAL_HEALTH:     return "❤️"
-        }
-    }
-
     var icon: String {
         switch self {
         case .WEIGHT_LOSS:        return "arrow.down.circle.fill"

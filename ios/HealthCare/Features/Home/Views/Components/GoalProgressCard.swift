@@ -47,9 +47,12 @@ private struct ActiveGoalContent: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("GOAL · \(goal.goalType.displayName.uppercased())")
                     .eyebrowStyle()
-                Text("\(goal.goalType.emoji)  \(goal.goalType.displayName)")
-                    .font(.bodyLarge).fontWeight(.bold)
-                    .foregroundStyle(Color.textHeadline)
+                HStack(spacing: 6) {
+                    Image(systemName: goal.goalType.icon)
+                    Text(goal.goalType.displayName)
+                }
+                .font(.bodyLarge).fontWeight(.bold)
+                .foregroundStyle(Color.textHeadline)
 
                 if let days = goal.daysRemaining {
                     HStack(spacing: 6) {

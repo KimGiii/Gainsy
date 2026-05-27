@@ -114,10 +114,10 @@ private struct DashboardHeaderBar: View {
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 5..<12:  return "좋은 아침이에요 ☀️"
-        case 12..<17: return "활기찬 오후예요 💪"
-        case 17..<21: return "수고했어요 🌙"
-        default:      return "오늘도 잘 했어요 ⭐"
+        case 5..<12:  return "좋은 아침이에요"
+        case 12..<17: return "활기찬 오후예요"
+        case 17..<21: return "수고했어요"
+        default:      return "오늘도 잘 했어요"
         }
     }
 
@@ -255,8 +255,9 @@ private struct MealCard: View {
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
                     .fill(Color.surfaceCard)
-                Text(log.mealType.emoji)
-                    .font(.system(size: 52)) // design-lint:ignore — SF Symbol or hero numeric
+                Image(systemName: log.mealType.sfSymbol)
+                    .font(.system(size: 44))
+                    .foregroundStyle(Color.brandAccent.opacity(0.15))
                     .offset(x: 16, y: 14)
                     .rotationEffect(.degrees(-4))
                     .accessibilityHidden(true)

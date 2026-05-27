@@ -678,8 +678,8 @@ private struct DietLogSummaryCard: View {
         HStack(spacing: 12) {
             // 식사 유형 아이콘
             VStack(spacing: 2) {
-                Text(log.mealType.emoji)
-                    .font(.system(size: 20)) // design-lint:ignore — SF Symbol or special
+                Image(systemName: log.mealType.sfSymbol)
+                    .font(.system(size: 18))
                 Text(log.mealType.displayName)
                     .font(.system(size: 9, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(Color.brandAccent)
