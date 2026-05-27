@@ -17,6 +17,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         }
         configurePushNotifications(application)
         GADMobileAds.sharedInstance().start(completionHandler: nil)
+
+        // Cold start: 앱 종료 상태에서 푸시 탭 → launch 시점에 payload 도착.
+        // MainTabView가 아직 onReceive 등록 전이므로 PushRouter에 저장해 consume 대기.
+        if let userInfo = launchOptions?[.remoteNotification] as? [AnyHashable: Any],
+           let type = userInfo["type"] as? String {
+            Task { @MainActor in
+                PushRouter.shared.deliver(type: type)
+            }
+        }
         return true
     }
 
@@ -70,9 +79,12 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     ) async {
         let userInfo = response.notification.request.content.userInfo
         guard let type = userInfo["type"] as? String else { return }
-        NotificationCenter.default.post(name: .pushNotificationTapped,
-                                        object: nil,
-                                        userInfo: ["type": type])
+        // 메인 스레드에서 PushRouter에 전달 — SwiftUI 상태 변경 안전성 보장.
+        // NotificationCenter publisher는 race condition(.onReceive 등록 전 fire)이 있어
+        // PushRouter의 pending queue 방식으로 일원화.
+        await MainActor.run {
+            PushRouter.shared.deliver(type: type)
+        }
     }
 }
 
@@ -85,6 +97,6 @@ extension AppDelegate: @preconcurrency MessagingDelegate {
 }
 
 extension Notification.Name {
-    static let fcmTokenRefreshed    = Notification.Name("fcmTokenRefreshed")
-    static let pushNotificationTapped = Notification.Name("pushNotificationTapped")
+    static let fcmTokenRefreshed = Notification.Name("fcmTokenRefreshed")
+    // pushNotificationTapped는 PushRouter로 대체되어 제거됨 (cold-start race 해결).
 }
