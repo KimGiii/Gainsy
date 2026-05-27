@@ -29,7 +29,7 @@ struct ActivityRingPanel: View {
                     size: .hero,
                     value: caloriesValueText,
                     unit: "kcal",
-                    label: "칼로리 섭취"
+                    label: String(format: "권장 %.0f kcal", dailyCalorieGoal)
                 )
 
                 // 오른쪽 — 운동 + 단백질 (standard × 2)
@@ -65,7 +65,7 @@ struct ActivityRingPanel: View {
                 .background(Color.brandDusk.opacity(0.07))
                 .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
-            // 하단 — 소모 칼로리 + 목표 대비 요약
+            // 하단 — 소모 칼로리 + 권장 대비 요약 (초과 시 brandDanger)
             HStack {
                 summaryChip(
                     icon: "flame.fill",
@@ -75,10 +75,10 @@ struct ActivityRingPanel: View {
                 )
                 Spacer()
                 summaryChip(
-                    icon: "target",
-                    color: Color.brandAccent,
-                    value: String(format: "%.0f", dailyCalorieGoal - todayCalories),
-                    unit: "kcal 남음"
+                    icon: remainingCalories >= 0 ? "target" : "exclamationmark.triangle.fill",
+                    color: remainingCalories >= 0 ? Color.brandAccent : Color.brandDanger,
+                    value: String(format: "%.0f", abs(remainingCalories)),
+                    unit: remainingCalories >= 0 ? "kcal 남음" : "kcal 초과"
                 )
             }
             .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
@@ -97,6 +97,9 @@ struct ActivityRingPanel: View {
     }
 
     // MARK: - Helpers
+
+    /// 권장 - 섭취 (음수면 초과 섭취량).
+    private var remainingCalories: Double { dailyCalorieGoal - todayCalories }
 
     private var caloriesValueText: String {
         let v = Int(todayCalories)
