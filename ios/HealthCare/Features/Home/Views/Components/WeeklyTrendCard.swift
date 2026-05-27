@@ -23,13 +23,33 @@ struct WeeklyTrendCard: View {
                     .eyebrowStyle()
                 Spacer()
                 if let sel = selectedDay {
-                    HStack(alignment: .lastTextBaseline, spacing: 2) {
-                        Text(String(format: "%.0f", sel.caloriesIn))
-                            .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
-                            .foregroundStyle(Color.brandPrimary)
-                        Text("kcal")
-                            .font(.captionXSmall)
-                            .foregroundStyle(Color.textSecondary)
+                    HStack(spacing: 10) {
+                        // 섭취
+                        HStack(alignment: .lastTextBaseline, spacing: 2) {
+                            Image(systemName: "fork.knife")
+                                .font(.system(size: 9))
+                                .foregroundStyle(Color.brandAccent)
+                            Text(String(format: "%.0f", sel.caloriesIn))
+                                .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — hero numeric
+                                .foregroundStyle(Color.brandAccent)
+                            Text("kcal")
+                                .font(.captionXSmall)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                        // 소모
+                        if sel.caloriesBurned > 0 {
+                            HStack(alignment: .lastTextBaseline, spacing: 2) {
+                                Image(systemName: "flame.fill")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(Color.brandEmber)
+                                Text(String(format: "%.0f", sel.caloriesBurned))
+                                    .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — hero numeric
+                                    .foregroundStyle(Color.brandEmber)
+                                Text("kcal")
+                                    .font(.captionXSmall)
+                                    .foregroundStyle(Color.textSecondary)
+                            }
+                        }
                     }
                     .transition(.opacity)
                 } else {
@@ -70,7 +90,10 @@ struct WeeklyTrendCard: View {
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { val in
-                                    guard let date: String = proxy.value(atX: val.location.x) else { return }
+                                    // plot area origin을 빼야 정확한 x 좌표 매핑
+                                    let origin = geo[proxy.plotAreaFrame].origin
+                                    let xInPlot = val.location.x - origin.x
+                                    guard let date: String = proxy.value(atX: xInPlot) else { return }
                                     selectedDay = weeklyActivity.first { shortLabel($0.date) == date }
                                 }
                                 .onEnded { _ in
