@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
@@ -101,7 +103,68 @@ public class NotificationService {
         return sb.toString();
     }
 
+    // MARK: - Daily Log Reminder
+    //
+    // 매일 저녁 운영 cutoff 시각(기본 18:00 KST) 이후, 오늘 어떤 기록도 없는
+    // 사용자에게 "오늘의 기록을 추가해 보세요" 알림을 발송.
+
+    /**
+     * 오늘 미기록 사용자 전체에게 일일 리마인더 발송.
+     * 같은 일자에 이미 한 번 발송된 사용자는 skip (중복 방지).
+     */
+    public void sendDailyLogReminderToAll() {
+        LocalDate todayKst = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        Instant startOfTodayKst = todayKst.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant();
+        int sent = 0, skipped = 0, failed = 0;
+
+        for (User user : userRepository.findAllWithFcmToken()) {
+            // 오늘 이미 발송했으면 skip
+            if (notificationLogRepository.existsByUserIdAndTypeAndSentAtAfter(
+                    user.getId(), NotificationType.DAILY_LOG_REMINDER, startOfTodayKst)) {
+                skipped++;
+                continue;
+            }
+            // 오늘 기록이 하나라도 있으면 skip
+            if (insightsService.hasAnyActivityOn(user.getId(), todayKst)) {
+                skipped++;
+                continue;
+            }
+
+            try {
+                sendDailyLogReminder(user);
+                sent++;
+            } catch (Exception e) {
+                failed++;
+                log.warn("[Notification] Daily log reminder failed userId={}: {}",
+                        user.getId(), e.getMessage());
+            }
+        }
+
+        log.info("[Notification] Daily log reminder — sent={} skipped={} failed={}", sent, skipped, failed);
+    }
+
+    private void sendDailyLogReminder(User user) {
+        String title = "오늘 기록을 잊지 마세요";
+        String body  = "운동·식단 중 하나라도 가볍게 남겨 두면 추세를 놓치지 않아요";
+
+        FcmService.FcmResult result = fcmService.send(
+                user.getFcmToken(), title, body,
+                Map.of("type", NotificationType.DAILY_LOG_REMINDER));
+
+        NotificationLog logEntry = NotificationLog.builder()
+                .userId(user.getId())
+                .type(NotificationType.DAILY_LOG_REMINDER)
+                .title(title)
+                .body(body)
+                .status(result.isSent() ? "SENT" : "FAILED")
+                .fcmToken(user.getFcmToken())
+                .errorMessage(result.isSent() ? null : result.detail())
+                .build();
+        notificationLogRepository.save(logEntry);
+    }
+
     public interface NotificationType {
-        String WEEKLY_SUMMARY = "WEEKLY_SUMMARY";
+        String WEEKLY_SUMMARY     = "WEEKLY_SUMMARY";
+        String DAILY_LOG_REMINDER = "DAILY_LOG_REMINDER";
     }
 }
