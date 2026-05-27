@@ -57,7 +57,7 @@ private struct WeekNavigationBar: View {
             Button(action: onPrev) {
                 Image(systemName: "chevron.left")
                     .font(.bodyLarge).fontWeight(.semibold)
-                    .foregroundStyle(Color.brandPrimary)
+                    .foregroundStyle(Color.textHeadline)
                     .frame(width: 36, height: 36)
                     .background(Color.surfaceCard)
                     .clipShape(Circle())
@@ -70,10 +70,13 @@ private struct WeekNavigationBar: View {
             Button(action: onNext) {
                 Image(systemName: "chevron.right")
                     .font(.bodyLarge).fontWeight(.semibold)
-                    .foregroundStyle(canGoNext ? Color.brandPrimary : Color.textSecondary)
+                    // 활성=textHeadline(적응형 진함), 비활성=textTertiary(적응형 흐림)
+                    // brandPrimary는 다크 배경에서 안 보여 swap된 것처럼 보이던 문제 해결.
+                    .foregroundStyle(canGoNext ? Color.textHeadline : Color.textTertiary)
                     .frame(width: 36, height: 36)
                     .background(Color.surfaceCard)
                     .clipShape(Circle())
+                    .opacity(canGoNext ? 1.0 : 0.6)
             }
             .disabled(!canGoNext)
         }
