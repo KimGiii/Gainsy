@@ -17,6 +17,7 @@ import com.healthcare.domain.nutrition.service.NutritionTargetService;
 import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class GoalService {
     // ─────────────────────────── 목표 생성 ───────────────────────────
 
     @Transactional
+    @CacheEvict(cacheNames = "userProfile", key = "#userId")
     public GoalResponse createGoal(Long userId, CreateGoalRequest request) {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
@@ -563,6 +565,7 @@ public class GoalService {
     // ─────────────────────────── 목표 포기 ───────────────────────────
 
     @Transactional
+    @CacheEvict(cacheNames = "userProfile", key = "#userId")
     public void abandonGoal(Long userId, Long goalId) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Goal", goalId));
@@ -574,5 +577,9 @@ public class GoalService {
         }
         goal.abandon();
         goalRepository.save(goal);
+
+        // 활성 목표가 사라졌으므로 User daily target을 '목표 없음' 기준(TDEE 유지)으로 재계산.
+        userRepository.findByIdAndDeletedAtIsNull(userId)
+                .ifPresent(nutritionTargetService::applyToUser);
     }
 }
