@@ -76,9 +76,6 @@ struct DietRecordView: View {
                         .foregroundColor(viewModel.remainingCalories >= 0
                             ? Color.textHeadline
                             : Color.brandDanger)
-                    Text(String(format: "권장 %.0f", viewModel.dailyCalorieGoal))
-                        .font(.caption2)
-                        .foregroundColor(Color.textSecondary)
                 }
             }
             // 칼로리 프로그레스 바
