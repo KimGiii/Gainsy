@@ -351,7 +351,7 @@ private struct DietRouteCard: View {
                 Spacer()
 
                 Image(systemName: "fork.knife.circle.fill")
-                    .font(.system(size: 46))
+                    .font(.system(size: 46)) // design-lint:ignore — SF Symbol hero icon sizing
                     .foregroundStyle(Color.brandAccent.opacity(0.2))
                     .rotationEffect(.degrees(-6))
                     .padding(.bottom, Spacing.md) // design-lint:ignore — micro/hero spacing

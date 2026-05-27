@@ -589,7 +589,7 @@ struct ExerciseCatalogPickerView: View {
                         } label: {
                             VStack(spacing: 8) {
                                 Image(systemName: meta.sfSymbol)
-                                    .font(.system(size: 26))
+                                    .font(.system(size: 26)) // design-lint:ignore — SF Symbol icon sizing
                                 Text(meta.label)
                                     .font(.labelSmall)
                                     .foregroundStyle(Color.textPrimary)

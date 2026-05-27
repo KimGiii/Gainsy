@@ -258,11 +258,11 @@ private struct MealCard: View {
                 .overlay {
                     VStack(spacing: 8) {
                         Image(systemName: log.mealType.sfSymbol)
-                            .font(.system(size: 36, weight: .medium))
+                            .font(.system(size: 36, weight: .medium)) // design-lint:ignore — SF Symbol icon sizing
                             .foregroundStyle(Color.brandAccent)
                             .accessibilityHidden(true)
                         Text(log.mealType.displayName)
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 11, weight: .semibold)) // design-lint:ignore — SF Symbol icon label
                             .foregroundStyle(Color.textSecondary)
                     }
                 }

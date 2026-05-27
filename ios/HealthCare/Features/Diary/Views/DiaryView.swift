@@ -679,7 +679,7 @@ private struct DietLogSummaryCard: View {
             // 식사 유형 아이콘
             VStack(spacing: 2) {
                 Image(systemName: log.mealType.sfSymbol)
-                    .font(.system(size: 18))
+                    .font(.system(size: 18)) // design-lint:ignore — SF Symbol icon sizing
                 Text(log.mealType.displayName)
                     .font(.system(size: 9, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(Color.brandAccent)

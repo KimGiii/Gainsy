@@ -203,7 +203,7 @@ private struct DietDetailHeader: View {
 
             VStack(spacing: 6) {
                 Image(systemName: detail.mealType.sfSymbol)
-                    .font(.system(size: 40))
+                    .font(.system(size: 40)) // design-lint:ignore — SF Symbol hero icon sizing
                 Text(detail.mealType.displayName)
                     .font(.title2.bold())
                     .foregroundColor(.white)
