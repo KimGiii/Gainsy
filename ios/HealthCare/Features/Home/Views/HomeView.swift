@@ -309,7 +309,7 @@ private struct EmptyMealCard: View {
                 }
             }
             .frame(width: 140, height: 114)
-            Text("첫 식사를 기록해 보세요")
+            Text("식단을 기록해 보세요")
                 .font(.captionBold).foregroundStyle(Color.textSecondary)
                 .frame(width: 140, alignment: .leading).padding(.top, 9) // design-lint:ignore — micro/hero spacing
         }

@@ -35,7 +35,7 @@ struct OnboardingView: View {
                             .font(.brandWordmark)
                             .foregroundStyle(Color.brandPrimary)
 
-                        Text("운동·식단·신체변화를 하나로\n매일 기록하고 꾸준히 성장하세요")
+                        Text("운동·식단·신체 변화를 하나로\n매일 기록하고 꾸준히 성장하세요")
                             .font(.bodyMedium)
                             .foregroundStyle(Color.textSecondary)
                             .multilineTextAlignment(.center)

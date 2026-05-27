@@ -230,7 +230,7 @@ struct AddProgressPhotoView: View {
                         }
                         .foregroundStyle(.white)
                     } else {
-                        Text("저장하기")
+                        Text("저장")
                             .font(.bodyLarge).fontWeight(.semibold)
                             .foregroundStyle(.white)
                     }

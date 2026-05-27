@@ -21,7 +21,7 @@ final class ProfileSetupViewModel: ObservableObject {
 
     func submit(apiClient: APIClient, authState: AuthState) async {
         guard let height = Double(heightText), let weight = Double(weightText) else {
-            errorMessage = "키와 몸무게를 올바르게 입력해주세요."
+            errorMessage = "키와 몸무게를 올바르게 입력해 주세요."
             return
         }
 

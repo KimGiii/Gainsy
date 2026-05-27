@@ -109,7 +109,7 @@ struct AddExerciseSessionView: View {
 
                     HStack {
                         Label {
-                            Text(viewModel.sessionDurationMinutes.map { "총 \($0)분" } ?? "시간을 확인해주세요")
+                            Text(viewModel.sessionDurationMinutes.map { "총 \($0)분" } ?? "시간을 확인해 주세요")
                                 .font(.labelSmall)
                                 .foregroundStyle(viewModel.hasValidSessionTime ? Color.brandAccent : Color.brandDanger)
                         } icon: {

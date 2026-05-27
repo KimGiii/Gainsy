@@ -29,7 +29,7 @@ final class ProgressPhotoViewModel: ObservableObject {
     @Published var uploadFailed = false
 
     var uploadFailureMessage: String {
-        failedStep?.message ?? "업로드 중 오류가 발생했습니다.\n다시 시도해주세요."
+        failedStep?.message ?? "업로드 중 오류가 발생했습니다.\n다시 시도해 주세요."
     }
 
     private var failedStep: UploadStep?
@@ -41,11 +41,11 @@ final class ProgressPhotoViewModel: ObservableObject {
         var message: String {
             switch self {
             case .initiating:
-                return "서버 연결에 실패했습니다.\n잠시 후 다시 시도해주세요."
+                return "서버 연결에 실패했습니다.\n잠시 후 다시 시도해 주세요."
             case .transferring:
-                return "사진 전송에 실패했습니다.\n네트워크 연결을 확인해주세요."
+                return "사진 전송에 실패했습니다.\n네트워크 연결을 확인해 주세요."
             case .registering:
-                return "사진은 전송됐지만 등록에 실패했습니다.\n다시 시도해주세요."
+                return "사진은 전송됐지만 등록에 실패했습니다.\n다시 시도해 주세요."
             }
         }
     }
@@ -146,7 +146,7 @@ final class ProgressPhotoViewModel: ObservableObject {
         apiClient: APIClient
     ) async {
         guard let imageData = image.jpegData(compressionQuality: 0.85) else {
-            errorMessage = "이미지를 처리할 수 없습니다. 다른 사진을 선택해주세요."
+            errorMessage = "이미지를 처리할 수 없습니다. 다른 사진을 선택해 주세요."
             return
         }
 

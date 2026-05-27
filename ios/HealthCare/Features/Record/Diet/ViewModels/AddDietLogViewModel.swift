@@ -170,7 +170,7 @@ final class AddDietLogViewModel: ObservableObject {
             errorMessage = nil
         } catch {
             catalogResults = []
-            errorMessage = "카탈로그 검색 실패: \(error.localizedDescription)"
+            errorMessage = "음식 검색 중 오류가 발생했습니다."
             print("❌ searchCatalog error: \(error)")
         }
     }
@@ -395,7 +395,7 @@ final class AddDietLogViewModel: ObservableObject {
             print("✅ searchExternal success: \(results.count) results")
         } catch {
             externalResults = []
-            errorMessage = "외부 검색 실패: \(error.localizedDescription)"
+            errorMessage = "음식 검색 중 오류가 발생했습니다."
             print("❌ searchExternal error: \(error)")
         }
     }
