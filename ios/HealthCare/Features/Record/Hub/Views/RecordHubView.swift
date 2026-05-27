@@ -1,5 +1,17 @@
 import SwiftUI
 
+// MARK: - Record Navigation Destinations
+//
+// MainTabView가 푸시 라우팅에서 recordPath에 직접 append할 수 있도록
+// value 기반 enum으로 노출. 식사 리마인더 푸시 → 식단 기록 화면으로 직진.
+
+enum RecordDestination: Hashable {
+    case diet
+    case exercise
+    case body
+    case progressPhoto
+}
+
 // VITALITY — Record Hub
 // Editorial entry point. Giant serif display, bento grid, deliberate
 // asymmetry. Each route card uses a distinct visual language while sharing
@@ -28,6 +40,14 @@ struct RecordHubView: View {
         .background(Color.backgroundPage.ignoresSafeArea())
         .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
+        .navigationDestination(for: RecordDestination.self) { dest in
+            switch dest {
+            case .diet:          DietRecordView()
+            case .exercise:      ExerciseRecordView()
+            case .body:          BodyMeasurementView()
+            case .progressPhoto: ProgressPhotoView()
+            }
+        }
     }
 }
 

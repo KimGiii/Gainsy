@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 struct MyPageView: View {
     @StateObject private var viewModel = MyPageViewModel()
@@ -170,6 +171,8 @@ struct MyPageView: View {
                 ThemeMenuRow(selectedTheme: selectedTheme) { theme in
                     appThemeRawValue = theme.rawValue
                 }
+                Divider().padding(.leading, 60) // design-lint:ignore — micro/hero spacing
+                NotificationSettingsRow()
             }
 
             MenuSection(title: "앱 정보") {
@@ -466,6 +469,83 @@ private struct ThemeMenuRow: View {
             .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
             .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
+    }
+}
+
+// MARK: - Notification Settings Row
+//
+// 알림 권한 상태를 표시하고 탭 시 iOS 시스템 설정으로 이동.
+// 시스템 설정에서 변경 후 앱 복귀(scenePhase = .active) 시 상태 재조회.
+
+private struct NotificationSettingsRow: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var status: UNAuthorizationStatus = .notDetermined
+
+    private var statusText: String {
+        switch status {
+        case .authorized:   return "허용됨"
+        case .denied:       return "꺼짐"
+        case .notDetermined: return "미설정"
+        case .provisional:  return "임시 허용"
+        case .ephemeral:    return "임시"
+        @unknown default:   return "알 수 없음"
+        }
+    }
+
+    private var statusColor: Color {
+        switch status {
+        case .authorized, .provisional, .ephemeral: return Color.brandAccent
+        case .denied:                                return Color.brandDanger
+        case .notDetermined:                         return Color.textSecondary
+        @unknown default:                            return Color.textSecondary
+        }
+    }
+
+    var body: some View {
+        Button(action: openSystemSettings) {
+            HStack(spacing: 14) {
+                Image(systemName: "bell.badge")
+                    .font(.bodyMedium).fontWeight(.medium)
+                    .foregroundStyle(Color.brandAccent)
+                    .frame(width: 30, height: 30)
+                    .background(Color.brandAccent.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
+
+                Text("알림")
+                    .font(.bodyMedium)
+                    .foregroundStyle(Color.textPrimary)
+
+                Spacer()
+
+                Text(statusText)
+                    .font(.labelSmall)
+                    .foregroundStyle(statusColor)
+
+                Image(systemName: "chevron.right")
+                    .font(.captionBold)
+                    .foregroundStyle(Color.textSecondary.opacity(0.6))
+            }
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        }
+        .task { await refreshStatus() }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                Task { await refreshStatus() }
+            }
+        }
+    }
+
+    private func refreshStatus() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        await MainActor.run {
+            self.status = settings.authorizationStatus
+        }
+    }
+
+    private func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
 
