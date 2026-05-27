@@ -20,7 +20,7 @@ struct ProgressPhotoView: View {
             }
             photoGrid
         }
-        .background(Color.surfaceGrouped)
+        .background(Color.backgroundPage)
         .navigationTitle("진행 사진")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -405,7 +405,7 @@ private struct PhotoDetailView: View {
                     .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
                 }
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle(photo.photoType.label)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

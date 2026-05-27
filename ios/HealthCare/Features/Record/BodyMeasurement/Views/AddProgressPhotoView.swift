@@ -31,7 +31,7 @@ struct AddProgressPhotoView: View {
                 .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
                 .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
             }
-            .background(Color.surfaceGrouped)
+            .background(Color.backgroundPage)
             .navigationTitle("진행 사진 추가")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -132,7 +132,7 @@ private struct ExerciseHeroSection: View {
                 .padding(.vertical, Spacing.xl) // design-lint:ignore — micro/hero spacing
                 .background(
                     RoundedRectangle(cornerRadius: Radius.xl)
-                        .fill(.white)
+                        .fill(Color.surfaceCard)
                         .shadow(color: .black.opacity(0.10), radius: 16, x: 0, y: 6)
                 )
                 .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing

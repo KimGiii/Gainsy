@@ -501,6 +501,8 @@ private struct ExerciseSessionSummaryCard: View {
             Text(value)
                 .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
         .padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
@@ -657,6 +659,8 @@ private struct MeasurementSummaryCard: View {
             Text(value)
                 .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
         .padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
