@@ -5,6 +5,7 @@ protocol HomeDashboardLoading: Sendable {
     func loadExerciseSessions() async throws -> SessionListResponse
     func loadGoals() async throws -> GoalListResponse
     func loadGoalProgress(id: Int) async throws -> GoalProgressResponse
+    func loadUserProfile() async throws -> UserProfile
 }
 
 extension APIClient: HomeDashboardLoading {
@@ -21,6 +22,9 @@ extension APIClient: HomeDashboardLoading {
     }
     func loadGoalProgress(id: Int) async throws -> GoalProgressResponse {
         try await request(.getGoalProgress(id: id))
+    }
+    func loadUserProfile() async throws -> UserProfile {
+        try await request(.getProfile)
     }
 }
 
@@ -50,6 +54,8 @@ final class HomeViewModel: ObservableObject {
     @Published var weekDietLogs: [DietLogSummary] = []
     @Published var recentSessions: [SessionSummary] = []
     @Published var activeGoal: GoalSummary? = nil
+    /// 사용자 프로필 — 백엔드가 자동 계산한 권장 칼로리·매크로 표시에 사용
+    @Published var userProfile: UserProfile? = nil
 
     // MARK: - 날짜 유틸리티
 
@@ -74,8 +80,12 @@ final class HomeViewModel: ObservableObject {
         todayDietLogs.compactMap(\.totalCalories).reduce(0, +)
     }
 
-    /// 칼로리 일일 목표 (기본 2,000 kcal)
-    var dailyCalorieGoal: Double { 2_000.0 }
+    /// 칼로리 일일 목표.
+    /// 우선순위: 사용자 프로필의 백엔드 자동 계산값 → 기본 2,000 kcal fallback
+    var dailyCalorieGoal: Double {
+        if let target = userProfile?.calorieTarget, target > 0 { return Double(target) }
+        return 2_000.0
+    }
 
     /// 칼로리 진행률 (0~1, 초과 시 1로 클램프)
     var calorieProgress: Double {
@@ -119,10 +129,20 @@ final class HomeViewModel: ObservableObject {
         todayDietLogs.compactMap(\.totalFatG).reduce(0, +)
     }
 
-    /// 매크로 일일 목표 (기본값; 향후 GoalMacroTargets 연동 예정)
-    var dailyProteinGoal: Double { 150.0 }
-    var dailyCarbsGoal: Double   { 200.0 }
-    var dailyFatGoal: Double     { 60.0  }
+    /// 매크로 일일 목표.
+    /// 우선순위: 사용자 프로필의 백엔드 자동 계산값 → 기본값 fallback
+    var dailyProteinGoal: Double {
+        if let g = userProfile?.proteinTargetG, g > 0 { return Double(g) }
+        return 150.0
+    }
+    var dailyCarbsGoal: Double {
+        if let g = userProfile?.carbTargetG, g > 0 { return Double(g) }
+        return 200.0
+    }
+    var dailyFatGoal: Double {
+        if let g = userProfile?.fatTargetG, g > 0 { return Double(g) }
+        return 60.0
+    }
 
     var proteinProgress: Double { min(todayProteinG / dailyProteinGoal, 1.0) }
     var carbsProgress: Double   { min(todayCarbsG   / dailyCarbsGoal,   1.0) }
@@ -191,12 +211,15 @@ final class HomeViewModel: ObservableObject {
             async let dietResponse     = apiClient.loadDietLogs(from: weekStart, to: today)
             async let exerciseResponse = apiClient.loadExerciseSessions()
             async let goalResponse     = apiClient.loadGoals()
+            async let profileResponse  = apiClient.loadUserProfile()
 
-            let (diet, exercise, goals) = try await (dietResponse, exerciseResponse, goalResponse)
+            let (diet, exercise, goals, profile) =
+                try await (dietResponse, exerciseResponse, goalResponse, profileResponse)
 
             weekDietLogs   = diet.content
             todayDietLogs  = diet.content.filter { $0.logDate == today }
             recentSessions = exercise.content
+            userProfile    = profile
 
             if let goal = goals.content.first(where: { $0.status == .ACTIVE }) {
                 activeGoal = await enrichedActiveGoal(goal, apiClient: apiClient)

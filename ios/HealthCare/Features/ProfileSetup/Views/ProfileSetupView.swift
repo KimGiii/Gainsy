@@ -134,6 +134,15 @@ private struct StepOneView: View {
                     }
                 }
 
+                // Date of Birth
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("생년월일")
+                        .font(.labelSmall)
+                        .foregroundStyle(Color.textSecondary)
+
+                    DateOfBirthField(date: $viewModel.dateOfBirth)
+                }
+
                 // Height & Weight
                 VStack(alignment: .leading, spacing: 12) {
                     Text("키 / 몸무게")
@@ -243,6 +252,42 @@ private struct SexCard: View {
             )
             .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
         }
+    }
+}
+
+// MARK: - Date of Birth Field
+
+private struct DateOfBirthField: View {
+    @Binding var date: Date
+
+    private var minDate: Date {
+        Calendar.current.date(byAdding: .year, value: -120, to: Date()) ?? Date()
+    }
+
+    var body: some View {
+        HStack {
+            Image(systemName: "calendar")
+                .font(.bodyMedium)
+                .foregroundStyle(Color.brandPrimary)
+            DatePicker(
+                "",
+                selection: $date,
+                in: minDate...Date(),
+                displayedComponents: .date
+            )
+            .labelsHidden()
+            .environment(\.locale, Locale(identifier: "ko_KR"))
+            Spacer()
+        }
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
+        .background(Color.surfaceCard)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: Radius.md)
+                .stroke(Color.brandPrimary.opacity(0.2), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }
 

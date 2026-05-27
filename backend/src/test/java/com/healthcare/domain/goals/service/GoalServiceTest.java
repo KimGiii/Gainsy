@@ -13,6 +13,7 @@ import com.healthcare.domain.goals.entity.Goal.GoalType;
 import com.healthcare.domain.goals.entity.GoalCheckpoint;
 import com.healthcare.domain.goals.repository.GoalCheckpointRepository;
 import com.healthcare.domain.goals.repository.GoalRepository;
+import com.healthcare.domain.nutrition.service.NutritionTargetService;
 import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,7 @@ class GoalServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private BodyMeasurementRepository bodyMeasurementRepository;
     @Mock private ExerciseSessionRepository exerciseSessionRepository;
+    @Mock private NutritionTargetService nutritionTargetService;
 
     @InjectMocks
     private GoalService goalService;
