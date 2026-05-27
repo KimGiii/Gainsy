@@ -3,7 +3,7 @@ import Foundation
 @MainActor
 final class ProfileSetupViewModel: ObservableObject {
     @Published var sex: String? = nil          // "MALE" | "FEMALE" | "OTHER"
-    @Published var dateOfBirth: Date = Self.defaultDateOfBirth
+    @Published var dateOfBirth: Date = ProfileSetupViewModel.defaultDateOfBirth
     @Published var heightText = ""
     @Published var weightText = ""
     @Published var activityLevel: String? = nil
