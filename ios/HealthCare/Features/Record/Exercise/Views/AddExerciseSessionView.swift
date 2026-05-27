@@ -588,8 +588,8 @@ struct ExerciseCatalogPickerView: View {
                             }
                         } label: {
                             VStack(spacing: 8) {
-                                Text(meta.emoji)
-                                    .font(.system(size: 28)) // design-lint:ignore — SF Symbol or special
+                                Image(systemName: meta.sfSymbol)
+                                    .font(.system(size: 26)) // design-lint:ignore — SF Symbol icon sizing
                                 Text(meta.label)
                                     .font(.labelSmall)
                                     .foregroundStyle(Color.textPrimary)
@@ -700,21 +700,21 @@ struct ExerciseCatalogPickerView: View {
 private struct MuscleGroupMeta {
     let key: String
     let label: String
-    let emoji: String
+    let sfSymbol: String
 
     static let all: [MuscleGroupMeta] = [
-        .init(key: "CHEST",      label: "가슴",    emoji: "💪"),
-        .init(key: "BACK",       label: "등",      emoji: "🔙"),
-        .init(key: "SHOULDERS",  label: "어깨",    emoji: "🏋️"),
-        .init(key: "BICEPS",     label: "이두",    emoji: "💪"),
-        .init(key: "TRICEPS",    label: "삼두",    emoji: "🦾"),
-        .init(key: "CORE",       label: "코어",    emoji: "🔥"),
-        .init(key: "QUADRICEPS", label: "대퇴사두", emoji: "🦵"),
-        .init(key: "HAMSTRINGS", label: "햄스트링", emoji: "🦿"),
-        .init(key: "GLUTES",     label: "둔근",    emoji: "🍑"),
-        .init(key: "CALVES",     label: "종아리",  emoji: "🦶"),
-        .init(key: "FULL_BODY",  label: "전신",    emoji: "🤸"),
-        .init(key: "CARDIO",     label: "유산소",  emoji: "🏃"),
+        .init(key: "CHEST",      label: "가슴",    sfSymbol: "dumbbell.fill"),
+        .init(key: "BACK",       label: "등",      sfSymbol: "figure.strengthtraining.traditional"),
+        .init(key: "SHOULDERS",  label: "어깨",    sfSymbol: "figure.arms.open"),
+        .init(key: "BICEPS",     label: "이두",    sfSymbol: "bolt.fill"),
+        .init(key: "TRICEPS",    label: "삼두",    sfSymbol: "arrow.up.circle.fill"),
+        .init(key: "CORE",       label: "코어",    sfSymbol: "figure.core.training"),
+        .init(key: "QUADRICEPS", label: "대퇴사두", sfSymbol: "figure.walk"),
+        .init(key: "HAMSTRINGS", label: "햄스트링", sfSymbol: "figure.walk.arrival"),
+        .init(key: "GLUTES",     label: "둔근",    sfSymbol: "figure.step.training"),
+        .init(key: "CALVES",     label: "종아리",  sfSymbol: "figure.run"),
+        .init(key: "FULL_BODY",  label: "전신",    sfSymbol: "person.fill"),
+        .init(key: "CARDIO",     label: "유산소",  sfSymbol: "heart.circle.fill"),
     ]
 
     static func label(for key: String) -> String {

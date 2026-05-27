@@ -114,10 +114,10 @@ private struct DashboardHeaderBar: View {
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 5..<12:  return "좋은 아침이에요 ☀️"
-        case 12..<17: return "활기찬 오후예요 💪"
-        case 17..<21: return "수고했어요 🌙"
-        default:      return "오늘도 잘 했어요 ⭐"
+        case 5..<12:  return "좋은 아침이에요"
+        case 12..<17: return "활기찬 오후예요"
+        case 17..<21: return "수고했어요"
+        default:      return "오늘도 잘 했어요"
         }
     }
 
@@ -252,24 +252,20 @@ private struct MealCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
-                    .fill(Color.surfaceCard)
-                Text(log.mealType.emoji)
-                    .font(.system(size: 52)) // design-lint:ignore — SF Symbol or hero numeric
-                    .offset(x: 16, y: 14)
-                    .rotationEffect(.degrees(-4))
-                    .accessibilityHidden(true)
-            }
-            .frame(width: 140, height: 114)
-            .overlay(alignment: .topTrailing) {
-                Text(log.mealType.displayName)
-                    .font(.system(size: 9, weight: .heavy)).tracking(1.0).textCase(.uppercase) // design-lint:ignore — 마이크로 라벨
-                    .foregroundStyle(Color.textHeadline)
-                    .padding(.horizontal, 7).padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
-                    .background(Capsule().fill(Color.surfaceCard))
-                    .padding(9) // design-lint:ignore — micro/hero spacing
-            }
+            RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
+                .fill(Color.surfaceCard)
+                .frame(width: 140, height: 114)
+                .overlay {
+                    VStack(spacing: 8) {
+                        Image(systemName: log.mealType.sfSymbol)
+                            .font(.system(size: 36, weight: .medium)) // design-lint:ignore — SF Symbol icon sizing
+                            .foregroundStyle(Color.brandAccent)
+                            .accessibilityHidden(true)
+                        Text(log.mealType.displayName)
+                            .font(.system(size: 11, weight: .semibold)) // design-lint:ignore — SF Symbol icon label
+                            .foregroundStyle(Color.textSecondary)
+                    }
+                }
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .lastTextBaseline, spacing: 2) {

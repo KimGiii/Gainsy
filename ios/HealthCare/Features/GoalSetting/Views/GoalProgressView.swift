@@ -194,9 +194,12 @@ private struct HeroProgressRing: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(progress.goalType.emoji + " " + progress.goalType.displayName)
-                        .font(.bodyLarge).fontWeight(.bold)
-                        .foregroundStyle(.white)
+                    HStack(spacing: 6) {
+                        Image(systemName: progress.goalType.icon)
+                        Text(progress.goalType.displayName)
+                    }
+                    .font(.bodyLarge).fontWeight(.bold)
+                    .foregroundStyle(.white)
                     Text("목표: \(progress.formattedValue(progress.targetValue))")
                         .font(.bodySmall)
                         .foregroundStyle(.white.opacity(0.75))

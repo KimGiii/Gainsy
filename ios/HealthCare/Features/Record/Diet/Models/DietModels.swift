@@ -14,12 +14,12 @@ enum MealType: String, Codable, CaseIterable {
         }
     }
 
-    var emoji: String {
+    var sfSymbol: String {
         switch self {
-        case .BREAKFAST: return "🌅"
-        case .LUNCH:     return "☀️"
-        case .DINNER:    return "🌙"
-        case .SNACK:     return "🍎"
+        case .BREAKFAST: return "sun.horizon.fill"
+        case .LUNCH:     return "sun.max.fill"
+        case .DINNER:    return "moon.stars.fill"
+        case .SNACK:     return "cup.and.saucer.fill"
         }
     }
 }
@@ -41,17 +41,17 @@ enum FoodCategory: String, Codable, CaseIterable {
         }
     }
 
-    var emoji: String {
+    var sfSymbol: String {
         switch self {
-        case .GRAIN:          return "🍚"
-        case .PROTEIN_SOURCE: return "🥩"
-        case .VEGETABLE:      return "🥦"
-        case .FRUIT:          return "🍎"
-        case .DAIRY:          return "🥛"
-        case .FAT:            return "🥑"
-        case .BEVERAGE:       return "🧃"
-        case .PROCESSED:      return "🍱"
-        case .OTHER:          return "🍽"
+        case .GRAIN:          return "bowl.fill"
+        case .PROTEIN_SOURCE: return "fish.fill"
+        case .VEGETABLE:      return "leaf.fill"
+        case .FRUIT:          return "tree.fill"
+        case .DAIRY:          return "drop.fill"
+        case .FAT:            return "drop.halffull"
+        case .BEVERAGE:       return "cup.and.saucer.fill"
+        case .PROCESSED:      return "cube.fill"
+        case .OTHER:          return "fork.knife"
         }
     }
 }

@@ -202,8 +202,8 @@ private struct DietDetailHeader: View {
                 .offset(y: 1)
 
             VStack(spacing: 6) {
-                Text(detail.mealType.emoji)
-                    .font(.system(size: 44)) // design-lint:ignore — SF Symbol/hero
+                Image(systemName: detail.mealType.sfSymbol)
+                    .font(.system(size: 40)) // design-lint:ignore — SF Symbol hero icon sizing
                 Text(detail.mealType.displayName)
                     .font(.title2.bold())
                     .foregroundColor(.white)
@@ -270,7 +270,7 @@ private struct FoodEntryRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Text(entry.category?.emoji ?? "🍽")
+            Image(systemName: entry.category?.sfSymbol ?? "fork.knife")
                 .font(.title3)
                 .frame(width: 40, height: 40)
                 .background(Color.surfaceCard)

@@ -306,7 +306,7 @@ private struct MealTypePill: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
-                Text(type.emoji)
+                Image(systemName: type.sfSymbol)
                     .font(.caption)
                 Text(type.displayName)
                     .font(.caption.bold())
@@ -688,7 +688,7 @@ private struct CatalogFoodRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Text(item.category?.emoji ?? "🍽")
+            Image(systemName: item.category?.sfSymbol ?? "fork.knife")
                 .font(.title2)
                 .frame(width: 40, height: 40)
                 .background(Color.surfaceCard)
@@ -733,7 +733,7 @@ private struct ExternalFoodRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Text(item.category?.emoji ?? "🔍")
+            Image(systemName: item.category?.sfSymbol ?? "magnifyingglass")
                 .font(.title2)
                 .frame(width: 40, height: 40)
                 .background(Color.backgroundPage)

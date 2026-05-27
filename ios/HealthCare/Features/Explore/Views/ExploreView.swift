@@ -68,7 +68,7 @@ private struct InsightMenuGrid: View {
             NavigationLink(value: ExploreDestination.weeklyRetrospective) {
                 InsightMenuCard(
                     icon: "chart.bar.doc.horizontal",
-                    iconColor: Color.brandPrimary,
+                    iconColor: Color.brandAccent,
                     title: "주간 회고",
                     description: "이번 주 운동·식단·신체 변화를 한눈에"
                 )

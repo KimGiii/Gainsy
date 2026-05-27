@@ -267,7 +267,7 @@ private struct MealStatusChip: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Text(type.emoji).font(.caption)
+            Image(systemName: type.sfSymbol).font(.caption)
             Text(count > 0 ? "✓" : type.displayName)
                 .font(.caption2.bold())
                 .foregroundColor(count > 0 ? .brandAccent : .white.opacity(0.7))
@@ -352,7 +352,7 @@ private struct DietLogCard: View {
         HStack(spacing: 14) {
             // 식사 유형 배지
             VStack(spacing: 4) {
-                Text(log.mealType.emoji)
+                Image(systemName: log.mealType.sfSymbol)
                     .font(.title2)
                 Text(log.mealType.displayName)
                     .font(.caption2.bold())
