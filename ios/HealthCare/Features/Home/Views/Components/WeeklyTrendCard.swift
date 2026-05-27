@@ -27,7 +27,7 @@ struct WeeklyTrendCard: View {
                         // 섭취
                         HStack(alignment: .lastTextBaseline, spacing: 2) {
                             Image(systemName: "fork.knife")
-                                .font(.system(size: 9))
+                                .font(.system(size: 9)) // design-lint:ignore — SF Symbol icon sizing
                                 .foregroundStyle(Color.brandAccent)
                             Text(String(format: "%.0f", sel.caloriesIn))
                                 .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — hero numeric
@@ -40,7 +40,7 @@ struct WeeklyTrendCard: View {
                         if sel.caloriesBurned > 0 {
                             HStack(alignment: .lastTextBaseline, spacing: 2) {
                                 Image(systemName: "flame.fill")
-                                    .font(.system(size: 9))
+                                    .font(.system(size: 9)) // design-lint:ignore — SF Symbol icon sizing
                                     .foregroundStyle(Color.brandEmber)
                                 Text(String(format: "%.0f", sel.caloriesBurned))
                                     .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — hero numeric
