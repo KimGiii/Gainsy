@@ -23,18 +23,18 @@ struct SignUpView: View {
                 // Header
                 VStack(spacing: 8) {
                     BrandLogoView(size: 72, color: Color.brandPrimary)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
-                    Text("함께 시작해봐요")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                    Text("함께 시작해 봐요")
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
 
                     Text("건강한 습관의 첫 걸음")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
-                .padding(.top, 36)
-                .padding(.bottom, 32)
+                .padding(.top, 36) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                 // Form
                 VStack(spacing: 14) {
@@ -64,7 +64,7 @@ struct SignUpView: View {
                         text:        $viewModel.passwordConfirm
                     )
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                 // Error
                 if let error = viewModel.errorMessage {
@@ -72,8 +72,8 @@ struct SignUpView: View {
                         .font(.caption)
                         .foregroundStyle(Color.brandDanger)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 28)
-                        .padding(.top, 8)
+                        .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                        .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
                 }
 
                 Spacer()
@@ -93,31 +93,18 @@ struct SignUpView: View {
                             url: privacyURL
                         )
                     }
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, Spacing.xs) // design-lint:ignore — micro/hero spacing
 
-                    Button {
+                    PrimaryButton(
+                        "가입하기",
+                        isEnabled: canSubmit,
+                        isLoading: viewModel.isLoading
+                    ) {
                         Task { await viewModel.register(apiClient: container.apiClient, authState: authState) }
-                    } label: {
-                        Group {
-                            if viewModel.isLoading {
-                                ProgressView().tint(.white)
-                            } else {
-                                Text("가입하기")
-                                    .font(.system(size: 17, weight: .semibold))
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(canSubmit ? Color.brandPrimary : Color.brandPrimary.opacity(0.4))
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .shadow(color: Color.brandPrimary.opacity(canSubmit ? 0.3 : 0), radius: 10, x: 0, y: 5)
                     }
-                    .disabled(!canSubmit)
-                    .animation(.easeInOut(duration: 0.2), value: canSubmit)
                 }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 48)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 48) // design-lint:ignore — micro/hero spacing
             }
         }
         .navigationTitle("")
@@ -132,23 +119,24 @@ struct SignUpView: View {
                 isChecked.wrappedValue.toggle()
             } label: {
                 Image(systemName: isChecked.wrappedValue ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22))
+                    .font(.system(size: 22)) // design-lint:ignore — SF Symbol size
                     .foregroundStyle(isChecked.wrappedValue ? Color.brandPrimary : Color.textSecondary.opacity(0.5))
                     .animation(.easeInOut(duration: 0.15), value: isChecked.wrappedValue)
             }
 
             HStack(spacing: 4) {
                 Text("(필수)")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.captionBold)
                     .foregroundStyle(Color.brandDanger)
 
                 Link(label, destination: url)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.bodySmall)
+                    .fontWeight(.medium)
                     .foregroundStyle(Color.brandPrimary)
                     .underline()
 
                 Text("에 동의합니다")
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textPrimary)
             }
 

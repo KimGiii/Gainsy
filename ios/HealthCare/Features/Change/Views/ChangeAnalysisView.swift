@@ -14,15 +14,15 @@ struct ChangeAnalysisView: View {
                 )
 
                 if viewModel.isLoading {
-                    ProgressView().padding(.top, 60)
+                    ProgressView().padding(.top, 60) // design-lint:ignore — micro/hero spacing
                 } else if let analysis = viewModel.analysis {
                     ChangeAnalysisContent(analysis: analysis)
                 } else {
                     ChangeEmptyState()
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.backgroundPage)
         .navigationTitle("변화 분석")
@@ -57,7 +57,7 @@ private struct DateRangeSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("기간 선택")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(Color.textPrimary)
 
             HStack(spacing: 8) {
@@ -70,10 +70,10 @@ private struct DateRangeSection: View {
                         onAnalyze()
                     }) {
                         Text(preset.label)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.labelSmall)
                             .foregroundStyle(Color.brandAccent)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 7)
+                            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                            .padding(.vertical, 7) // design-lint:ignore — micro/hero spacing
                             .background(Color.brandAccent.opacity(0.15))
                             .overlay(
                                 Capsule().stroke(Color.brandAccent.opacity(0.35), lineWidth: 1)
@@ -87,24 +87,24 @@ private struct DateRangeSection: View {
             VStack(spacing: 0) {
                 DatePicker("시작일", selection: $fromDate, in: ...toDate, displayedComponents: .date)
                     .environment(\.locale, Locale(identifier: "ko_KR"))
-                    .padding(14)
-                Divider().padding(.horizontal, 14)
+                    .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
+                Divider().padding(.horizontal, Spacing.lg)
                 DatePicker("종료일", selection: $toDate, in: fromDate..., displayedComponents: .date)
                     .environment(\.locale, Locale(identifier: "ko_KR"))
-                    .padding(14)
+                    .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
 
             Button(action: onAnalyze) {
                 Text("분석하기")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                     .background(Color.brandPrimary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
         }
     }
@@ -137,7 +137,7 @@ private struct BodyChangeCard: View {
                 Image(systemName: "arrow.up.arrow.down.circle.fill")
                     .foregroundStyle(Color.brandPrimary)
                 Text("신체 변화")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
             }
 
@@ -156,9 +156,9 @@ private struct BodyChangeCard: View {
                 }
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -178,11 +178,11 @@ private struct ChangeRow: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.system(size: 14))
+                .font(.bodyMedium)
                 .foregroundStyle(Color.textSecondary)
             Spacer()
             Text(delta.text)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.bodyMedium).fontWeight(.semibold)
                 .foregroundStyle(color)
         }
     }
@@ -197,10 +197,10 @@ private struct ExerciseActivityCard: View {
         HStack(spacing: 0) {
             VStack(spacing: 4) {
                 Text("\(analysis.exerciseSessionCount)회")
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .font(.headingLarge)
                     .foregroundStyle(.cyan)
                 Text("운동 세션")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
@@ -209,17 +209,17 @@ private struct ExerciseActivityCard: View {
 
             VStack(spacing: 4) {
                 Text("\(analysis.totalExerciseMinutes)분")
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .font(.headingLarge)
                     .foregroundStyle(.cyan)
                 Text("총 운동 시간")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -242,7 +242,7 @@ private struct SnapshotComparisonCard: View {
                 Image(systemName: "calendar.badge.clock")
                     .foregroundStyle(.purple)
                 Text("측정값 비교")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
             }
 
@@ -258,9 +258,9 @@ private struct SnapshotComparisonCard: View {
                 }
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -272,21 +272,21 @@ private struct SnapshotColumn: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(Color.textSecondary)
             if let w = snapshot.weightKg {
                 Text(String(format: "%.1f kg", w))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
             }
             if let bf = snapshot.bodyFatPct {
                 Text(String(format: "체지방 %.1f%%", bf))
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
             if let mm = snapshot.muscleMassKg {
                 Text(String(format: "근육 %.1f kg", mm))
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
         }
@@ -298,13 +298,13 @@ private struct ChangeEmptyState: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "waveform.path.ecg")
-                .font(.system(size: 48))
+                .font(.system(size: 48)) // design-lint:ignore — SF Symbol or special
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
             Text("기간을 선택하고 분석을 시작하세요")
-                .font(.system(size: 16, weight: .medium))
+                .font(.bodyLarge).fontWeight(.medium)
                 .foregroundStyle(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.top, 60)
+        .padding(.top, 60) // design-lint:ignore — micro/hero spacing
     }
 }

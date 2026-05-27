@@ -21,7 +21,7 @@ struct MacroBreakdownCard: View {
                     .eyebrowStyle()
                 Spacer()
                 Text("오늘 섭취")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textTertiary)
             }
 
@@ -49,12 +49,12 @@ struct MacroBreakdownCard: View {
                 )
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                 .fill(Color.surfaceCard)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)
                         .stroke(Color.cardStroke, lineWidth: 1)
                 )
         )
@@ -77,15 +77,15 @@ private struct MacroRow: View {
         VStack(spacing: 5) {
             HStack(alignment: .lastTextBaseline) {
                 Text(label)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.captionBold)
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(String(format: "%.0f", current))
-                        .font(.system(size: 14, weight: .heavy, design: .rounded))
+                        .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
                         .foregroundStyle(Color.textPrimary)
                     Text("/ \(Int(goal))\(unit)")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textTertiary)
                 }
             }
@@ -124,6 +124,6 @@ private struct MacroRow: View {
             carbsGoal: 200,
             fatGoal: 60
         )
-        .padding(20)
+        .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
     }
 }

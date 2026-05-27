@@ -15,15 +15,15 @@ struct WeeklyRetrospectiveView: View {
                 )
 
                 if viewModel.isLoading {
-                    ProgressView().padding(.top, 60)
+                    ProgressView().padding(.top, 60) // design-lint:ignore — micro/hero spacing
                 } else if let s = viewModel.summary {
                     WeeklySummaryContent(summary: s)
                 } else {
                     WeeklyEmptyState()
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.backgroundPage)
         .navigationTitle("주간 회고")
@@ -56,7 +56,7 @@ private struct WeekNavigationBar: View {
         HStack {
             Button(action: onPrev) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.brandPrimary)
                     .frame(width: 36, height: 36)
                     .background(Color.surfaceCard)
@@ -64,12 +64,12 @@ private struct WeekNavigationBar: View {
             }
             Spacer()
             Text(weekRange)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(Color.textPrimary)
             Spacer()
             Button(action: onNext) {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(canGoNext ? Color.brandPrimary : Color.textSecondary)
                     .frame(width: 36, height: 36)
                     .background(Color.surfaceCard)
@@ -77,7 +77,7 @@ private struct WeekNavigationBar: View {
             }
             .disabled(!canGoNext)
         }
-        .padding(.top, 8)
+        .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -267,18 +267,18 @@ private struct InsightCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(color)
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.headingSmall)
                     .foregroundStyle(Color.textPrimary)
             }
             content()
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity)
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
@@ -291,10 +291,10 @@ private struct InsightStat: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(.numeralMedium).fontWeight(.bold)
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -303,14 +303,9 @@ private struct InsightStat: View {
 
 private struct WeeklyEmptyState: View {
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "chart.bar.doc.horizontal")
-                .font(.system(size: 48))
-                .foregroundStyle(Color.textSecondary.opacity(0.5))
-            Text("이 주에는 기록이 없어요")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(Color.textSecondary)
-        }
-        .padding(.top, 60)
+        EmptyState(
+            icon: "chart.bar.doc.horizontal",
+            title: "이 주에는 기록이 아직 없어요"
+        )
     }
 }

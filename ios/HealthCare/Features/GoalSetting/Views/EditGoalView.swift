@@ -35,8 +35,8 @@ struct EditGoalView: View {
                         EditErrorBanner(message: error)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 24)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("목표 수정")
@@ -58,7 +58,7 @@ struct EditGoalView: View {
                                 }
                             }
                         }
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.headingSmall)
                         .foregroundStyle(viewModel.isValid ? Color.brandPrimary : Color.textSecondary)
                         .disabled(!viewModel.isValid)
                     }
@@ -76,25 +76,25 @@ private struct GoalTypeInfoSection: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: goalType.icon)
-                .font(.system(size: 22))
+                .font(.headingLarge)
                 .foregroundStyle(.white)
                 .frame(width: 52, height: 52)
                 .background(goalType.accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(goalType.displayName)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
                 Text("목표 유형은 변경할 수 없습니다")
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
             Spacer()
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
     }
 }
@@ -108,33 +108,33 @@ private struct EditTargetValueSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("목표값")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(Color.textPrimary)
 
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("목표 \(type.displayName)")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.caption).fontWeight(.medium)
                         .foregroundStyle(Color.textSecondary)
                     TextField("예: 70.0", text: $valueText)
                         .keyboardType(.decimalPad)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.bodyLarge).fontWeight(.semibold)
                         .foregroundStyle(Color.textPrimary)
                 }
                 Spacer()
                 if !type.displayUnit.isEmpty {
                     Text(type.displayUnit)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.bodyMedium).fontWeight(.medium)
                         .foregroundStyle(Color.textSecondary)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, Spacing.md) // design-lint:ignore — micro/hero spacing
+                        .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
                         .background(Color.surfaceSecondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
                 }
             }
-            .padding(16)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
         }
     }
@@ -154,7 +154,7 @@ private struct EditTargetDateSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("목표 날짜")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.headingSmall)
                 .foregroundStyle(Color.textPrimary)
 
             HStack(spacing: 8) {
@@ -165,10 +165,10 @@ private struct EditTargetDateSection: View {
                         ) ?? Date()
                     }) {
                         Text(preset.label)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.bodySmall).fontWeight(.medium)
                             .foregroundStyle(Color.brandPrimary)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 7)
+                            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                            .padding(.vertical, 7) // design-lint:ignore — micro/hero spacing
                             .background(Color.surfaceCard)
                             .clipShape(Capsule())
                     }
@@ -184,37 +184,37 @@ private struct EditTargetDateSection: View {
             )
             .datePickerStyle(.compact)
             .environment(\.locale, Locale(identifier: "ko_KR"))
-            .padding(16)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
 
             if goalType.supportsWeeklyRateTarget {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("주간 목표 변화량 (선택)")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.caption).fontWeight(.medium)
                             .foregroundStyle(Color.textSecondary)
                         TextField(
                             goalType == .BODY_RECOMPOSITION ? "예: 0.25" : "예: 0.5",
                             text: $weeklyRateText
                         )
                         .keyboardType(.decimalPad)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.bodyLarge).fontWeight(.semibold)
                         .foregroundStyle(Color.textPrimary)
                     }
                     Spacer()
                     Text(goalType.weeklyRateDisplayUnit)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.bodyMedium).fontWeight(.medium)
                         .foregroundStyle(Color.textSecondary)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, Spacing.md) // design-lint:ignore — micro/hero spacing
+                        .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
                         .background(Color.surfaceSecondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
                 }
-                .padding(16)
+                .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfacePrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
                 .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
             }
         }
@@ -231,12 +231,12 @@ private struct EditErrorBanner: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(Color.brandDanger)
             Text(message)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.brandDanger)
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.brandDanger.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
     }
 }

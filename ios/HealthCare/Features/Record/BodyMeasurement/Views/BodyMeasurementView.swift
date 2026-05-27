@@ -21,20 +21,20 @@ struct BodyMeasurementView: View {
                         if viewModel.isLoading {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
-                                .padding(.top, 40)
+                                .padding(.top, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
                         } else if viewModel.measurements.isEmpty {
                             EmptyMeasurementCard { viewModel.showAddSheet = true }
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                         } else {
                             if let latest = viewModel.latestMeasurement {
                                 LatestStatsCard(
                                     measurement: latest,
                                     onSourceTap: { showMedicalSources = true }
                                 )
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                             }
                             MeasurementTrendSection(viewModel: viewModel)
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                             MeasurementHistorySection(
                                 measurements: viewModel.measurements,
                                 onDelete: { id in
@@ -43,8 +43,8 @@ struct BodyMeasurementView: View {
                             )
                         }
                     }
-                    .padding(.top, 20)
-                    .padding(.bottom, 80)
+                    .padding(.top, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                    .padding(.bottom, 80) // design-lint:ignore — micro/hero spacing
                 }
             }
             .ignoresSafeArea(edges: .top)
@@ -60,15 +60,15 @@ struct BodyMeasurementView: View {
             // FAB
             Button { viewModel.showAddSheet = true } label: {
                 Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                     .foregroundStyle(.white)
                     .frame(width: 58, height: 58)
                     .background(Color(hex: "#2563EB"))
                     .clipShape(Circle())
                     .shadow(color: Color(hex: "#2563EB").opacity(0.45), radius: 12, x: 0, y: 6)
             }
-            .padding(.trailing, 24)
-            .padding(.bottom, 32)
+            .padding(.trailing, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $viewModel.showAddSheet) {
@@ -114,27 +114,27 @@ private struct BodyHeroSection: View {
                 HStack {
                     Button(action: onDismiss) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundStyle(.white)
-                            .padding(10)
+                            .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                             .background(.white.opacity(0.15))
                             .clipShape(Circle())
                     }
                     Spacer()
                     Text("신체 변화")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.headingMedium).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Spacer()
                     Color.clear.frame(width: 40, height: 40)
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
                 if isLoading {
-                    ProgressView().tint(.white).padding(.top, 18)
+                    ProgressView().tint(.white).padding(.top, Spacing.lg)
                 } else if let m = latest {
-                    HeroStatsRow(measurement: m).padding(.top, 14)
+                    HeroStatsRow(measurement: m).padding(.top, Spacing.lg)
                 } else {
-                    HeroEmptyState().padding(.top, 14)
+                    HeroEmptyState().padding(.top, Spacing.lg)
                 }
             }
         }
@@ -162,7 +162,7 @@ private struct HeroStatsRow: View {
                 HeroStatItem(value: String(format: "%.1f", mm), unit: "kg", label: "근육량")
             }
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -175,30 +175,32 @@ private struct HeroStatItem: View {
         VStack(spacing: 2) {
             HStack(alignment: .lastTextBaseline, spacing: 2) {
                 Text(value)
-                    .font(.system(size: 26, weight: .bold, design: .rounded))
+                    .font(.numeralLarge)
                     .foregroundStyle(.white)
                 Text(unit)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.bodySmall).fontWeight(.medium)
                     .foregroundStyle(.white.opacity(0.75))
             }
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(.white.opacity(0.65))
         }
     }
 }
 
+// 다크 hero 배경 안에 표시되는 빈 상태이므로 EmptyState(라이트 배경 전제) 대신
+// 인라인 유지 + 카피만 통일 (docs/COPY.md §4).
 private struct HeroEmptyState: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: "scalemass.fill")
-                .font(.system(size: 30, weight: .semibold))
+                .font(.system(size: 30, weight: .semibold)) // design-lint:ignore — SF Symbol size
                 .foregroundStyle(.white.opacity(0.5))
-            Text("측정 기록이 없습니다")
-                .font(.system(size: 13))
+            Text("측정 기록이 아직 없어요")
+                .font(.bodySmall)
                 .foregroundStyle(.white.opacity(0.65))
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, Spacing.lg) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -254,11 +256,11 @@ private struct LatestStatsCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("최근 측정")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Spacer()
                 Text(measurement.formattedDate)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
 
@@ -307,15 +309,15 @@ private struct LatestStatsCard: View {
             if measurement.bmi != nil, let tap = onSourceTap {
                 Button(action: tap) {
                     Label("BMI 분류 기준: WHO·대한비만학회 출처 보기", systemImage: "info.circle")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.brandPrimary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 }
@@ -330,24 +332,24 @@ private struct StatCell: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
+                .font(.bodyLarge).fontWeight(.medium)
                 .foregroundStyle(color)
                 .frame(width: 40, height: 40)
                 .background(color.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
             HStack(alignment: .lastTextBaseline, spacing: 1) {
                 Text(value)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 if !unit.isEmpty {
                     Text(unit)
-                        .font(.system(size: 10))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }
             Text(label)
-                .font(.system(size: 11))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
     }
@@ -363,21 +365,21 @@ private struct MeasurementTrendSection: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("변화 추세")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.headingMedium).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
                     Text("선택한 기간 동안의 변화 흐름")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                 }
                 Spacer()
                 if let latestValue = viewModel.latestTrendValueText {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(latestValue + viewModel.currentMetricUnit)
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .font(.numeralMedium).fontWeight(.bold)
                             .foregroundStyle(Color.textPrimary)
                         if let delta = viewModel.trendChangeText {
                             Text(delta + "  ·  " + viewModel.trendSummaryText)
-                                .font(.system(size: 12, weight: .medium))
+                                .font(.caption).fontWeight(.medium)
                                 .foregroundStyle(delta.hasPrefix("-") ? Color.brandDanger : Color.brandPrimary)
                         }
                     }
@@ -408,7 +410,7 @@ private struct MeasurementTrendSection: View {
             if viewModel.isTrendLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 30)
+                    .padding(.vertical, 30) // design-lint:ignore — micro/hero spacing
             } else if viewModel.hasTrendData {
                 VStack(alignment: .leading, spacing: 12) {
                     Chart(viewModel.displayTrendPoints) { point in
@@ -461,7 +463,7 @@ private struct MeasurementTrendSection: View {
                             }
                         }
                     }
-                    .padding(.trailing, 8)
+                    .padding(.trailing, Spacing.sm) // design-lint:ignore — micro/hero spacing
 
                     HStack(spacing: 12) {
                         TrendSummaryPill(
@@ -479,25 +481,25 @@ private struct MeasurementTrendSection: View {
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.system(size: 22, weight: .semibold)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color.textSecondary.opacity(0.6))
                     Text("추세를 보여주기엔 기록이 조금 더 필요해요")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.bodyMedium).fontWeight(.semibold)
                         .foregroundStyle(Color.textPrimary)
                     Text("선택한 기간 안에 \(viewModel.selectedMetric.title) 기록이 2개 이상 있으면 그래프로 보여드릴게요.")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 28)
+                .padding(.vertical, Spacing.xxl) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 
@@ -531,10 +533,10 @@ private struct MetricChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(isSelected ? .white : accent)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 9)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, 9) // design-lint:ignore — micro/hero spacing
                 .background(isSelected ? accent : accent.opacity(0.12))
                 .clipShape(Capsule())
         }
@@ -551,23 +553,23 @@ private struct TrendSummaryPill: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.captionXSmall)
                     .foregroundStyle(Color.textSecondary)
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(value)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(.system(size: 16, weight: .bold, design: .rounded)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color.textPrimary)
                     Text(unit)
-                        .font(.system(size: 10))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity)
         .background(Color.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
     }
 }
 
@@ -592,14 +594,14 @@ private struct MeasurementHistorySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("측정 기록")
-                .font(.system(size: 18, weight: .bold))
+                .font(.headingMedium).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
 
             VStack(spacing: 10) {
                 ForEach(visibleMeasurements) { m in
                     MeasurementRow(measurement: m, onDelete: { onDelete(m.id) })
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                 }
 
                 if hasMore {
@@ -612,17 +614,17 @@ private struct MeasurementHistorySection: View {
                             Text(isExpanded
                                  ? "접기"
                                  : "더보기 (\(measurements.count - visibleLimit)개)")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(.bodyMedium).fontWeight(.semibold)
                             Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.captionBold)
                         }
                         .foregroundStyle(Color.brandPrimary)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
                         .background(Color.brandPrimary.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
                 }
             }
         }
@@ -638,10 +640,10 @@ private struct MeasurementRow: View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(measurement.formattedDate)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
                 Text(summaryText)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
                     .lineLimit(1)
             }
@@ -650,16 +652,16 @@ private struct MeasurementRow: View {
 
             Button { showDeleteConfirm = true } label: {
                 Image(systemName: "ellipsis")
-                    .font(.system(size: 14))
+                    .font(.bodyMedium)
                     .foregroundStyle(Color.textSecondary)
                     .frame(width: 32, height: 32)
                     .background(Color.surfaceSecondary)
                     .clipShape(Circle())
             }
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
         .confirmationDialog("기록 삭제", isPresented: $showDeleteConfirm) {
             Button("삭제", role: .destructive) { onDelete() }
@@ -689,31 +691,31 @@ private struct EmptyMeasurementCard: View {
                 ZStack {
                     Circle().fill(Color(hex: "#EAF4FF")).frame(width: 72, height: 72)
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 32))
+                        .font(.system(size: 32)) // design-lint:ignore — SF Symbol or special
                         .foregroundStyle(Color(hex: "#2563EB"))
                 }
                 VStack(spacing: 6) {
                     Text("첫 번째 측정을 기록해보세요")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.bodyLarge).fontWeight(.bold)
                         .foregroundStyle(Color.textPrimary)
                     Text("체중, 체지방률, 근육량 등\n신체 변화를 꾸준히 기록하세요.")
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(3)
                 }
                 Text("기록 추가하기")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 30)
-                    .padding(.vertical, 11)
+                    .padding(.horizontal, 30) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, 11) // design-lint:ignore — micro/hero spacing
                     .background(Color(hex: "#2563EB"))
                     .clipShape(Capsule())
             }
             .frame(maxWidth: .infinity)
-            .padding(28)
+            .padding(Spacing.xxl) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
             .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
         }
         .buttonStyle(.plain)

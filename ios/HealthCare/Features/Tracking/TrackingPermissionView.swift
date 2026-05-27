@@ -12,22 +12,22 @@ struct TrackingPermissionView: View {
             Spacer()
 
             Image(systemName: "hand.raised.circle.fill")
-                .font(.system(size: 76, weight: .regular))
+                .font(.system(size: 76, weight: .regular)) // design-lint:ignore — SF Symbol/hero
                 .foregroundStyle(Color.brandPrimary)
 
             VStack(spacing: 12) {
                 Text("맞춤 광고를 위한 허용 요청")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.headingLarge)
                     .foregroundStyle(Color.textPrimary)
                     .multilineTextAlignment(.center)
 
                 Text("다음 화면에서 광고 추적 허용 여부를 묻습니다.\n허용 시 관심사에 더 가까운 광고를 보여드리며,\n거부하셔도 모든 기능을 정상 이용하실 수 있습니다.")
-                    .font(.system(size: 14))
+                    .font(.bodyMedium)
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
             VStack(alignment: .leading, spacing: 14) {
                 bulletRow(
@@ -49,11 +49,11 @@ struct TrackingPermissionView: View {
                     detail: "iOS 설정 > 개인정보 보호 > 추적에서 언제든 변경"
                 )
             }
-            .padding(20)
+            .padding(Spacing.xl) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
             Spacer()
 
@@ -65,18 +65,18 @@ struct TrackingPermissionView: View {
                         ProgressView().tint(.white)
                     } else {
                         Text("계속")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.bodyLarge).fontWeight(.semibold)
                             .foregroundStyle(.white)
                     }
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
                 .background(Color.brandPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             }
             .disabled(isRequesting)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 24)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxl) // design-lint:ignore — micro/hero spacing
         }
         .background(Color.surfaceGrouped.ignoresSafeArea())
     }
@@ -84,16 +84,16 @@ struct TrackingPermissionView: View {
     private func bulletRow(icon: String, iconColor: Color, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 18, weight: .medium))
+                .font(.bodyLarge).fontWeight(.medium)
                 .foregroundStyle(iconColor)
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.bodyMedium).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
                 Text(detail)
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }

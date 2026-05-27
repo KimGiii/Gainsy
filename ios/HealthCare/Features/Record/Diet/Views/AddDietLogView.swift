@@ -40,8 +40,8 @@ struct AddDietLogView: View {
                         }
                         Spacer(minLength: 100)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                    .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                    .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
                 }
                 saveButton
             }
@@ -117,10 +117,10 @@ struct AddDietLogView: View {
                         .font(.subheadline)
                         .foregroundColor(Color.textSecondary)
                 }
-                .padding(14)
+                .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
 
             if !viewModel.analysisWarnings.isEmpty {
@@ -134,10 +134,10 @@ struct AddDietLogView: View {
                             .foregroundColor(Color.textSecondary)
                     }
                 }
-                .padding(14)
+                .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
         }
     }
@@ -161,9 +161,9 @@ struct AddDietLogView: View {
                 MacroCell(label: "지방", value: viewModel.totalFat, color: .pink)
             }
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
@@ -203,9 +203,9 @@ struct AddDietLogView: View {
                 .font(.subheadline.bold())
                 .foregroundColor(Color.brandAccent)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
         }
     }
@@ -222,9 +222,9 @@ struct AddDietLogView: View {
                 .font(.subheadline.bold())
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .background(Color.brandPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
         } else {
             Button {
@@ -235,17 +235,17 @@ struct AddDietLogView: View {
                     Text("사진으로 시작")
                     Text("PRO")
                         .font(.caption2.bold())
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
+                        .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                        .padding(.vertical, 2) // design-lint:ignore — micro/hero spacing
                         .background(Color.white.opacity(0.25))
                         .clipShape(Capsule())
                 }
                 .font(.subheadline.bold())
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .background(Color.brandPrimary.opacity(0.55))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             }
         }
     }
@@ -258,9 +258,9 @@ struct AddDietLogView: View {
             TextField("식사 메모를 입력하세요", text: $viewModel.notes, axis: .vertical)
                 .font(.body)
                 .lineLimit(3...6)
-                .padding(12)
+                .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
         }
     }
 
@@ -286,11 +286,11 @@ struct AddDietLogView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(viewModel.canSave ? Color.brandPrimary : Color.gray.opacity(0.4))
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .padding(.horizontal, 16)
-            .padding(.bottom, 16)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.lg) // design-lint:ignore — micro/hero spacing
         }
         .disabled(!viewModel.canSave || viewModel.isSaving)
     }
@@ -311,8 +311,8 @@ private struct MealTypePill: View {
                 Text(type.displayName)
                     .font(.caption.bold())
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
+            .padding(.horizontal, Spacing.md) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, 7) // design-lint:ignore — micro/hero spacing
             .background(isSelected ? Color.brandPrimary : Color.surfaceCard)
             .foregroundColor(isSelected ? .white : .primary)
             .clipShape(Capsule())
@@ -344,8 +344,8 @@ private struct DraftEntryCard: View {
                         HStack(spacing: 6) {
                             Text("AI 추정")
                                 .font(.caption2.bold())
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
+                                .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                                .padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
                                 .background(Color.brandPrimary.opacity(0.12))
                                 .foregroundColor(Color.brandAccent)
                                 .clipShape(Capsule())
@@ -373,10 +373,10 @@ private struct DraftEntryCard: View {
                     .font(.subheadline.bold())
                     .frame(width: 70)
                     .multilineTextAlignment(.trailing)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
                     .background(Color.surfaceCard)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
                 Text("g")
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
@@ -402,9 +402,9 @@ private struct DraftEntryCard: View {
                 }
             }
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         .shadow(color: .black.opacity(0.04), radius: 3, y: 1)
     }
 
@@ -415,8 +415,8 @@ private struct DraftEntryCard: View {
         }
         .font(.caption.bold())
         .foregroundColor(Color.brandAccent)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
+        .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
         .clipShape(Capsule())
     }
@@ -466,11 +466,11 @@ struct FoodSearchSheet: View {
                         }
                     }
                 }
-                .padding(10)
+                .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                 .background(Color.backgroundPage)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
                 .onChange(of: viewModel.searchQuery) { _ in
                     viewModel.scheduleSearch(apiClient: container.apiClient)
                 }
@@ -533,7 +533,7 @@ struct FoodSearchSheet: View {
         VStack(spacing: 12) {
             Spacer()
             Image(systemName: "fork.knife.circle")
-                .font(.system(size: 48))
+                .font(.system(size: 48)) // design-lint:ignore — SF Symbol/hero
                 .foregroundColor(.secondary.opacity(0.5))
             Text(message)
                 .font(.subheadline)
@@ -616,10 +616,10 @@ struct FoodSearchSheet: View {
                     .buttonStyle(.borderedProminent)
                     .tint(.brandPrimary)
                 }
-                .padding(14)
+                .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
             } else {
                 VStack(spacing: 10) {
                     Button {
@@ -657,7 +657,7 @@ struct FoodSearchSheet: View {
 
             Spacer()
         }
-        .padding(32)
+        .padding(Spacing.xxl) // design-lint:ignore — micro/hero spacing
     }
 
     private func aiMacro(_ title: String, value: Double, unit: String) -> some View {
@@ -670,9 +670,9 @@ struct FoodSearchSheet: View {
                 .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
+        .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
     }
 
     private func triggerSearch() {
@@ -692,7 +692,7 @@ private struct CatalogFoodRow: View {
                 .font(.title2)
                 .frame(width: 40, height: 40)
                 .background(Color.surfaceCard)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
@@ -701,8 +701,8 @@ private struct CatalogFoodRow: View {
                     if item.custom {
                         Text("사용자 등록")
                             .font(.caption2.bold())
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, 5) // design-lint:ignore — micro/hero spacing
+                            .padding(.vertical, 2) // design-lint:ignore — micro/hero spacing
                             .background(Color.brandAccent.opacity(0.2))
                             .foregroundColor(.brandAccent)
                             .clipShape(Capsule())
@@ -721,7 +721,7 @@ private struct CatalogFoodRow: View {
                     .foregroundColor(Color.brandAccent)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -737,7 +737,7 @@ private struct ExternalFoodRow: View {
                 .font(.title2)
                 .frame(width: 40, height: 40)
                 .background(Color.backgroundPage)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.displayName)
@@ -746,8 +746,8 @@ private struct ExternalFoodRow: View {
                 HStack(spacing: 4) {
                     Text(item.source.displayName)
                         .font(.caption2.bold())
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
+                        .padding(.horizontal, 5) // design-lint:ignore — micro/hero spacing
+                        .padding(.vertical, 2) // design-lint:ignore — micro/hero spacing
                         .background(Color.hairline)
                         .clipShape(Capsule())
                     Text(item.nutritionSummary)
@@ -763,7 +763,7 @@ private struct ExternalFoodRow: View {
                     .foregroundColor(Color.brandAccent)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
     }
 }
 

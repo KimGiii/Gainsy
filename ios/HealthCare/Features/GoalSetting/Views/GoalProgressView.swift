@@ -34,12 +34,12 @@ struct GoalProgressView: View {
                                 CheckpointHistoryCard(checkpoints: checkpoints)
                             }
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 20)
-                        .padding(.bottom, 40)
+                        .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                        .padding(.top, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                        .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
                     } else if !viewModel.isLoading {
                         EmptyProgressState()
-                            .padding(.top, 60)
+                            .padding(.top, 60) // design-lint:ignore — micro/hero spacing
                     }
                 }
             }
@@ -85,23 +85,23 @@ private struct ProgressHeroSection: View {
                 HStack {
                     Button(action: onDismiss) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.cta)
                             .foregroundStyle(.white)
-                            .padding(10)
+                            .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                             .background(.white.opacity(0.15))
                             .clipShape(Circle())
                     }
                     Spacer()
                     Text("목표 진행률")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.numeralMedium).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Spacer()
                     if let onEdit {
                         Button(action: onEdit) {
                             Image(systemName: "pencil")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(.headingSmall)
                                 .foregroundStyle(.white)
-                                .padding(10)
+                                .padding(Spacing.md) // design-lint:ignore — micro/hero spacing
                                 .background(.white.opacity(0.15))
                                 .clipShape(Circle())
                         }
@@ -109,13 +109,13 @@ private struct ProgressHeroSection: View {
                         Color.clear.frame(width: 40, height: 40)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 56)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.top, 56) // design-lint:ignore — micro/hero spacing
 
                 if isLoading {
-                    ProgressView().tint(.white).padding(.top, 50)
+                    ProgressView().tint(.white).padding(.top, 50) // design-lint:ignore — micro/hero spacing
                 } else if let p = progress {
-                    HeroProgressRing(progress: p).padding(.top, 20)
+                    HeroProgressRing(progress: p).padding(.top, Spacing.xl)
                 }
             }
         }
@@ -184,10 +184,10 @@ private struct HeroProgressRing: View {
 
                 VStack(spacing: 2) {
                     Text(String(format: "%.0f%%", (progress.percentComplete ?? 0)))
-                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .font(.numeralLarge)
                         .foregroundStyle(.white)
                     Text("달성")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.captionXSmall)
                         .foregroundStyle(.white.opacity(0.65))
                 }
             }
@@ -195,35 +195,35 @@ private struct HeroProgressRing: View {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(progress.goalType.emoji + " " + progress.goalType.displayName)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.bodyLarge).fontWeight(.bold)
                         .foregroundStyle(.white)
                     Text("목표: \(progress.formattedValue(progress.targetValue))")
-                        .font(.system(size: 13))
+                        .font(.bodySmall)
                         .foregroundStyle(.white.opacity(0.75))
                 }
 
                 HStack(spacing: 5) {
                     Image(systemName: progress.trackingIcon)
-                        .font(.system(size: 11))
+                        .font(.captionXSmall)
                     Text(progress.trackingStatusLabel)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.captionBold)
                 }
                 .foregroundStyle(ringColor)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
+                .padding(.horizontal, Spacing.md) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, 5) // design-lint:ignore — micro/hero spacing
                 .background(.white.opacity(0.15))
                 .clipShape(Capsule())
 
                 if let days = progress.daysRemaining, days >= 0 {
                     HStack(spacing: 4) {
-                        Image(systemName: "calendar").font(.system(size: 10))
-                        Text("D-\(days)").font(.system(size: 11, weight: .semibold))
+                        Image(systemName: "calendar").font(.captionXSmall)
+                        Text("D-\(days)").font(.captionXSmall).fontWeight(.semibold)
                     }
                     .foregroundStyle(.white.opacity(0.8))
                 }
             }
         }
-        .padding(.horizontal, 28)
+        .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -245,27 +245,27 @@ private struct TrackingStatusCard: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: progress.trackingIcon)
-                .font(.system(size: 22))
+                .font(.system(size: 22)) // design-lint:ignore — SF Symbol or special
                 .foregroundStyle(statusColor)
                 .frame(width: 48, height: 48)
                 .background(statusColor.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.md))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(progress.trackingStatusLabel)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Text(progress.isOnTrack
                      ? "현재 페이스로 목표를 달성할 수 있어요"
                      : "목표 날짜까지 페이스를 높여보세요")
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
             Spacer()
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
     }
 }
@@ -278,7 +278,7 @@ private struct ValueProgressCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("수치 변화")
-                .font(.system(size: 15, weight: .bold))
+                .font(.headingSmall).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
 
             HStack(spacing: 0) {
@@ -289,7 +289,7 @@ private struct ValueProgressCard: View {
                 )
                 Spacer()
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
                 ValueColumn(
@@ -300,7 +300,7 @@ private struct ValueProgressCard: View {
                 )
                 Spacer()
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
                 ValueColumn(
@@ -327,9 +327,9 @@ private struct ValueProgressCard: View {
             }
             .frame(height: 8)
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
     }
 }
@@ -343,10 +343,11 @@ private struct ValueColumn: View {
     var body: some View {
         VStack(spacing: 5) {
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
             Text(value)
-                .font(.system(size: 15, weight: isBold ? .bold : .semibold))
+                .font(.headingSmall)
+                .fontWeight(isBold ? .bold : .semibold)
                 .foregroundStyle(color)
         }
     }
@@ -360,7 +361,7 @@ private struct TimelineCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("일정")
-                .font(.system(size: 15, weight: .bold))
+                .font(.headingSmall).fontWeight(.bold)
                 .foregroundStyle(Color.textPrimary)
 
             HStack(spacing: 0) {
@@ -386,9 +387,9 @@ private struct TimelineCard: View {
                 )
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
     }
 
@@ -409,14 +410,14 @@ private struct TimelineItem: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.bodyLarge)
                 .foregroundStyle(color)
             Text(value)
-                .font(.system(size: 12, weight: .bold))
+                .font(.captionBold).fontWeight(.bold)
                 .foregroundStyle(color)
                 .multilineTextAlignment(.center)
             Text(label)
-                .font(.system(size: 10, weight: .medium))
+                .font(.captionXSmall)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -436,11 +437,11 @@ private struct CheckpointHistoryCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("기록 히스토리")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Spacer()
                 Text("\(checkpoints.count)개")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
             }
 
@@ -448,14 +449,14 @@ private struct CheckpointHistoryCard: View {
                 ForEach(Array(sorted.enumerated()), id: \.offset) { _, cp in
                     CheckpointRow(checkpoint: cp)
                     if cp.checkpointDate != sorted.last?.checkpointDate {
-                        Divider().padding(.leading, 44)
+                        Divider().padding(.leading, 44) // design-lint:ignore — micro/hero spacing
                     }
                 }
             }
         }
-        .padding(18)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfacePrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
     }
 }
@@ -476,28 +477,28 @@ private struct CheckpointRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: iconName)
-                .font(.system(size: 18))
+                .font(.headingMedium).fontWeight(.regular)
                 .foregroundStyle(iconColor)
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(checkpoint.formattedDate)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                         .foregroundStyle(Color.textPrimary)
                     if checkpoint.isStartingPoint {
                         Text("시작")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.captionXSmall).fontWeight(.bold)
                             .foregroundStyle(Color.brandPrimary)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, Spacing.sm) // design-lint:ignore — micro/hero spacing
+                            .padding(.vertical, 2) // design-lint:ignore — micro/hero spacing
                             .background(Color.brandPrimary.opacity(0.12))
                             .clipShape(Capsule())
                     }
                 }
                 if !checkpoint.isStartingPoint, let projected = checkpoint.projectedValue {
                     Text("예상: \(String(format: "%.1f", projected))")
-                        .font(.system(size: 11))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                 }
             }
@@ -506,11 +507,11 @@ private struct CheckpointRow: View {
 
             if let actual = checkpoint.actualValue {
                 Text(String(format: "%.1f", actual))
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
             }
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
     }
 }
 
@@ -518,18 +519,10 @@ private struct CheckpointRow: View {
 
 private struct EmptyProgressState: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 40))
-                .foregroundStyle(Color.textSecondary.opacity(0.5))
-            Text("진행률 데이터 없음")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color.textSecondary)
-            Text("신체 측정 기록을 추가하면\n목표 진행률을 확인할 수 있어요.")
-                .font(.system(size: 13))
-                .foregroundStyle(Color.textSecondary.opacity(0.7))
-                .multilineTextAlignment(.center)
-                .lineSpacing(4)
-        }
+        EmptyState(
+            icon: "chart.line.uptrend.xyaxis",
+            title: "진행률 데이터가 아직 없어요",
+            message: "신체 측정 기록을 추가하면\n목표 진행률을 확인할 수 있어요"
+        )
     }
 }

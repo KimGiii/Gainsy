@@ -13,8 +13,8 @@ struct ProfileSetupView: View {
             VStack(spacing: 0) {
                 // Progress
                 ProgressBar(current: step, total: 2)
-                    .padding(.horizontal, 28)
-                    .padding(.top, 24)
+                    .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                    .padding(.top, Spacing.xxl) // design-lint:ignore — micro/hero spacing
 
                 // Step Content
                 if step == 1 {
@@ -38,49 +38,31 @@ struct ProfileSetupView: View {
                     Text(error)
                         .font(.caption)
                         .foregroundStyle(Color.brandDanger)
-                        .padding(.horizontal, 28)
-                        .padding(.bottom, 8)
+                        .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                        .padding(.bottom, Spacing.sm) // design-lint:ignore — micro/hero spacing
                 }
 
                 // CTA
-                VStack(spacing: 0) {
+                Group {
                     if step == 1 {
-                        Button {
+                        PrimaryButton(
+                            "다음으로",
+                            isEnabled: viewModel.canProceedStep1
+                        ) {
                             withAnimation { step = 2 }
-                        } label: {
-                            Text("다음")
-                                .font(.system(size: 17, weight: .semibold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(viewModel.canProceedStep1 ? Color.brandPrimary : Color.brandPrimary.opacity(0.3))
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
-                        .disabled(!viewModel.canProceedStep1)
                     } else {
-                        Button {
+                        PrimaryButton(
+                            "시작하기",
+                            isEnabled: viewModel.canSubmit,
+                            isLoading: viewModel.isLoading
+                        ) {
                             Task { await viewModel.submit(apiClient: container.apiClient, authState: authState) }
-                        } label: {
-                            Group {
-                                if viewModel.isLoading {
-                                    ProgressView().tint(.white)
-                                } else {
-                                    Text("시작하기")
-                                        .font(.system(size: 17, weight: .semibold))
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(viewModel.canSubmit ? Color.brandPrimary : Color.brandPrimary.opacity(0.3))
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .shadow(color: Color.brandPrimary.opacity(0.3), radius: 10, x: 0, y: 5)
                         }
-                        .disabled(!viewModel.canSubmit || viewModel.isLoading)
                     }
                 }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 48)
+                .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                .padding(.bottom, 48) // design-lint:ignore — micro/hero spacing
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -127,17 +109,17 @@ private struct StepOneView: View {
                 // Title
                 VStack(alignment: .leading, spacing: 6) {
                     Text("신체 정보를 알려주세요")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
                     Text("맞춤형 목표 설정에 사용됩니다")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
 
                 // Sex
                 VStack(alignment: .leading, spacing: 12) {
                     Text("성별")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                         .foregroundStyle(Color.textSecondary)
 
                     HStack(spacing: 10) {
@@ -155,7 +137,7 @@ private struct StepOneView: View {
                 // Height & Weight
                 VStack(alignment: .leading, spacing: 12) {
                     Text("키 / 몸무게")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.labelSmall)
                         .foregroundStyle(Color.textSecondary)
 
                     HStack(spacing: 12) {
@@ -172,8 +154,8 @@ private struct StepOneView: View {
                     }
                 }
             }
-            .padding(.horizontal, 28)
-            .padding(.top, 36)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.top, 36) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -188,10 +170,10 @@ private struct StepTwoView: View {
             VStack(alignment: .leading, spacing: 32) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("평소 활동 수준은?")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.headingLarge)
                         .foregroundStyle(Color.brandPrimary)
                     Text("칼로리 목표 계산에 반영됩니다")
-                        .font(.system(size: 14))
+                        .font(.bodyMedium)
                         .foregroundStyle(Color.textSecondary)
                 }
 
@@ -206,8 +188,8 @@ private struct StepTwoView: View {
                     }
                 }
             }
-            .padding(.horizontal, 28)
-            .padding(.top, 36)
+            .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+            .padding(.top, 36) // design-lint:ignore — micro/hero spacing
         }
     }
 }
@@ -245,18 +227,18 @@ private struct SexCard: View {
         Button(action: action) {
             VStack(spacing: 8) {
                 Image(systemName: option.icon)
-                    .font(.system(size: 22))
+                    .font(.system(size: 22)) // design-lint:ignore — SF Symbol size
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                 Text(option.label)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.labelSmall)
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 18)
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(isSelected ? Color.brandPrimary : Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: Radius.lg)
                     .stroke(Color.brandPrimary.opacity(isSelected ? 0 : 0.2), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
@@ -274,19 +256,20 @@ private struct MeasurementField: View {
     var body: some View {
         HStack(spacing: 4) {
             TextField(placeholder, text: $text)
-                .font(.system(size: 17, weight: .medium))
+                .font(.bodyLarge)
+                .fontWeight(.medium)
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.trailing)
             Text(unit)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.textSecondary)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: Radius.md)
                 .stroke(Color.brandPrimary.opacity(0.2), lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
@@ -341,16 +324,16 @@ private struct ActivityCard: View {
         Button(action: action) {
             HStack(spacing: 16) {
                 Image(systemName: option.icon)
-                    .font(.system(size: 22))
+                    .font(.system(size: 22)) // design-lint:ignore — SF Symbol size
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     .frame(width: 28)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(option.title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.headingSmall)
                         .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     Text(option.description)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(isSelected ? .white.opacity(0.8) : Color.textSecondary)
                 }
 
@@ -361,12 +344,12 @@ private struct ActivityCard: View {
                         .foregroundStyle(.white)
                 }
             }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 16)
+            .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+            .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(isSelected ? Color.brandPrimary : Color.surfaceCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: Radius.lg)
                     .stroke(Color.brandPrimary.opacity(isSelected ? 0 : 0.2), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)

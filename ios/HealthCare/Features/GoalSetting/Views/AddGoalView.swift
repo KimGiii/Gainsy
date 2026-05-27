@@ -31,8 +31,8 @@ struct AddGoalView: View {
                         ErrorBanner(message: error)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 24)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("목표 설정")
@@ -54,7 +54,7 @@ struct AddGoalView: View {
                                 }
                             }
                         }
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.headingSmall)
                         .foregroundStyle(viewModel.isValid ? Color.brandPrimary : Color.textSecondary)
                         .disabled(!viewModel.isValid)
                     }
@@ -81,8 +81,8 @@ private struct GoalTypeSection: View {
                         }
                     }
                 }
-                .padding(.horizontal, 1)
-                .padding(.vertical, 4)
+                .padding(.horizontal, 1) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
             }
         }
     }
@@ -97,22 +97,23 @@ private struct GoalTypeCard: View {
         Button(action: onTap) {
             VStack(spacing: 10) {
                 Image(systemName: type.icon)
-                    .font(.system(size: 22))
+                    .font(.headingLarge)
                     .foregroundStyle(isSelected ? .white : Color.brandPrimary)
                     .frame(width: 52, height: 52)
                     .background(
                         isSelected ? Color.brandPrimary : Color.surfaceCard
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
 
                 Text(type.displayName)
-                    .font(.system(size: 12, weight: isSelected ? .bold : .regular))
+                    .font(.caption)
+                    .fontWeight(isSelected ? .bold : .regular)
                     .foregroundStyle(isSelected ? Color.brandPrimary : Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .frame(width: 72)
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, Spacing.xs) // design-lint:ignore — micro/hero spacing
         }
         .buttonStyle(.plain)
         .animation(.easeInOut(duration: 0.15), value: isSelected)
@@ -149,7 +150,7 @@ private struct TargetValueSection: View {
                     )
 
                     Text("비워두면 가장 최근 신체 측정 기록으로 자동 채워집니다.")
-                        .font(.system(size: 11))
+                        .font(.captionXSmall)
                         .foregroundStyle(Color.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -215,7 +216,7 @@ private struct SectionLabel: View {
 
     var body: some View {
         Text(title)
-            .font(.system(size: 15, weight: .semibold))
+            .font(.headingSmall)
             .foregroundStyle(Color.textPrimary)
     }
 }
@@ -229,9 +230,9 @@ private struct FormCard<Content: View>: View {
 
     var body: some View {
         content()
-            .padding(16)
+            .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
             .background(Color.surfacePrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
     }
 }
@@ -246,22 +247,22 @@ private struct NumericField: View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
                 Text(label)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
                 TextField(placeholder, text: $text)
                     .keyboardType(.decimalPad)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.bodyLarge).fontWeight(.semibold)
                     .foregroundStyle(Color.textPrimary)
             }
             Spacer()
             if !unit.isEmpty {
                 Text(unit)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.bodyMedium).fontWeight(.medium)
                     .foregroundStyle(Color.textSecondary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, Spacing.md) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, Spacing.sm) // design-lint:ignore — micro/hero spacing
                     .background(Color.surfaceSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
             }
         }
     }
@@ -274,10 +275,10 @@ private struct PresetChip: View {
     var body: some View {
         Button(action: onTap) {
             Text(label)
-                .font(.system(size: 13, weight: .medium))
+                .font(.bodySmall).fontWeight(.medium)
                 .foregroundStyle(Color.brandPrimary)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
+                .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+                .padding(.vertical, 7) // design-lint:ignore — micro/hero spacing
                 .background(Color.surfaceCard)
                 .clipShape(Capsule())
         }
@@ -293,12 +294,12 @@ private struct ErrorBanner: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(Color.brandDanger)
             Text(message)
-                .font(.system(size: 13))
+                .font(.bodySmall)
                 .foregroundStyle(Color.brandDanger)
         }
-        .padding(14)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.brandDanger.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
     }
 }

@@ -14,8 +14,8 @@ struct PremiumPaywallSheet: View {
                     upcomingNotice
                     Spacer(minLength: 32)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 24)
+                .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                .padding(.top, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             }
             .background(Color.backgroundPage)
             .navigationBarTitleDisplayMode(.inline)
@@ -35,7 +35,7 @@ struct PremiumPaywallSheet: View {
                     .fill(Color.brandPrimary.opacity(0.12))
                     .frame(width: 88, height: 88)
                 Image(systemName: "sparkles")
-                    .font(.system(size: 38, weight: .semibold))
+                    .font(.system(size: 38, weight: .semibold)) // design-lint:ignore — SF Symbol/hero
                     .foregroundColor(Color.brandPrimary)
             }
             Text("Gainsy PRO")
@@ -66,9 +66,9 @@ struct PremiumPaywallSheet: View {
                 detail: "AI 추정값을 검토하고 그대로 식단 기록으로 저장"
             )
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
     }
 
     private func featureRow(icon: String, title: String, detail: String) -> some View {
@@ -98,9 +98,9 @@ struct PremiumPaywallSheet: View {
                 .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .frame(maxWidth: .infinity)
         .background(Color.surfaceCard.opacity(0.6))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
     }
 }

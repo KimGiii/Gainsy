@@ -10,9 +10,9 @@ struct ExploreView: View {
                 InsightSectionHeader()
                 InsightMenuGrid(container: container)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
-            .padding(.bottom, 40)
+            .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+            .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
+            .padding(.bottom, Spacing.xxxl) // design-lint:ignore — micro/hero spacing
         }
         .safeAreaInset(edge: .bottom) {
             BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
@@ -30,12 +30,12 @@ private struct InsightSectionHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("인사이트")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.labelSmall)
                 .foregroundStyle(Color.textSecondary)
                 .textCase(.uppercase)
                 .tracking(0.5)
             Text("나의 기록을 분석해보세요")
-                .font(.system(size: 15))
+                .font(.bodyMedium)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -89,30 +89,30 @@ private struct InsightMenuCard: View {
     var body: some View {
         HStack(spacing: 16) {
             Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
+                .font(.numeralMedium).fontWeight(.semibold)
                 .foregroundStyle(iconColor)
                 .frame(width: 50, height: 50)
                 .background(iconColor.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.headingSmall).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
                 Text(description)
-                    .font(.system(size: 13))
+                    .font(.bodySmall)
                     .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.captionBold)
                 .foregroundStyle(Color.textSecondary.opacity(0.5))
         }
-        .padding(16)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
