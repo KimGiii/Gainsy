@@ -252,25 +252,20 @@ private struct MealCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
-                    .fill(Color.surfaceCard)
-                Image(systemName: log.mealType.sfSymbol)
-                    .font(.system(size: 44))
-                    .foregroundStyle(Color.brandAccent.opacity(0.15))
-                    .offset(x: 16, y: 14)
-                    .rotationEffect(.degrees(-4))
-                    .accessibilityHidden(true)
-            }
-            .frame(width: 140, height: 114)
-            .overlay(alignment: .topTrailing) {
-                Text(log.mealType.displayName)
-                    .font(.system(size: 9, weight: .heavy)).tracking(1.0).textCase(.uppercase) // design-lint:ignore — 마이크로 라벨
-                    .foregroundStyle(Color.textHeadline)
-                    .padding(.horizontal, 7).padding(.vertical, 3) // design-lint:ignore — micro/hero spacing
-                    .background(Capsule().fill(Color.surfaceCard))
-                    .padding(9) // design-lint:ignore — micro/hero spacing
-            }
+            RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
+                .fill(Color.surfaceCard)
+                .frame(width: 140, height: 114)
+                .overlay {
+                    VStack(spacing: 8) {
+                        Image(systemName: log.mealType.sfSymbol)
+                            .font(.system(size: 36, weight: .medium))
+                            .foregroundStyle(Color.brandAccent)
+                            .accessibilityHidden(true)
+                        Text(log.mealType.displayName)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color.textSecondary)
+                    }
+                }
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
