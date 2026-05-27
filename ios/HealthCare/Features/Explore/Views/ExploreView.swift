@@ -1,6 +1,16 @@
 import GoogleMobileAds
 import SwiftUI
 
+// MARK: - Explore Navigation Destinations
+//
+// MainTabView가 푸시 라우팅에서 explorePath에 직접 append할 수 있도록
+// value 기반 enum으로 노출. NavigationLink도 같은 enum으로 통일.
+
+enum ExploreDestination: Hashable {
+    case weeklyRetrospective
+    case changeAnalysis
+}
+
 struct ExploreView: View {
     @EnvironmentObject private var container: AppContainer
 
@@ -8,7 +18,7 @@ struct ExploreView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 InsightSectionHeader()
-                InsightMenuGrid(container: container)
+                InsightMenuGrid()
             }
             .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
             .padding(.top, Spacing.sm) // design-lint:ignore — micro/hero spacing
@@ -21,6 +31,14 @@ struct ExploreView: View {
         .background(Color.backgroundPage)
         .navigationTitle("탐색")
         .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(for: ExploreDestination.self) { dest in
+            switch dest {
+            case .weeklyRetrospective:
+                WeeklyRetrospectiveView().environmentObject(container)
+            case .changeAnalysis:
+                ChangeAnalysisView().environmentObject(container)
+            }
+        }
     }
 }
 
@@ -45,14 +63,9 @@ private struct InsightSectionHeader: View {
 // MARK: - Menu Grid
 
 private struct InsightMenuGrid: View {
-    let container: AppContainer
-
     var body: some View {
         VStack(spacing: 12) {
-            NavigationLink {
-                WeeklyRetrospectiveView()
-                    .environmentObject(container)
-            } label: {
+            NavigationLink(value: ExploreDestination.weeklyRetrospective) {
                 InsightMenuCard(
                     icon: "chart.bar.doc.horizontal",
                     iconColor: Color.brandPrimary,
@@ -62,10 +75,7 @@ private struct InsightMenuGrid: View {
             }
             .buttonStyle(.plain)
 
-            NavigationLink {
-                ChangeAnalysisView()
-                    .environmentObject(container)
-            } label: {
+            NavigationLink(value: ExploreDestination.changeAnalysis) {
                 InsightMenuCard(
                     icon: "waveform.path.ecg",
                     iconColor: .purple,

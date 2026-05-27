@@ -121,8 +121,11 @@ struct MainTabView: View {
     private func handlePushRoute(type: String) {
         switch type {
         case "WEEKLY_SUMMARY":
+            // explore 탭 + WeeklyRetrospectiveView 자동 push.
             selectedTab = .explore
-            resetTab(.explore)
+            exploreId = UUID()                                       // root view fresh
+            explorePath = NavigationPath()                           // 기존 스택 비우고
+            explorePath.append(ExploreDestination.weeklyRetrospective) // 회고로 직진
         default:
             break
         }
