@@ -20,7 +20,7 @@ struct StreakCard: View {
             HStack(alignment: .lastTextBaseline, spacing: 4) {
                 Text("\(streakDays)")
                     .font(.system(size: 40, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
-                    .foregroundStyle(streakDays > 0 ? Color.brandPrimary : Color.textTertiary)
+                    .foregroundStyle(streakDays > 0 ? Color.textHeadline : Color.textTertiary)
                     .contentTransition(.numericText())
                 Text("일 연속")
                     .font(.labelSmall)
