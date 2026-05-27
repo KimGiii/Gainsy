@@ -29,7 +29,7 @@ struct ActivityRingPanel: View {
                     size: .hero,
                     value: caloriesValueText,
                     unit: "kcal",
-                    label: String(format: "권장 %.0f kcal", dailyCalorieGoal)
+                    label: "칼로리 섭취"
                 )
 
                 // 오른쪽 — 운동 + 단백질 (standard × 2)
