@@ -106,6 +106,11 @@ struct HomeView: View {
 // MARK: - Dashboard Header Bar
 
 private struct DashboardHeaderBar: View {
+    @EnvironmentObject private var container: AppContainer
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var showNotifications = false
+    @State private var unreadCount: Int = 0
+
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
@@ -137,37 +142,63 @@ private struct DashboardHeaderBar: View {
 
             Spacer()
 
-            HStack(spacing: 8) {
-                HeaderIconButton(system: "bell")
-                // 마이페이지는 하단 탭(.myPage)으로 분리됨 — 헤더 아이콘 제거.
+            NotificationBellButton(unreadCount: unreadCount) {
+                showNotifications = true
             }
         }
+        .sheet(isPresented: $showNotifications, onDismiss: {
+            Task { await refreshUnreadCount() }
+        }) {
+            NavigationStack {
+                NotificationsView().environmentObject(container)
+            }
+        }
+        .task { await refreshUnreadCount() }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active { Task { await refreshUnreadCount() } }
+        }
+    }
+
+    private func refreshUnreadCount() async {
+        struct Response: Decodable { let count: Int }
+        let response: Response? = try? await container.apiClient.request(.getNotificationsUnreadCount)
+        if let response { unreadCount = response.count }
     }
 }
 
-private struct HeaderIconButton: View {
-    let system: String
+// MARK: - Notification Bell Button
 
-    private var accessibilityLabel: String {
-        switch system {
-        case "bell":               return "알림"
-        case "person.crop.circle": return "프로필"
-        default:                   return system
-        }
-    }
+private struct NotificationBellButton: View {
+    let unreadCount: Int
+    let action: () -> Void
 
     var body: some View {
-        Image(systemName: system)
-            .font(.bodyMedium).fontWeight(.semibold)
-            .foregroundStyle(Color.textHeadline.opacity(0.65))
-            .frame(width: 38, height: 38)
-            .background(
-                Circle()
-                    .fill(Color.surfaceCard)
-                    .overlay(Circle().stroke(Color.cardStroke, lineWidth: 1))
-            )
-            .elevation(.low)
-            .accessibilityLabel(accessibilityLabel)
+        Button(action: action) {
+            Image(systemName: "bell")
+                .font(.bodyMedium).fontWeight(.semibold)
+                .foregroundStyle(Color.textHeadline.opacity(0.75))
+                .frame(width: 38, height: 38)
+                .background(
+                    Circle()
+                        .fill(Color.surfaceCard)
+                        .overlay(Circle().stroke(Color.cardStroke, lineWidth: 1))
+                )
+                .overlay(alignment: .topTrailing) {
+                    if unreadCount > 0 {
+                        Text(unreadCount > 99 ? "99+" : "\(unreadCount)")
+                            .font(.captionXSmall).fontWeight(.bold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5) // design-lint:ignore — badge inner padding
+                            .frame(minWidth: 18, minHeight: 18)
+                            .background(Color.brandDanger)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(Color.surfaceCard, lineWidth: 1.5))
+                            .offset(x: 6, y: -4)
+                    }
+                }
+                .elevation(.low)
+        }
+        .accessibilityLabel(unreadCount > 0 ? "알림 \(unreadCount)개" : "알림")
     }
 }
 

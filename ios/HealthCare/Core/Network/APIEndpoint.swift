@@ -69,6 +69,13 @@ enum APIEndpoint {
     // Insights
     case getWeeklySummary(weekOffset: Int)
     case getChangeAnalysis(from: String, to: String)
+
+    // Notifications (인앱 알림 센터)
+    case getNotifications(page: Int, size: Int)
+    case getNotificationsUnreadCount
+    case markNotificationRead(id: Int)
+    case markAllNotificationsRead
+    case deleteNotification(id: Int)
 }
 
 extension APIEndpoint {
@@ -117,6 +124,11 @@ extension APIEndpoint {
         case .aiEstimateExercise:                return "/api/v1/exercise/ai-estimate"
         case .getWeeklySummary:                  return "/api/v1/insights/weekly-summary"
         case .getChangeAnalysis:                 return "/api/v1/insights/change-analysis"
+        case .getNotifications:                  return "/api/v1/notifications"
+        case .getNotificationsUnreadCount:       return "/api/v1/notifications/unread-count"
+        case .markNotificationRead(let id):      return "/api/v1/notifications/\(id)/read"
+        case .markAllNotificationsRead:          return "/api/v1/notifications/read-all"
+        case .deleteNotification(let id):        return "/api/v1/notifications/\(id)"
         }
     }
 
@@ -128,12 +140,14 @@ extension APIEndpoint {
              .createBodyMeasurement, .initiatePhotoUpload, .registerProgressPhoto, .createGoal,
              .aiEstimateFood, .aiEstimateExercise, .createCustomFood, .createCustomExercise:
             return .POST
-        case .updateProfile, .updateGoal:
+        case .updateProfile, .updateGoal,
+             .markNotificationRead, .markAllNotificationsRead:
             return .PATCH
         case .updateDietLog:
             return .PUT
         case .deleteAccount, .deleteExerciseSession, .deleteDietLog,
-             .deleteGoal, .deleteBodyMeasurement, .deleteProgressPhoto:
+             .deleteGoal, .deleteBodyMeasurement, .deleteProgressPhoto,
+             .deleteNotification:
             return .DELETE
         default:
             return .GET
@@ -213,6 +227,11 @@ extension APIEndpoint {
             return [.init(name: "weekOffset", value: "\(weekOffset)")]
         case .getChangeAnalysis(let from, let to):
             return [.init(name: "from", value: from), .init(name: "to", value: to)]
+        case .getNotifications(let page, let size):
+            return [
+                .init(name: "page", value: "\(page)"),
+                .init(name: "size", value: "\(size)")
+            ]
         default: return nil
         }
     }
