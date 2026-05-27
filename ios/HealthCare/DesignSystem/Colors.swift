@@ -4,7 +4,12 @@ import SwiftUI
 
 extension Color {
     // Brand — Dark Forest Green (deepened, richer)
-    static let brandPrimary      = Color(hex: "#0F3B24")   // deeper forest
+    // brandPrimary: 라이트 모드에서는 딥 포레스트, 다크 모드에서는 구별 가능한 밝은 포레스트
+    static let brandPrimary = Color(UIColor { t in
+        t.userInterfaceStyle == .dark
+            ? UIColor(adaptHex: "#1E6040")   // lighter forest — readable on dark bg
+            : UIColor(adaptHex: "#0F3B24")   // deeper forest for light bg
+    })
     static let brandSecondary    = Color(hex: "#2D6A4F")   // mid forest
     static let brandTertiary     = Color(hex: "#1A4A2E")   // classic forest (legacy)
     static let brandAccent       = Color(hex: "#52B788")   // fresh mint
