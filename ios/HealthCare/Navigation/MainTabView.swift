@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
+    @ObservedObject private var pushRouter = PushRouter.shared
 
     // NavigationPath — push 스택 리셋용
     @State private var homePath    = NavigationPath()
@@ -74,10 +75,21 @@ struct MainTabView: View {
             .tag(Tab.myPage)
         }
         .tint(Color.brandPrimary)
-        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationTapped)) { note in
-            guard let type = note.userInfo?["type"] as? String else { return }
-            handlePushRoute(type: type)
+        // 푸시 라우팅: PushRouter에 쌓인 pending route를 onAppear / onChange에서 소비.
+        // .onReceive(NotificationCenter)는 cold-start race condition이 있어 제거됨.
+        .onAppear {
+            print("[MainTabView] onAppear — pending=\(pushRouter.pendingRoute ?? "nil")")
+            processPendingPushRoute()
         }
+        .onChange(of: pushRouter.pendingRoute) { newValue in
+            print("[MainTabView] pendingRoute changed → \(newValue ?? "nil")")
+            processPendingPushRoute()
+        }
+    }
+
+    private func processPendingPushRoute() {
+        guard let type = pushRouter.consume() else { return }
+        handlePushRoute(type: type)
     }
 
     /// 탭을 선택할 때마다 항상 해당 탭의 path와 root view id를 리셋한다.
@@ -113,11 +125,15 @@ struct MainTabView: View {
     }
 
     private func handlePushRoute(type: String) {
+        print("[MainTabView] handlePushRoute type=\(type)")
         switch type {
         case "WEEKLY_SUMMARY":
+            // explorePath를 먼저 세팅 — ExploreView가 mount되며 destination을 자동 push.
+            // exploreId 재생성은 path append와 race를 일으켜 제거.
+            explorePath = NavigationPath([ExploreDestination.weeklyRetrospective])
             selectedTab = .explore
-            resetTab(.explore)
         default:
+            print("[MainTabView] handlePushRoute — 매핑되지 않은 type: \(type)")
             break
         }
     }
