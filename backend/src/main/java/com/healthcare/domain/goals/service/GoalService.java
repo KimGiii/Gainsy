@@ -12,6 +12,9 @@ import com.healthcare.domain.goals.entity.Goal.GoalStatus;
 import com.healthcare.domain.goals.entity.GoalCheckpoint;
 import com.healthcare.domain.goals.repository.GoalCheckpointRepository;
 import com.healthcare.domain.goals.repository.GoalRepository;
+import com.healthcare.domain.nutrition.dto.NutritionTargets;
+import com.healthcare.domain.nutrition.service.NutritionTargetService;
+import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,12 +41,13 @@ public class GoalService {
     private final UserRepository userRepository;
     private final BodyMeasurementRepository bodyMeasurementRepository;
     private final ExerciseSessionRepository exerciseSessionRepository;
+    private final NutritionTargetService nutritionTargetService;
 
     // ─────────────────────────── 목표 생성 ───────────────────────────
 
     @Transactional
     public GoalResponse createGoal(Long userId, CreateGoalRequest request) {
-        userRepository.findByIdAndDeletedAtIsNull(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         if (request.getTargetDate().isBefore(LocalDate.now())) {
@@ -76,6 +80,10 @@ public class GoalService {
             goalRepository.save(active);
         });
 
+        // 새 목표 타입 기준으로 영양 권장량 계산 — Goal과 User의 daily target에 모두 반영.
+        // 프로필 정보가 부족하면 null이 반환되고 그대로 비워둔다.
+        NutritionTargets nutritionTargets = nutritionTargetService.computeForGoal(user, goalType);
+
         Goal goal = Goal.builder()
                 .userId(userId)
                 .goalType(goalType)
@@ -86,9 +94,23 @@ public class GoalService {
                 .startDate(startDate)
                 .status(GoalStatus.ACTIVE)
                 .weeklyRateTarget(normalizedWeeklyRateTarget)
+                .calorieTarget(nutritionTargets != null ? nutritionTargets.calorieTarget() : null)
+                .proteinTargetG(nutritionTargets != null ? nutritionTargets.proteinTargetG() : null)
+                .carbTargetG(nutritionTargets != null ? nutritionTargets.carbTargetG() : null)
+                .fatTargetG(nutritionTargets != null ? nutritionTargets.fatTargetG() : null)
                 .build();
 
         Goal saved = goalRepository.save(goal);
+
+        // 활성 목표가 바뀌었으므로 User의 daily 권장량도 동기화 (홈 화면 등은 User 기반으로 표시).
+        if (nutritionTargets != null) {
+            user.updateTargets(
+                    nutritionTargets.calorieTarget(),
+                    nutritionTargets.proteinTargetG(),
+                    nutritionTargets.carbTargetG(),
+                    nutritionTargets.fatTargetG()
+            );
+        }
 
         // 시작 체크포인트 — 히스토리에서 시작점을 항상 보이도록.
         // startValue가 있을 때만 의미가 있다. notes="시작"으로 주간 체크포인트와 구분.
