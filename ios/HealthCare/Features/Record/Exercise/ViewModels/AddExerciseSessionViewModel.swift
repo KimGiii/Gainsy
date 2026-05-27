@@ -258,7 +258,7 @@ final class AddExerciseSessionViewModel: ObservableObject {
     func save(apiClient: APIClient, onSuccess: @escaping @MainActor (CreateSessionResponse) -> Void) async {
         guard canSave else {
             errorMessage = hasValidSessionTime
-                ? "모든 세트 정보를 올바르게 입력해주세요."
+                ? "모든 세트 정보를 올바르게 입력해 주세요."
                 : "운동 종료 시간은 시작 시간보다 늦어야 합니다."
             return
         }

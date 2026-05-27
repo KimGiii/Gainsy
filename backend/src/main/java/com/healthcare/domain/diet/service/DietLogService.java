@@ -81,7 +81,7 @@ public class DietLogService {
                 .orElseThrow(() -> new ResourceNotFoundException("DietLog", logId));
 
         if (!log.isOwnedBy(userId)) {
-            throw new UnauthorizedException("다른 사용자의 식사 기록에 접근할 수 없습니다.");
+            throw new UnauthorizedException("다른 사용자의 식단 기록에 접근할 수 없습니다.");
         }
 
         List<FoodEntry> rawEntries = foodEntryRepository.findByDietLogIdOrderById(logId);
@@ -126,7 +126,7 @@ public class DietLogService {
                 .orElseThrow(() -> new ResourceNotFoundException("DietLog", logId));
 
         if (!log.isOwnedBy(userId)) {
-            throw new UnauthorizedException("다른 사용자의 식사 기록을 수정할 수 없습니다.");
+            throw new UnauthorizedException("다른 사용자의 식단 기록을 수정할 수 없습니다.");
         }
 
         List<FoodEntry> oldEntries = foodEntryRepository.findByDietLogIdOrderById(logId);
@@ -158,7 +158,7 @@ public class DietLogService {
                 .orElseThrow(() -> new ResourceNotFoundException("DietLog", logId));
 
         if (!log.isOwnedBy(userId)) {
-            throw new UnauthorizedException("다른 사용자의 식사 기록을 삭제할 수 없습니다.");
+            throw new UnauthorizedException("다른 사용자의 식단 기록을 삭제할 수 없습니다.");
         }
 
         foodEntryRepository.findByDietLogIdOrderById(logId).stream()

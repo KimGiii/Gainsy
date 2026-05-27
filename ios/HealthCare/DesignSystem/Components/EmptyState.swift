@@ -8,7 +8,7 @@ import SwiftUI
 ///     icon: "fork.knife.circle",
 ///     title: "오늘 식단 기록이 아직 없어요",
 ///     message: "오늘 먹은 음식을 기록해 보세요\n영양 목표 달성을 도와드려요",
-///     action: .init(label: "첫 식사 기록하기") { vm.startNewLog() }
+///     action: .init(label: "식단 기록하기") { vm.startNewLog() }
 /// )
 /// ```
 ///
@@ -84,7 +84,7 @@ struct EmptyState: View {
             icon: "fork.knife.circle",
             title: "오늘 식단 기록이 아직 없어요",
             message: "오늘 먹은 음식을 기록해 보세요\n영양 목표 달성을 도와드려요",
-            action: .init(label: "첫 식사 기록하기") {}
+            action: .init(label: "식단 기록하기") {}
         )
         Divider()
         EmptyState(

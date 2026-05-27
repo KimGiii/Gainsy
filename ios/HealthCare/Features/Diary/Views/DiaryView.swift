@@ -585,7 +585,7 @@ private struct MeasurementRecordsSection: View {
                     .font(.bodyLarge)
                     .foregroundStyle(Color.brandAccent)
 
-                Text("신체 측정")
+                Text("신체 변화")
                     .font(.bodyLarge).fontWeight(.bold)
                     .foregroundStyle(Color.textPrimary)
 

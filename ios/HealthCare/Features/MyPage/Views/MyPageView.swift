@@ -289,7 +289,7 @@ private struct EditProfileSheet: View {
                             if viewModel.isLoading {
                                 ProgressView().tint(.white)
                             } else {
-                                Text("저장하기")
+                                Text("저장")
                                     .font(.bodyLarge).fontWeight(.semibold)
                                     .foregroundStyle(.white)
                             }
