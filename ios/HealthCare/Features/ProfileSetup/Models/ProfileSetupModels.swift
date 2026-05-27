@@ -2,6 +2,7 @@ import Foundation
 
 struct ProfileSetupRequest: Encodable {
     let sex: String?
+    let dateOfBirth: String?   // yyyy-MM-dd (백엔드 LocalDate)
     let heightCm: Double
     let weightKg: Double
     let activityLevel: String?
@@ -13,6 +14,7 @@ struct UserProfile: Decodable {
     let email: String
     let displayName: String
     let sex: String?
+    let dateOfBirth: String?   // yyyy-MM-dd
     let heightCm: Double?
     let weightKg: Double?
     let activityLevel: String?
