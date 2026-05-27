@@ -132,6 +132,17 @@ struct MainTabView: View {
             // exploreId 재생성은 path append와 race를 일으켜 제거.
             explorePath = NavigationPath([ExploreDestination.weeklyRetrospective])
             selectedTab = .explore
+        case "MEAL_BREAKFAST_REMINDER",
+             "MEAL_LUNCH_REMINDER",
+             "MEAL_DINNER_REMINDER":
+            // 식사 시간대 미기록 리마인더 → 기록 탭의 식단 기록 화면으로 직진.
+            // AddDietLogView가 sheet로 열릴 때 시간대 기반으로 mealType이 자동 선택된다.
+            recordPath = NavigationPath([RecordDestination.diet])
+            selectedTab = .record
+        case "DAILY_LOG_REMINDER":
+            // 하루 전체 미기록 리마인더 → 기록 허브로 이동(사용자가 무엇을 기록할지 선택).
+            recordPath = NavigationPath()
+            selectedTab = .record
         default:
             print("[MainTabView] handlePushRoute — 매핑되지 않은 type: \(type)")
             break
