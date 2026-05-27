@@ -78,7 +78,11 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse
     ) async {
         let userInfo = response.notification.request.content.userInfo
-        guard let type = userInfo["type"] as? String else { return }
+        print("[AppDelegate] didReceive userInfo=\(userInfo)")
+        guard let type = userInfo["type"] as? String else {
+            print("[AppDelegate] didReceive — userInfo['type']이 String 아님: \(userInfo["type"] ?? "nil")")
+            return
+        }
         // 메인 스레드에서 PushRouter에 전달 — SwiftUI 상태 변경 안전성 보장.
         // NotificationCenter publisher는 race condition(.onReceive 등록 전 fire)이 있어
         // PushRouter의 pending queue 방식으로 일원화.

@@ -25,6 +25,9 @@ final class PushRouter: ObservableObject {
 
     /// AppDelegate의 푸시 핸들러에서 호출. 메인 스레드 보장.
     func deliver(type: String) {
+        print("[PushRouter] deliver type=\(type)")
+        // 동일 값을 두 번 set하면 onChange가 트리거되지 않을 수 있어, 일단 nil로 리셋 후 set.
+        pendingRoute = nil
         pendingRoute = type
     }
 
@@ -32,6 +35,7 @@ final class PushRouter: ObservableObject {
     func consume() -> String? {
         let route = pendingRoute
         pendingRoute = nil
+        print("[PushRouter] consume route=\(route ?? "nil")")
         return route
     }
 }
