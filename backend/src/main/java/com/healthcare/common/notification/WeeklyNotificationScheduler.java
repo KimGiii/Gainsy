@@ -36,4 +36,26 @@ public class WeeklyNotificationScheduler {
             log.error("[Scheduler] Daily log reminder failed: {}", e.getMessage(), e);
         }
     }
+
+    // 매일 09:00 KST — 아침 식사 미기록자에게 리마인더.
+    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
+    public void sendBreakfastReminders() {
+        log.info("[Scheduler] Breakfast reminder triggered");
+        try {
+            notificationService.sendBreakfastReminderToAll();
+        } catch (Exception e) {
+            log.error("[Scheduler] Breakfast reminder failed: {}", e.getMessage(), e);
+        }
+    }
+
+    // 매일 13:00 KST — 점심 식사 미기록자에게 리마인더.
+    @Scheduled(cron = "0 0 13 * * *", zone = "Asia/Seoul")
+    public void sendLunchReminders() {
+        log.info("[Scheduler] Lunch reminder triggered");
+        try {
+            notificationService.sendLunchReminderToAll();
+        } catch (Exception e) {
+            log.error("[Scheduler] Lunch reminder failed: {}", e.getMessage(), e);
+        }
+    }
 }

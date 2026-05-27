@@ -1,5 +1,7 @@
 package com.healthcare.common.notification;
 
+import com.healthcare.domain.diet.entity.DietLog;
+import com.healthcare.domain.diet.repository.DietLogRepository;
 import com.healthcare.domain.insights.service.InsightsService;
 import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
@@ -22,6 +24,7 @@ public class NotificationService {
     private final NotificationLogRepository notificationLogRepository;
     private final UserRepository userRepository;
     private final InsightsService insightsService;
+    private final DietLogRepository dietLogRepository;
 
     /**
      * 전체 사용자에게 주간 요약 발송.
@@ -163,8 +166,88 @@ public class NotificationService {
         notificationLogRepository.save(logEntry);
     }
 
+    // MARK: - Meal Reminders
+    //
+    // 식사 시간대 cutoff 시각이 되면 해당 끼니 미기록 사용자에게 리마인더 발송.
+    // - BREAKFAST: 09:00 KST
+    // - LUNCH:     13:00 KST
+    // 저녁은 18:00 DAILY_LOG_REMINDER가 어떤 기록이라도 없는 사용자 대상이라 별도 메시지 생략.
+
+    public void sendBreakfastReminderToAll() {
+        sendMealReminderToAll(
+                DietLog.MealType.BREAKFAST,
+                NotificationType.MEAL_BREAKFAST_REMINDER,
+                "아침 식사를 기록해 주세요",
+                "오늘 아침 한 끼만 가볍게 남겨도 추세 그래프가 살아나요"
+        );
+    }
+
+    public void sendLunchReminderToAll() {
+        sendMealReminderToAll(
+                DietLog.MealType.LUNCH,
+                NotificationType.MEAL_LUNCH_REMINDER,
+                "점심 식사를 기록해 주세요",
+                "점심 칼로리·매크로를 가볍게 남기면 하루 균형이 보여요"
+        );
+    }
+
+    /**
+     * 특정 mealType 미기록 사용자에게 일괄 리마인더 발송.
+     * 같은 일자 중복 발송 방지 + 이미 해당 끼니 기록이 있으면 skip.
+     */
+    private void sendMealReminderToAll(DietLog.MealType mealType, String type,
+                                        String title, String body) {
+        LocalDate todayKst = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        Instant startOfTodayKst = todayKst.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant();
+        int sent = 0, skipped = 0, failed = 0;
+
+        for (User user : userRepository.findAllWithFcmToken()) {
+            if (notificationLogRepository.existsByUserIdAndTypeAndSentAtAfter(
+                    user.getId(), type, startOfTodayKst)) {
+                skipped++;
+                continue;
+            }
+            if (dietLogRepository.existsByUserIdAndLogDateAndMealType(
+                    user.getId(), todayKst, mealType)) {
+                skipped++;
+                continue;
+            }
+
+            try {
+                sendMealReminder(user, type, title, body);
+                sent++;
+            } catch (Exception e) {
+                failed++;
+                log.warn("[Notification] Meal reminder failed userId={} type={}: {}",
+                        user.getId(), type, e.getMessage());
+            }
+        }
+
+        log.info("[Notification] Meal reminder({}) — sent={} skipped={} failed={}",
+                type, sent, skipped, failed);
+    }
+
+    private void sendMealReminder(User user, String type, String title, String body) {
+        FcmService.FcmResult result = fcmService.send(
+                user.getFcmToken(), title, body,
+                Map.of("type", type));
+
+        NotificationLog logEntry = NotificationLog.builder()
+                .userId(user.getId())
+                .type(type)
+                .title(title)
+                .body(body)
+                .status(result.isSent() ? "SENT" : "FAILED")
+                .fcmToken(user.getFcmToken())
+                .errorMessage(result.isSent() ? null : result.detail())
+                .build();
+        notificationLogRepository.save(logEntry);
+    }
+
     public interface NotificationType {
-        String WEEKLY_SUMMARY     = "WEEKLY_SUMMARY";
-        String DAILY_LOG_REMINDER = "DAILY_LOG_REMINDER";
+        String WEEKLY_SUMMARY          = "WEEKLY_SUMMARY";
+        String DAILY_LOG_REMINDER      = "DAILY_LOG_REMINDER";
+        String MEAL_BREAKFAST_REMINDER = "MEAL_BREAKFAST_REMINDER";
+        String MEAL_LUNCH_REMINDER     = "MEAL_LUNCH_REMINDER";
     }
 }

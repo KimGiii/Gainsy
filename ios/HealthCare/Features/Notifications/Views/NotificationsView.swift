@@ -112,8 +112,11 @@ struct NotificationsView: View {
             // dismiss하고 PushRouter 흐름 재사용 — MainTabView가 receiver
             dismiss()
             PushRouter.shared.deliver(type: kind.rawValue)
-        case .dailyLogReminder:
-            // 일일 리마인더는 라우팅 없이 읽음 처리만. (홈 진입은 사용자가 직접)
+        case .dailyLogReminder,
+             .mealBreakfastReminder,
+             .mealLunchReminder:
+            // 리마인더 류는 라우팅 없이 읽음 처리만 — 어디로 가야 할지 사용자가 결정.
+            // 향후 식단/기록 화면 deep link 필요해지면 PushRouter case 추가.
             break
         }
     }
@@ -134,9 +137,11 @@ private struct NotificationRow: View {
 
     private var iconName: String {
         switch item.kind {
-        case .weeklySummary:    return "chart.bar.doc.horizontal"
-        case .dailyLogReminder: return "pencil.and.list.clipboard"
-        case nil:               return "bell"
+        case .weeklySummary:         return "chart.bar.doc.horizontal"
+        case .dailyLogReminder:      return "pencil.and.list.clipboard"
+        case .mealBreakfastReminder: return "sun.max.fill"
+        case .mealLunchReminder:     return "fork.knife"
+        case nil:                    return "bell"
         }
     }
 

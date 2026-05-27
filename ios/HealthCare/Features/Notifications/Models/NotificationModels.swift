@@ -18,8 +18,10 @@ struct NotificationItem: Decodable, Identifiable, Equatable, Hashable {
 extension NotificationItem {
     /// PushRouter / handlePushRoute에서 사용하는 같은 type 문자열.
     enum Kind: String {
-        case weeklySummary    = "WEEKLY_SUMMARY"
-        case dailyLogReminder = "DAILY_LOG_REMINDER"
+        case weeklySummary          = "WEEKLY_SUMMARY"
+        case dailyLogReminder       = "DAILY_LOG_REMINDER"
+        case mealBreakfastReminder  = "MEAL_BREAKFAST_REMINDER"
+        case mealLunchReminder      = "MEAL_LUNCH_REMINDER"
     }
 
     var kind: Kind? { Kind(rawValue: type) }
