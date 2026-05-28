@@ -50,7 +50,9 @@ struct DietRecordView: View {
                 }
             }
         }
-        .task { await viewModel.loadLogs(apiClient: container.apiClient) }
+        .onAppear {
+            Task { await viewModel.loadLogs(apiClient: container.apiClient) }
+        }
     }
 
     // MARK: - 오늘 영양소 바

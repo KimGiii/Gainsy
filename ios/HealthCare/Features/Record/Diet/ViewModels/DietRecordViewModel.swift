@@ -74,6 +74,9 @@ final class DietRecordViewModel: ObservableObject {
     // MARK: - API
 
     func loadLogs(apiClient: APIClient) async {
+        // 중복 호출 가드 — onAppear가 짧은 간격에 두 번 호출돼도 in-flight면 무시.
+        guard !isLoading else { return }
+
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }

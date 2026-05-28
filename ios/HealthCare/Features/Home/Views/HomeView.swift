@@ -90,7 +90,11 @@ struct HomeView: View {
                 BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
                     .frame(height: 50)
             }
-            .task { await viewModel.loadDashboard(apiClient: container.apiClient) }
+            // 매 등장 시 갱신 — 다른 탭/시트에서 목표·프로필을 바꾼 뒤 돌아왔을 때도 반영.
+            // ViewModel.loadDashboard의 isLoading 가드가 중복 호출을 차단한다.
+            .onAppear {
+                Task { await viewModel.loadDashboard(apiClient: container.apiClient) }
+            }
             .refreshable {
                 await viewModel.loadDashboard(apiClient: container.apiClient)
                 // pull-to-refresh로 인한 실패는 alert으로 알리지 않음(기존 화면 데이터 유지).
