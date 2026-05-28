@@ -18,6 +18,9 @@ struct ActivityRingPanel: View {
     let todayProteinG: Double
     let dailyProteinGoal: Double
 
+    /// "왜 이 수치인가요?" 탭 — 권장 칼로리 계산식 시트 호출. nil이면 버튼 미표시.
+    var onWhyTapped: (() -> Void)? = nil
+
     var body: some View {
         VStack(spacing: 0) {
             // 링 영역
@@ -83,6 +86,27 @@ struct ActivityRingPanel: View {
             }
             .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
             .padding(.vertical, Spacing.lg) // design-lint:ignore — micro/hero spacing
+
+            if let onWhyTapped {
+                Divider()
+                    .background(Color.brandDusk.opacity(0.07))
+                    .padding(.horizontal, Spacing.xl) // design-lint:ignore — micro/hero spacing
+                Button(action: onWhyTapped) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "info.circle")
+                            .font(.captionXSmall)
+                        Text("왜 \(Int(dailyCalorieGoal)) kcal인가요?")
+                            .font(.captionXSmall).fontWeight(.semibold)
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right")
+                            .font(.captionXSmall)
+                    }
+                    .foregroundStyle(Color.brandAccent)
+                    .padding(.horizontal, Spacing.xxl) // design-lint:ignore — micro/hero spacing
+                    .padding(.vertical, Spacing.md) // design-lint:ignore — micro/hero spacing
+                }
+                .accessibilityLabel("권장 칼로리 \(Int(dailyCalorieGoal)) 킬로칼로리가 어떻게 계산됐는지 보기")
+            }
         }
         .background(
             RoundedRectangle(cornerRadius: Radius.xl, style: .continuous)

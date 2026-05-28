@@ -9,6 +9,7 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject private var container: AppContainer
+    @State private var showCalorieExplanation = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -29,7 +30,10 @@ struct HomeView: View {
                         todayDurationMinutes: viewModel.todayDurationMinutes,
                         todayBurnedCalories:  viewModel.todayBurnedCalories,
                         todayProteinG:    viewModel.todayProteinG,
-                        dailyProteinGoal: viewModel.dailyProteinGoal
+                        dailyProteinGoal: viewModel.dailyProteinGoal,
+                        onWhyTapped: viewModel.userProfile != nil
+                            ? { showCalorieExplanation = true }
+                            : nil
                     )
 
                     // 3. 매크로 + 연속일 — 2열 그리드
@@ -89,6 +93,14 @@ struct HomeView: View {
             .safeAreaInset(edge: .bottom) {
                 BannerAdView(adUnitID: AdsManager.shared.bannerAdUnitID)
                     .frame(height: 50)
+            }
+            .sheet(isPresented: $showCalorieExplanation) {
+                if let profile = viewModel.userProfile {
+                    CalorieExplanationView(
+                        profile: profile,
+                        goalType: viewModel.activeGoal?.goalType
+                    )
+                }
             }
             // 매 등장 시 갱신 — 다른 탭/시트에서 목표·프로필을 바꾼 뒤 돌아왔을 때도 반영.
             // ViewModel.loadDashboard의 isLoading 가드가 중복 호출을 차단한다.
