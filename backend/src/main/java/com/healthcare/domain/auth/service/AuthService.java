@@ -12,7 +12,8 @@ import com.healthcare.domain.auth.repository.RefreshTokenRepository;
 import com.healthcare.domain.user.entity.User;
 import com.healthcare.domain.user.repository.UserRepository;
 import com.healthcare.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthService {
 
@@ -34,6 +34,32 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+
+    private final Counter registerCounter;
+    private final Counter loginSuccessCounter;
+    private final Counter loginFailCounter;
+
+    public AuthService(UserRepository userRepository,
+                       RefreshTokenRepository refreshTokenRepository,
+                       JwtTokenProvider jwtTokenProvider,
+                       PasswordEncoder passwordEncoder,
+                       MeterRegistry meterRegistry) {
+        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.passwordEncoder = passwordEncoder;
+        this.registerCounter = Counter.builder("healthcare.auth.register")
+            .description("회원가입 성공 수")
+            .register(meterRegistry);
+        this.loginSuccessCounter = Counter.builder("healthcare.auth.login")
+            .description("로그인 시도 수")
+            .tag("result", "success")
+            .register(meterRegistry);
+        this.loginFailCounter = Counter.builder("healthcare.auth.login")
+            .description("로그인 시도 수")
+            .tag("result", "fail")
+            .register(meterRegistry);
+    }
 
     @Transactional
     public TokenResponse register(RegisterRequest request) {
@@ -66,19 +92,25 @@ public class AuthService {
             .build();
 
         userRepository.save(user);
+        registerCounter.increment();
         return issueTokens(user);
     }
 
     @Transactional
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByEmailAndDeletedAtIsNull(request.getEmail())
-            .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
+            .orElseThrow(() -> {
+                loginFailCounter.increment();
+                return new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            });
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            loginFailCounter.increment();
             throw new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
         refreshTokenRepository.revokeAllByUserId(user.getId());
+        loginSuccessCounter.increment();
         return issueTokens(user);
     }
 
