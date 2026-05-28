@@ -11,7 +11,7 @@
 
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.1.0
     container_name: healthcare-prometheus
     restart: unless-stopped
     mem_limit: 250m
@@ -28,15 +28,21 @@ services:
       - "host.docker.internal:host-gateway"
 
   grafana:
-    image: grafana/grafana:latest
+    # v12/v13은 grafana-apiserver·k8s 스토리지 등 무거운 서브시스템이 있어 t3.small에서 thrashing.
+    # 가벼운 11.x LTS로 핀 + 메모리 상향.
+    image: grafana/grafana:11.6.3
     container_name: healthcare-grafana
     restart: unless-stopped
-    mem_limit: 180m
+    mem_limit: 350m
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set in monitoring.env}
       GF_SERVER_ROOT_URL: https://api.gainsy.site/grafana/
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+      # 불필요한 기능 끄기 (메모리/CPU 절약)
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
     ports:
       - "127.0.0.1:3000:3000"   # 외부는 Nginx /grafana/ 경유
     volumes:
