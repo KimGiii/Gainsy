@@ -40,7 +40,7 @@ services:
       - localstack_data:/tmp/localstack
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.1.0
     container_name: healthcare-prometheus
     ports:
       - "9090:9090"
@@ -51,7 +51,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.6.3
     container_name: healthcare-grafana
     ports:
       - "3000:3000"

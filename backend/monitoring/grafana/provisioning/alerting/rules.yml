@@ -10,6 +10,8 @@ groups:
         title: API 5xx 비율 > 5%
         condition: C
         for: 5m
+        # 데이터 없음(배포 중·무트래픽)은 알림 안 함. 실제 다운은 hc-instance-down이 잡음.
+        noDataState: OK
         labels:
           severity: critical
         annotations:
@@ -35,6 +37,8 @@ groups:
         title: HTTP p99 지연 > 2s
         condition: C
         for: 5m
+        # 데이터 없음(배포 중·무트래픽)은 알림 안 함. 실제 다운은 hc-instance-down이 잡음.
+        noDataState: OK
         labels:
           severity: warning
         annotations:
@@ -60,6 +64,8 @@ groups:
         title: JVM 힙 사용률 > 90%
         condition: C
         for: 5m
+        # 데이터 없음(배포 중·무트래픽)은 알림 안 함. 실제 다운은 hc-instance-down이 잡음.
+        noDataState: OK
         labels:
           severity: warning
         annotations:
@@ -110,6 +116,8 @@ groups:
         title: HikariCP 커넥션 풀 고갈
         condition: C
         for: 5m
+        # 데이터 없음(배포 중·무트래픽)은 알림 안 함. 실제 다운은 hc-instance-down이 잡음.
+        noDataState: OK
         labels:
           severity: warning
         annotations:
