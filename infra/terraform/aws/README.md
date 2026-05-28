@@ -96,6 +96,9 @@ terraform apply \
    GRAFANA_ADMIN_PASSWORD=<강력한_비밀번호>
    SLACK_WEBHOOK_URL=<슬랙_incoming_webhook_URL>   # 없으면 빈 값 → 알림 미발송
    ENV
+   # docker compose(ubuntu 사용자)가 --env-file을 읽을 수 있도록 소유자를 ubuntu로.
+   # root 소유 + 600이면 "permission denied"로 기동 실패한다.
+   sudo chown ubuntu:ubuntu /etc/healthcare/monitoring.env
    sudo chmod 600 /etc/healthcare/monitoring.env
    ```
 
