@@ -30,6 +30,7 @@ enum ActivityLevelOption {
 struct UpdateProfileRequest: Encodable {
     var displayName: String?
     var sex: String?
+    var dateOfBirth: String?   // yyyy-MM-dd (백엔드 LocalDate)
     var heightCm: Double?
     var weightKg: Double?
     var activityLevel: String?
@@ -66,9 +67,25 @@ final class MyPageViewModel: ObservableObject {
     // 편집 시트용 임시 값
     @Published var editDisplayName = ""
     @Published var editSex = ""
+    @Published var editDateOfBirth: Date = MyPageViewModel.defaultDateOfBirth
     @Published var editHeightCm = ""
     @Published var editWeightKg = ""
     @Published var editActivityLevel = ""
+
+    /// 디폴트 생년월일 — 30년 전.
+    private static let defaultDateOfBirth: Date = {
+        Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()
+    }()
+
+    /// 백엔드 LocalDate(yyyy-MM-dd) <-> Swift Date 변환에 사용.
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = TimeZone(identifier: "Asia/Seoul")
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
 
     var activityLevelLabel: String {
         ActivityLevelOption.label(for: profile?.activityLevel)
@@ -100,6 +117,8 @@ final class MyPageViewModel: ObservableObject {
         guard let p = profile else { return }
         editDisplayName  = p.displayName
         editSex          = p.sex ?? ""
+        editDateOfBirth  = p.dateOfBirth
+            .flatMap { Self.dateFormatter.date(from: $0) } ?? Self.defaultDateOfBirth
         editHeightCm     = p.heightCm.map { String($0) } ?? ""
         editWeightKg     = p.weightKg.map { String($0) } ?? ""
         editActivityLevel = p.activityLevel ?? ""
@@ -112,6 +131,7 @@ final class MyPageViewModel: ObservableObject {
             let req = UpdateProfileRequest(
                 displayName:   editDisplayName.isEmpty ? nil : editDisplayName,
                 sex:           editSex.isEmpty ? nil : editSex,
+                dateOfBirth:   Self.dateFormatter.string(from: editDateOfBirth),
                 heightCm:      Double(editHeightCm),
                 weightKg:      Double(editWeightKg),
                 activityLevel: editActivityLevel.isEmpty ? nil : editActivityLevel

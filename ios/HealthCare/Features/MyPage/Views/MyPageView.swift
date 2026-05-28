@@ -245,6 +245,8 @@ private struct EditProfileSheet: View {
                     }
 
                     EditCard(title: "신체 정보") {
+                        EditDateField(label: "생년월일", date: $viewModel.editDateOfBirth)
+                        Divider().padding(.leading, Spacing.lg)
                         EditNumericField(label: "키", unit: "cm", text: $viewModel.editHeightCm)
                         Divider().padding(.leading, Spacing.lg)
                         EditNumericField(label: "체중", unit: "kg", text: $viewModel.editWeightKg)
@@ -613,6 +615,31 @@ private struct EditNumericField: View {
                     .font(.bodySmall)
                     .foregroundStyle(Color.textTertiary)
             }
+        }
+        .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .padding(.vertical, 13) // design-lint:ignore — micro/hero spacing
+    }
+}
+
+private struct EditDateField: View {
+    let label: String
+    @Binding var date: Date
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.bodyMedium)
+                .foregroundStyle(Color.textSecondary)
+                .frame(width: 64, alignment: .leading)
+            Spacer()
+            DatePicker(
+                "",
+                selection: $date,
+                in: ...Date(),
+                displayedComponents: .date
+            )
+            .labelsHidden()
+            .environment(\.locale, Locale(identifier: "ko_KR"))
         }
         .padding(.horizontal, Spacing.lg) // design-lint:ignore — micro/hero spacing
         .padding(.vertical, 13) // design-lint:ignore — micro/hero spacing
