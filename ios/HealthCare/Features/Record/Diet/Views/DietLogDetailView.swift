@@ -5,14 +5,37 @@ import SwiftUI
 @MainActor
 final class DietLogDetailViewModel: ObservableObject {
     @Published var detail: DietLogDetailResponse?
+    @Published var userProfile: UserProfile?
     @Published var isLoading = false
     @Published var errorMessage: String?
+
+    // MARK: - 일일 권장량 (프로필 우선, 없거나 0이면 fallback)
+    var dailyCalorieGoal: Double {
+        if let t = userProfile?.calorieTarget, t > 0 { return Double(t) }
+        return 2_000
+    }
+    var dailyProteinGoal: Double {
+        if let g = userProfile?.proteinTargetG, g > 0 { return Double(g) }
+        return 60
+    }
+    var dailyCarbsGoal: Double {
+        if let g = userProfile?.carbTargetG, g > 0 { return Double(g) }
+        return 250
+    }
+    var dailyFatGoal: Double {
+        if let g = userProfile?.fatTargetG, g > 0 { return Double(g) }
+        return 65
+    }
 
     func load(id: Int, apiClient: APIClient) async {
         isLoading = true
         defer { isLoading = false }
         do {
-            detail = try await apiClient.request(.getDietLog(id: id))
+            async let detailRequest: DietLogDetailResponse = apiClient.request(.getDietLog(id: id))
+            async let profileRequest: UserProfile = apiClient.request(.getProfile)
+            let (loadedDetail, profile) = try await (detailRequest, profileRequest)
+            detail = loadedDetail
+            userProfile = profile
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
@@ -45,6 +68,7 @@ struct DietLogDetailView: View {
                         DietDetailHeader(detail: detail)
                         VStack(spacing: 16) {
                             nutritionCard(detail: detail)
+                            recommendedProgressCard(detail: detail)
                             entriesSection(detail: detail)
                             if let notes = detail.notes, !notes.isEmpty {
                                 notesCard(notes: notes)
@@ -152,6 +176,52 @@ struct DietLogDetailView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
+    private func recommendedProgressCard(detail: DietLogDetailResponse) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("일일 권장량 대비")
+                .font(.subheadline.bold())
+                .foregroundColor(Color.brandAccent)
+            VStack(spacing: 12) {
+                MacroProgressRow(
+                    label: "칼로리",
+                    current: detail.totalCalories ?? 0,
+                    goal: viewModel.dailyCalorieGoal,
+                    unit: "kcal",
+                    color: .brandAccent
+                )
+                MacroProgressRow(
+                    label: "단백질",
+                    current: detail.totalProteinG ?? 0,
+                    goal: viewModel.dailyProteinGoal,
+                    unit: "g",
+                    color: .blue
+                )
+                MacroProgressRow(
+                    label: "탄수화물",
+                    current: detail.totalCarbsG ?? 0,
+                    goal: viewModel.dailyCarbsGoal,
+                    unit: "g",
+                    color: .orange
+                )
+                MacroProgressRow(
+                    label: "지방",
+                    current: detail.totalFatG ?? 0,
+                    goal: viewModel.dailyFatGoal,
+                    unit: "g",
+                    color: .pink
+                )
+            }
+            Text("이 식사가 오늘 권장량에서 차지하는 비율입니다.")
+                .font(.caption)
+                .foregroundColor(Color.textTertiary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
+        .background(Color.surfaceCard)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
+        .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+    }
+
     private func entriesSection(detail: DietLogDetailResponse) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("식품 목록")
@@ -185,6 +255,57 @@ struct DietLogDetailView: View {
         .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+    }
+}
+
+// MARK: - MacroProgressRow
+
+private struct MacroProgressRow: View {
+    let label: String
+    let current: Double
+    let goal: Double
+    let unit: String
+    let color: Color
+
+    private var progress: Double { min(current / max(goal, 1), 1.0) }
+    private var percent: Int { Int((current / max(goal, 1) * 100).rounded()) }
+    private var isExceeded: Bool { current > goal && goal > 0 }
+
+    var body: some View {
+        VStack(spacing: 5) {
+            HStack(alignment: .lastTextBaseline) {
+                Text(label)
+                    .font(.captionBold)
+                    .foregroundStyle(Color.textSecondary)
+                Spacer()
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("\(percent)%")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(isExceeded ? Color.brandDanger : Color.textPrimary)
+                    Text("\(Int(current.rounded())) / \(Int(goal))\(unit)")
+                        .font(.captionXSmall)
+                        .foregroundStyle(Color.textTertiary)
+                }
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill((isExceeded ? Color.brandDanger : color).opacity(0.12))
+                        .frame(height: 6)
+                    Capsule()
+                        .fill(isExceeded ? Color.brandDanger : color)
+                        .frame(width: geo.size.width * progress, height: 6)
+                        .animation(.spring(response: 0.8, dampingFraction: 0.82), value: progress)
+                }
+            }
+            .frame(height: 6)
+            .accessibilityHidden(true)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            "\(label): 권장량의 \(percent) 퍼센트, \(Int(current.rounded()))\(unit) / \(Int(goal))\(unit)"
+            + (isExceeded ? ", 권장량 초과" : "")
+        )
     }
 }
 

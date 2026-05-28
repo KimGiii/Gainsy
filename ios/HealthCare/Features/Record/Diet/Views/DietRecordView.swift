@@ -38,7 +38,7 @@ struct DietRecordView: View {
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $viewModel.showAddLog) {
-            AddDietLogView {
+            AddDietLogView(remainingCalories: viewModel.remainingCalories) {
                 viewModel.showAddLog = false
             }
             .environmentObject(container)
