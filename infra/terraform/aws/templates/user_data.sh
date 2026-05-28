@@ -61,8 +61,10 @@ server {
     }
 
     # Grafana (모니터링 대시보드) — 경로 기반. 컨테이너는 127.0.0.1:3000에만 바인딩.
+    # serve_from_sub_path=true이므로 proxy_pass 끝에 슬래시를 두지 않는다(접두사 보존).
+    # 슬래시를 붙이면 /grafana/ 접두사가 제거돼 무한 리다이렉트(ERR_TOO_MANY_REDIRECTS) 발생.
     location /grafana/ {
-        proxy_pass         http://127.0.0.1:3000/;
+        proxy_pass         http://127.0.0.1:3000;
         proxy_set_header   Host              \$host;
         proxy_set_header   X-Real-IP         \$remote_addr;
         proxy_set_header   X-Forwarded-For   \$proxy_add_x_forwarded_for;
