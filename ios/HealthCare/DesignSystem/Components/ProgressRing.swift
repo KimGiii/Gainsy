@@ -65,6 +65,15 @@ enum ProgressRingSize {
         }
     }
 
+    /// 링과 하단 라벨 사이 간격
+    var labelSpacing: CGFloat {
+        switch self {
+        case .compact:  return 5
+        case .standard: return 10
+        case .hero:     return 12
+        }
+    }
+
     /// spring 애니메이션 response
     var springResponse: Double {
         switch self {
@@ -120,7 +129,7 @@ struct ProgressRing: View {
     }
 
     var body: some View {
-        VStack(spacing: size == .compact ? 3 : 6) {
+        VStack(spacing: size.labelSpacing) {
             ZStack {
                 // 트랙 (미진행 배경 원)
                 Circle()
