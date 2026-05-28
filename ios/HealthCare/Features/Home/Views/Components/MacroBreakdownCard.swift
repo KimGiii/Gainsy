@@ -72,6 +72,7 @@ private struct MacroRow: View {
     let unit: String
 
     private var progress: Double { min(current / max(goal, 1), 1.0) }
+    private var isExceeded: Bool { current > goal && goal > 0 }
 
     var body: some View {
         VStack(spacing: 5) {
@@ -83,24 +84,24 @@ private struct MacroRow: View {
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(String(format: "%.0f", current))
                         .font(.system(size: 14, weight: .heavy, design: .rounded)) // design-lint:ignore — SF Symbol or hero numeric
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(isExceeded ? Color.brandDanger : Color.textPrimary)
                     Text("/ \(Int(goal))\(unit)")
                         .font(.captionXSmall)
                         .foregroundStyle(Color.textTertiary)
                 }
             }
 
-            // 진행 바
+            // 진행 바 (100% 클램프 + 초과 시 danger 톤)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     // 트랙
                     Capsule()
-                        .fill(color.opacity(0.12))
+                        .fill((isExceeded ? Color.brandDanger : color).opacity(0.12))
                         .frame(height: 6)
 
                     // 진행
                     Capsule()
-                        .fill(color)
+                        .fill(isExceeded ? Color.brandDanger : color)
                         .frame(width: geo.size.width * progress, height: 6)
                         .animation(.spring(response: 0.8, dampingFraction: 0.82), value: progress)
                 }
@@ -109,7 +110,10 @@ private struct MacroRow: View {
             .accessibilityHidden(true)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(label): \(String(format: "%.0f", current))\(unit) / \(Int(goal))\(unit)")
+        .accessibilityLabel(
+            "\(label): \(String(format: "%.0f", current))\(unit) / \(Int(goal))\(unit)"
+            + (isExceeded ? ", 권장량 초과" : "")
+        )
     }
 }
 

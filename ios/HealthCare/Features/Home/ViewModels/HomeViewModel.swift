@@ -203,6 +203,10 @@ final class HomeViewModel: ObservableObject {
     // MARK: - API
 
     func loadDashboard(apiClient: any HomeDashboardLoading) async {
+        // 중복 호출 가드 — 탭 재진입 등으로 onAppear가 짧은 간격에 두 번 호출돼도
+        // in-flight 중이면 두 번째는 즉시 무시한다. MainActor isolated이라 race-free.
+        guard !isLoading else { return }
+
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }

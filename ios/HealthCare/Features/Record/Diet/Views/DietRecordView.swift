@@ -38,7 +38,7 @@ struct DietRecordView: View {
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $viewModel.showAddLog) {
-            AddDietLogView {
+            AddDietLogView(remainingCalories: viewModel.remainingCalories) {
                 viewModel.showAddLog = false
             }
             .environmentObject(container)
@@ -50,7 +50,9 @@ struct DietRecordView: View {
                 }
             }
         }
-        .task { await viewModel.loadLogs(apiClient: container.apiClient) }
+        .onAppear {
+            Task { await viewModel.loadLogs(apiClient: container.apiClient) }
+        }
     }
 
     // MARK: - 오늘 영양소 바
@@ -68,12 +70,14 @@ struct DietRecordView: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("목표")
+                    Text(viewModel.remainingCalories >= 0 ? "남은 칼로리" : "초과 섭취")
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
-                    Text(String(format: "%.0f kcal", DietRecordViewModel.dailyCalorieGoal))
-                        .font(.subheadline)
-                        .foregroundColor(Color.textSecondary)
+                    Text(String(format: "%.0f kcal", abs(viewModel.remainingCalories)))
+                        .font(.subheadline.bold())
+                        .foregroundColor(viewModel.remainingCalories >= 0
+                            ? Color.textHeadline
+                            : Color.brandDanger)
                 }
             }
             // 칼로리 프로그레스 바
@@ -100,7 +104,7 @@ struct DietRecordView: View {
                 MacroProgressCell(
                     label: "단백질",
                     current: viewModel.todayProteinG,
-                    goal: DietRecordViewModel.dailyProteinGoal,
+                    goal: viewModel.dailyProteinGoal,
                     progress: viewModel.proteinProgress,
                     color: .blue
                 )
@@ -108,7 +112,7 @@ struct DietRecordView: View {
                 MacroProgressCell(
                     label: "탄수화물",
                     current: viewModel.todayCarbsG,
-                    goal: DietRecordViewModel.dailyCarbsGoal,
+                    goal: viewModel.dailyCarbsGoal,
                     progress: viewModel.carbsProgress,
                     color: .orange
                 )
@@ -116,7 +120,7 @@ struct DietRecordView: View {
                 MacroProgressCell(
                     label: "지방",
                     current: viewModel.todayFatG,
-                    goal: DietRecordViewModel.dailyFatGoal,
+                    goal: viewModel.dailyFatGoal,
                     progress: viewModel.fatProgress,
                     color: .pink
                 )

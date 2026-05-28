@@ -10,10 +10,14 @@ struct AddDietLogView: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     var onSaved: () -> Void
 
-    init(initialDate: Date = Date(), onSaved: @escaping () -> Void) {
+    /// 이 식사 입력 전 기준, 오늘 남은 칼로리(일일 권장 − 이미 기록된 섭취). nil이면 hint 미표시.
+    private let remainingBeforeMeal: Double?
+
+    init(initialDate: Date = Date(), remainingCalories: Double? = nil, onSaved: @escaping () -> Void) {
         _viewModel = StateObject(
             wrappedValue: AddDietLogViewModel(initialDate: initialDate)
         )
+        self.remainingBeforeMeal = remainingCalories
         self.onSaved = onSaved
     }
 
@@ -21,6 +25,7 @@ struct AddDietLogView: View {
         _viewModel = StateObject(
             wrappedValue: AddDietLogViewModel(editing: log)
         )
+        self.remainingBeforeMeal = nil
         self.onSaved = onSaved
     }
 
@@ -160,11 +165,39 @@ struct AddDietLogView: View {
                 Divider().frame(height: 30)
                 MacroCell(label: "지방", value: viewModel.totalFat, color: .pink)
             }
+            if let remainingBeforeMeal {
+                Divider()
+                remainingCalorieHint(remainingBeforeMeal)
+            }
         }
         .padding(Spacing.lg) // design-lint:ignore — micro/hero spacing
         .background(Color.surfaceCard)
         .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+    }
+
+    /// 이 식사를 더한 뒤 오늘 남는 칼로리. 음수면 초과로 danger 톤 표시.
+    private func remainingCalorieHint(_ remainingBeforeMeal: Double) -> some View {
+        let remaining = remainingBeforeMeal - viewModel.totalCalories
+        let isExceeded = remaining < 0
+        return HStack(spacing: 6) {
+            Image(systemName: isExceeded ? "exclamationmark.triangle.fill" : "flame.fill")
+                .font(.caption)
+                .foregroundColor(isExceeded ? Color.brandDanger : Color.textSecondary)
+            Text(isExceeded ? "오늘 권장 초과" : "오늘 남은 칼로리")
+                .font(.caption)
+                .foregroundColor(Color.textSecondary)
+            Spacer()
+            Text("\(isExceeded ? "+" : "")\(abs(remaining).formatted(.number.precision(.fractionLength(0)))) kcal")
+                .font(.subheadline.bold())
+                .foregroundColor(isExceeded ? Color.brandDanger : Color.brandAccent)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            isExceeded
+                ? "오늘 권장 칼로리를 \(String(format: "%.0f", abs(remaining))) 킬로칼로리 초과합니다."
+                : "오늘 남은 칼로리 \(String(format: "%.0f", remaining)) 킬로칼로리."
+        )
     }
 
     // MARK: - 추가된 식품 목록
