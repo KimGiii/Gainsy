@@ -60,6 +60,18 @@ server {
         proxy_pass http://127.0.0.1:8080;
     }
 
+    # Grafana (모니터링 대시보드) — 경로 기반. 컨테이너는 127.0.0.1:3000에만 바인딩.
+    location /grafana/ {
+        proxy_pass         http://127.0.0.1:3000/;
+        proxy_set_header   Host              \$host;
+        proxy_set_header   X-Real-IP         \$remote_addr;
+        proxy_set_header   X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        # Grafana Live (WebSocket)
+        proxy_set_header   Upgrade           \$http_upgrade;
+        proxy_set_header   Connection        "upgrade";
+    }
+
     location / {
         proxy_pass         http://127.0.0.1:8080;
         proxy_http_version 1.1;
